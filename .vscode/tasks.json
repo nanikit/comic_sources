@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "denopack",
+      "type": "shell",
+      "command": "denopack --config denopack_config.ts --dir dist --input ${file}",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "denopack watch",
+      "type": "shell",
+      "command": "denopack --config denopack_config.ts --dir dist --watch ${fileDirname} --input ${file}",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/07e41604/src/mod.ts"
+  }
+}
