@@ -68,7 +68,7 @@ const postprocess = (code: string) => {
 
   let transforming = code.replace(header, '');
 
-  const dependencies = [...header.matchAll(/@resource\s+(\S+)\s+.*?\.js$/gm)];
+  const dependencies = [...header.matchAll(/@resource\s+(\S+)\s+.*?\.js.*?$/gm)];
   if (dependencies.length) {
     const aliases = dependencies.map((x) => x[1]);
     transforming = implantRequireJs(aliases, transforming);
