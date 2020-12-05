@@ -71,7 +71,7 @@ initialize(hiyobiSource);
 
 //
 // ==UserScript==
-// @name         manatoki viewer
+// @name         hiyobi viewer
 // @version      1.0
 // @description  press i to open
 // @match        https://hiyobi.me/reader/*
