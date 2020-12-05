@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         hiyobi viewer
-// @version      2012050951
+// @version      2012051010
 // @description  press i to open
 // @match        https://hiyobi.me/reader/*
 // @author       keut

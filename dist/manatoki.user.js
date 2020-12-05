@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         manatoki viewer
-// @version      2012051008
+// @version      2012051010
 // @description  press i to open
 // @include      /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author       keut
