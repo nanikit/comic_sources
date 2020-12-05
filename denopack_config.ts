@@ -31,7 +31,7 @@ const denoFmt = async (code: string) => {
   return decoded;
 };
 
-const wrapByExecutor = (dependencies: string[], body: string) => {
+const implantRequireJs = (dependencies: string[], body: string) => {
   return `'use strict';
 
 unsafeWindow.process = { env: { NODE_ENV: 'development' } };
@@ -53,7 +53,12 @@ require(['main']);
 `;
 };
 
-const implantRequireJs = (code: string) => {
+const replaceVersion = (header: string): string => {
+  const dateVersion = new Date().toISOString().replace(/\D+/g, '').substr(2, 10);
+  return header.replace('${date_version}', dateVersion);
+};
+
+const postprocess = (code: string) => {
   const header = code.match(
     /(?:^\s*\/\/.*\r?\n?)*?(?:^\s*\/\/.*?==UserScript==.*?\r?\n?)(?:^\s*\/\/.*\r?\n?)+/m,
   )?.[0];
@@ -66,10 +71,10 @@ const implantRequireJs = (code: string) => {
   const dependencies = [...header.matchAll(/@resource\s+(\S+)\s+.*?\.js$/gm)];
   if (dependencies.length) {
     const aliases = dependencies.map((x) => x[1]);
-    transforming = wrapByExecutor(aliases, transforming);
+    transforming = implantRequireJs(aliases, transforming);
   }
 
-  transforming = header + transforming;
+  transforming = replaceVersion(header) + transforming;
   return transforming;
 };
 
@@ -85,7 +90,7 @@ const bannerPlugin = () => {
         if (output.type !== 'chunk') {
           continue;
         }
-        let transforming = implantRequireJs(output.code);
+        let transforming = postprocess(output.code);
         transforming = await denoFmt(transforming);
         output.code = transforming;
       }

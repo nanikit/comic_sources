@@ -1,4 +1,4 @@
-import { utils, types, initialize } from 'vim_comic_viewer';
+import { initialize, types, utils } from 'vim_comic_viewer';
 
 const registerEpisodeNavigator = () => {
   window.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -63,7 +63,7 @@ initialize(manatokiSource);
 //
 // ==UserScript==
 // @name         manatoki viewer
-// @version      1.0
+// @version      ${date_version}
 // @description  press i to open
 // @include      /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author       keut

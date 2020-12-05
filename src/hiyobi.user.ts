@@ -71,7 +71,7 @@ initialize(hiyobiSource);
 //
 // ==UserScript==
 // @name         hiyobi viewer
-// @version      1.0
+// @version      ${date_version}
 // @description  press i to open
 // @match        https://hiyobi.me/reader/*
 // @author       keut
