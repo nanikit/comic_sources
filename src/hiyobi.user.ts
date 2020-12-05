@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { initialize, types } from 'vim_comic_viewer';
 
 type ImageInfo = {
