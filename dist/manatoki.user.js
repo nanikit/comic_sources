@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         manatoki viewer
-// @version      2012052338
+// @name:ko      마나토끼 뷰어
+// @version      2012052350
 // @description  press i to open
 // @include      /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author       nanikit

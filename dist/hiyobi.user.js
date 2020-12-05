@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         hiyobi viewer
-// @version      2012052338
+// @name:ko      히요비 뷰어
+// @version      2012052351
 // @description  press i to open
 // @match        https://hiyobi.me/*
 // @author       nanikit
