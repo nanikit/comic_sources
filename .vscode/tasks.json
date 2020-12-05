@@ -4,14 +4,14 @@
     {
       "label": "denopack",
       "type": "shell",
-      "command": "denopack --config denopack_config.ts --dir dist --input ${file}",
+      "command": "deno run --unstable --allow-run --allow-read --allow-write --allow-env https://deno.land/x/denopack@0.10.0/cli.ts --config denopack_config.ts --dir dist --input ${file}",
       "group": "build",
       "problemMatcher": []
     },
     {
       "label": "denopack watch",
       "type": "shell",
-      "command": "denopack --config denopack_config.ts --dir dist --watch ${fileDirname} --input ${file}",
+      "command": "deno run --unstable --allow-run --allow-read --allow-write --allow-env https://deno.land/x/denopack@0.10.0/cli.ts --config denopack_config.ts --dir dist --input ${file} --watch src",
       "group": {
         "kind": "build",
         "isDefault": true

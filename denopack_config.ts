@@ -31,9 +31,6 @@ const denoFmt = async (code: string) => {
   return decoded;
 };
 
-const json = Deno.readTextFileSync('./tsconfig.json');
-const compilerOptions = JSON.parse(json).compilerOptions;
-
 const wrapByExecutor = (dependencies: string[], body: string) => {
   return `'use strict';
 
@@ -56,10 +53,30 @@ require(['main']);
 `;
 };
 
+const implantRequireJs = (code: string) => {
+  const header = code.match(
+    /(?:^\s*\/\/.*\r?\n?)*?(?:^\s*\/\/.*?==UserScript==.*?\r?\n?)(?:^\s*\/\/.*\r?\n?)+/m,
+  )?.[0];
+  if (!header) {
+    return code;
+  }
+
+  let transforming = code.replace(header, '');
+
+  const dependencies = [...header.matchAll(/@resource\s+(\S+)\s+.*?\.js$/gm)];
+  if (dependencies.length) {
+    const aliases = dependencies.map((x) => x[1]);
+    transforming = wrapByExecutor(aliases, transforming);
+  }
+
+  transforming = header + transforming;
+  return transforming;
+};
+
 const bannerPlugin = () => {
   return {
     name: 'tampermonkey-header-plugin',
-    generateBundle: (
+    generateBundle: async (
       _options: OutputOptions,
       bundle: { [fileName: string]: AssetInfo | ChunkInfo },
       _isWrite: boolean,
@@ -68,27 +85,16 @@ const bannerPlugin = () => {
         if (output.type !== 'chunk') {
           continue;
         }
-        const header = output.code.match(
-          /(?:^\s*\/\/.*\r?\n?)*?(?:^\s*\/\/.*?==UserScript==.*?\r?\n?)(?:^\s*\/\/.*\r?\n?)+/m,
-        )?.[0];
-        if (!header) {
-          continue;
-        }
-
-        let transforming = output.code.replace(header, '');
-
-        const dependencies = [...header.matchAll(/@resource\s+(\S+)\s+.*?\.js$/gm)];
-        if (dependencies.length) {
-          const aliases = dependencies.map((x) => x[1]);
-          transforming = wrapByExecutor(aliases, transforming);
-        }
-
-        transforming = header + transforming;
+        let transforming = implantRequireJs(output.code);
+        transforming = await denoFmt(transforming);
         output.code = transforming;
       }
     },
   };
 };
+
+const json = Deno.readTextFileSync('./tsconfig.json');
+const compilerOptions = JSON.parse(json).compilerOptions;
 
 const config: RollupOptions = {
   external: ['react', 'react-dom', '@stitches/react', 'vim_comic_viewer'],
