@@ -56,6 +56,7 @@ hookPage();
 //
 // ==UserScript==
 // @name         hiyobi viewer
+// @name:ko      히요비 뷰어
 // @version      ${date_version}
 // @description  press i to open
 // @match        https://hiyobi.me/*

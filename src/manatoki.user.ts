@@ -63,6 +63,7 @@ initialize(manatokiSource);
 //
 // ==UserScript==
 // @name         manatoki viewer
+// @name:ko      마나토끼 뷰어
 // @version      ${date_version}
 // @description  press i to open
 // @include      /^https:\/\/manatoki\d+\.net\/comic\/\d+/
