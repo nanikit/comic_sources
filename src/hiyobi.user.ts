@@ -1,5 +1,6 @@
 import { initialize, types } from 'vim_comic_viewer';
 import { hookListPage } from './hiyobi/list.ts';
+import { fetchJson, getId, hookReaderPage } from './hiyobi/reader.ts';
 
 type ImageInfo = {
   hasavif: 0 | 1;
@@ -8,25 +9,6 @@ type ImageInfo = {
   width: number;
   height: number;
   name: string;
-};
-
-const fetchJson = async (url: string) => {
-  const response = await fetch(url);
-  return response.json();
-};
-
-const fetchTitle = async (id: string) => {
-  const info = (await fetchJson(`//api.hiyobi.me/gallery/${id}`)) as {
-    title: string;
-  };
-  const title = document.querySelector('title')!;
-  const observer = new MutationObserver(() => {
-    observer.disconnect();
-    document.title = `${id} ${info.title} - hiyobi.me`;
-    observer.observe(title, { childList: true });
-  });
-  document.title = `${id} ${info.title} - hiyobi.me`;
-  observer.observe(title, { childList: true });
 };
 
 const fetchList = async (id: string) => {
@@ -44,20 +26,12 @@ const fetchList = async (id: string) => {
   return infos.map(getUrl);
 };
 
-const getId = () => {
-  return location.href.match(/hiyobi\.me\/reader\/(\w+)/)?.[1];
-};
-
 const comicSource: types.ComicSource = () => {
   const id = getId();
   if (!id) {
     throw new Error('히요비 만화 페이지가 아닙니다');
   }
 
-  window.stop();
-  document.querySelectorAll('#root, #modal').forEach((x) => x.remove());
-
-  fetchTitle(id);
   return fetchList(id);
 };
 
@@ -69,7 +43,9 @@ const hiyobiSource: types.ViewerSource = {
 
 const hookPage = async () => {
   if (location.pathname.startsWith('/reader')) {
-    await initialize(hiyobiSource);
+    window.stop();
+    document.querySelectorAll('#root, #modal').forEach((x) => x.remove());
+    await Promise.all([initialize(hiyobiSource), hookReaderPage()]);
   } else {
     await hookListPage();
   }

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         hiyobi viewer
-// @version      2012052228
+// @version      2012052304
 // @description  press i to open
 // @match        https://hiyobi.me/*
 // @author       nanikit
@@ -209,25 +209,52 @@ define("main", (require, exports, module) => {
     prefetchNextPage();
   };
 
+  const getHitomiUrl$1 = (id, kind) => {
+    return `https://hitomi.la/${kind}/${id}.html`;
+  };
+  const getId = () => {
+    return location.href.match(/hiyobi\.me\/reader\/(\w+)/)?.[1];
+  };
+  const onReaderKey = (event) => {
+    switch (event.key) {
+      case "o":
+        window.close();
+        break;
+      case "u":
+        window.location.href = getHitomiUrl$1(getId(), "galleries");
+        break;
+      case "p":
+        window.location.href = getHitomiUrl$1(getId(), "reader");
+        break;
+    }
+  };
+  const observeOnce = async (element, options) => {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((...args) => {
+        observer.disconnect();
+        resolve(args);
+      });
+      observer.observe(element, options);
+    });
+  };
   const fetchJson = async (url) => {
     const response = await fetch(url);
     return response.json();
   };
   const fetchTitle = async (id) => {
     const info = await fetchJson(`//api.hiyobi.me/gallery/${id}`);
-    const title = document.querySelector("title");
-    const observer = new MutationObserver(() => {
-      observer.disconnect();
-      document.title = `${id} ${info.title} - hiyobi.me`;
-      observer.observe(title, {
-        childList: true,
-      });
-    });
     document.title = `${id} ${info.title} - hiyobi.me`;
-    observer.observe(title, {
+    const title = document.querySelector("title");
+    await observeOnce(title, {
       childList: true,
     });
+    document.title = `${id} ${info.title} - hiyobi.me`;
   };
+  const hookReaderPage = async () => {
+    window.addEventListener("keypress", onReaderKey);
+    await fetchTitle(getId());
+  };
+
   const fetchList = async (id) => {
     const infos = await fetchJson(`//cdn.hiyobi.me/json/${id}_list.json`);
     const getImageName = (page) => {
@@ -239,17 +266,11 @@ define("main", (require, exports, module) => {
     };
     return infos.map(getUrl);
   };
-  const getId = () => {
-    return location.href.match(/hiyobi\.me\/reader\/(\w+)/)?.[1];
-  };
   const comicSource = () => {
     const id = getId();
     if (!id) {
       throw new Error("히요비 만화 페이지가 아닙니다");
     }
-    window.stop();
-    document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
-    fetchTitle(id);
     return fetchList(id);
   };
   const hiyobiSource = {
@@ -259,7 +280,12 @@ define("main", (require, exports, module) => {
   };
   const hookPage = async () => {
     if (location.pathname.startsWith("/reader")) {
-      await vim_comic_viewer.initialize(hiyobiSource);
+      window.stop();
+      document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
+      await Promise.all([
+        vim_comic_viewer.initialize(hiyobiSource),
+        hookReaderPage(),
+      ]);
     } else {
       await hookListPage$1();
     }
