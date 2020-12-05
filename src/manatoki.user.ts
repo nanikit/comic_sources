@@ -66,7 +66,7 @@ initialize(manatokiSource);
 // @version      ${date_version}
 // @description  press i to open
 // @include      /^https:\/\/manatoki\d+\.net\/comic\/\d+/
-// @author       keut
+// @author       nanikit
 // @namespace    https://greasyfork.org/ko/users/713014-nanikit
 // @grant        GM_getResourceText
 // @grant        window.close
@@ -76,5 +76,5 @@ initialize(manatokiSource);
 // @resource     react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
 // @resource     @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
 // @resource     @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
-// @resource     vim_comic_viewer https://cdn.jsdelivr.net/gh/nanikit/vim_comic_viewer@07e41604/vim_comic_viewer.user.js
+// @resource     vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877077
 // ==/UserScript==
