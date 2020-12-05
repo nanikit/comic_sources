@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         manatoki viewer
-// @version      2012052228
+// @version      2012052338
 // @description  press i to open
 // @include      /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author       nanikit
@@ -13,7 +13,7 @@
 // @resource     react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
 // @resource     @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
 // @resource     @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
-// @resource     vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877253
+// @resource     vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877259
 // ==/UserScript==
 "use strict";
 
