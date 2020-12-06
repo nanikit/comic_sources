@@ -34,22 +34,21 @@ const denoFmt = async (code: string) => {
 const implantRequireJs = (dependencies: string[], body: string) => {
   return `'use strict';
 
-unsafeWindow.process = { env: { NODE_ENV: 'development' } };
-
 if (typeof define !== 'function') {
   throw new Error('requirejs not found.');
-}
-
-for (const name of ${JSON.stringify(dependencies)}) {
-  const body = \`\${GM_getResourceText(name)}\`;
-  define(name, Function('require', 'exports', 'module', body));
 }
 
 define('main', (require, exports, module) => {
 ${body}
 });
 
-require(['main']);
+for (const name of ${JSON.stringify(dependencies)}) {
+  const body = GM_getResourceText(name);
+  define(name, Function('require', 'exports', 'module', body));
+}
+
+unsafeWindow.process = { env: { NODE_ENV: 'development' } };
+require(['main'], () => {}, console.log);
 `;
 };
 
