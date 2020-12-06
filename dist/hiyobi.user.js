@@ -1,21 +1,22 @@
 // ==UserScript==
-// @name         hiyobi viewer
-// @name:ko      히요비 뷰어
-// @version      2012052351
-// @description  press i to open
-// @match        https://hiyobi.me/*
-// @author       nanikit
-// @namespace    https://greasyfork.org/ko/users/713014-nanikit
-// @grant        GM_getResourceText
-// @grant        GM_openInTab
-// @grant        window.close
-// @run-at       document-start
-// @require      https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource     react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.development.js
-// @resource     react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
-// @resource     @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
-// @resource     @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
-// @resource     vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877259
+// @name           hiyobi viewer
+// @description    press i to open
+// @name:ko        히요비 뷰어
+// @description:ko i, j, k키를 눌러보세요
+// @version        2012060004
+// @match          https://hiyobi.me/*
+// @author         nanikit
+// @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @grant          GM_getResourceText
+// @grant          GM_openInTab
+// @grant          window.close
+// @run-at         document-start
+// @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
+// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.development.js
+// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877259
 // ==/UserScript==
 "use strict";
 
