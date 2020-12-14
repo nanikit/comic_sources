@@ -1,4 +1,4 @@
-import { initialize, types, utils } from 'vim_comic_viewer';
+import { initializeWithDefault, types, utils } from 'vim_comic_viewer';
 
 const registerEpisodeNavigator = () => {
   window.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -41,24 +41,36 @@ const getUrls = (): string[] => {
 };
 
 const comicSource: types.ComicSource = async () => {
-  utils.insertCss(`
-.vim_comic_viewer {
-  display: none;
-}`);
-  await utils.waitDomContent(document);
-
   registerEpisodeNavigator();
   const urls = getUrls();
   return urls;
 };
 
-const manatokiSource: types.ViewerSource = {
-  name: 'manatoki',
-  isApplicable,
-  comicSource,
+const getRoot = () => {
+  const div = document.createElement('div');
+  div.style.width = '0';
+  div.style.height = '0';
+  document.body.append(div);
+  return div;
 };
 
-initialize(manatokiSource);
+const main = async () => {
+  await utils.waitDomContent(document);
+  const manatokiSource: types.ViewerSource = {
+    name: 'manatoki',
+    isApplicable,
+    comicSource,
+    getRoot,
+  };
+
+  try {
+    await initializeWithDefault(manatokiSource);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+main();
 
 //
 // ==UserScript==
@@ -74,9 +86,9 @@ initialize(manatokiSource);
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.development.js
-// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877259
+// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
+// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=880455
 // ==/UserScript==

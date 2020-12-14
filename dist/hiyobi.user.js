@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name           히요비 뷰어
-// @description    i,j,k 키를 눌러보세요
-// @name:en        hiyobi viewer
-// @description:en press i to open
-// @version        2012060019
+// @name           hiyobi viewer
+// @description    press i to open
+// @name:ko        히요비 뷰어
+// @description:ko i,j,k 키를 눌러보세요
+// @version        2012141240
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -12,31 +12,16 @@
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.development.js
-// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877259
+// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
+// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=880455
 // ==/UserScript==
 "use strict";
 
-unsafeWindow.process = { env: { NODE_ENV: "development" } };
-
 if (typeof define !== "function") {
   throw new Error("requirejs not found.");
-}
-
-for (
-  const name of [
-    "react",
-    "react-dom",
-    "@stitches/core",
-    "@stitches/react",
-    "vim_comic_viewer",
-  ]
-) {
-  const body = `${GM_getResourceText(name)}`;
-  define(name, Function("require", "exports", "module", body));
 }
 
 define("main", (require, exports, module) => {
@@ -281,18 +266,36 @@ define("main", (require, exports, module) => {
     comicSource,
   };
   const hookPage = async () => {
-    if (location.pathname.startsWith("/reader")) {
-      window.stop();
-      document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
-      await Promise.all([
-        vim_comic_viewer.initialize(hiyobiSource),
-        hookReaderPage(),
-      ]);
-    } else {
-      await hookListPage$1();
+    try {
+      if (location.pathname.startsWith("/reader")) {
+        window.stop();
+        document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
+        await Promise.all([
+          vim_comic_viewer.initializeWithDefault(hiyobiSource),
+          hookReaderPage(),
+        ]);
+      } else {
+        await hookListPage$1();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   hookPage(); //
 });
 
-require(["main"]);
+for (
+  const name of [
+    "react",
+    "react-dom",
+    "@stitches/core",
+    "@stitches/react",
+    "vim_comic_viewer",
+  ]
+) {
+  const body = GM_getResourceText(name);
+  define(name, Function("require", "exports", "module", body));
+}
+
+unsafeWindow.process = { env: { NODE_ENV: "development" } };
+require(["main"], () => {}, console.log);

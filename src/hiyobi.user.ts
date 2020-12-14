@@ -1,4 +1,4 @@
-import { initialize, types } from 'vim_comic_viewer';
+import { initializeWithDefault, types } from 'vim_comic_viewer';
 import { hookListPage } from './hiyobi/list.ts';
 import { fetchJson, getId, hookReaderPage } from './hiyobi/reader.ts';
 
@@ -42,12 +42,16 @@ const hiyobiSource: types.ViewerSource = {
 };
 
 const hookPage = async () => {
-  if (location.pathname.startsWith('/reader')) {
-    window.stop();
-    document.querySelectorAll('#root, #modal').forEach((x) => x.remove());
-    await Promise.all([initialize(hiyobiSource), hookReaderPage()]);
-  } else {
-    await hookListPage();
+  try {
+    if (location.pathname.startsWith('/reader')) {
+      window.stop();
+      document.querySelectorAll('#root, #modal').forEach((x) => x.remove());
+      await Promise.all([initializeWithDefault(hiyobiSource), hookReaderPage()]);
+    } else {
+      await hookListPage();
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -68,9 +72,9 @@ hookPage();
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.development.js
-// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.development.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.dev.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.dev.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=877259
+// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
+// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=880455
 // ==/UserScript==
