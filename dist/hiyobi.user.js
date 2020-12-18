@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012161446
+// @version        2012181328
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -18,7 +18,7 @@
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
 // @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=880455
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=881809
 // ==/UserScript==
 "use strict";
 
@@ -157,7 +157,7 @@ define("main", (require, exports, module) => {
   };
   const getNextPageUrl = () => {
     const [, prefix, page, postfix] =
-      location.href.match(/^(.*?\/)(\d+)[^\/]*$/) || [];
+      location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
     return `${prefix}${Number(page || 1) + 1}${postfix}`;
   };
   const prefetchUrl = (url) => {
@@ -232,12 +232,13 @@ define("main", (require, exports, module) => {
   };
   const fetchTitle = async (id) => {
     const info = await fetchJson(`//api.hiyobi.me/gallery/${id}`);
-    document.title = `${id} ${info.title} - hiyobi.me`;
+    const point = `${id} ${info.title} - hiyobi.me`;
+    document.title = point;
     const title = document.querySelector("title");
     await observeOnce(title, {
       childList: true,
     });
-    document.title = `${id} ${info.title} - hiyobi.me`;
+    document.title = point;
   };
   const hookReaderPage = async () => {
     window.addEventListener("keypress", onReaderKey);
@@ -299,5 +300,5 @@ for (
   define(name, Function("require", "exports", "module", body));
 }
 
-unsafeWindow.process = { env: { NODE_ENV: "development" } };
+unsafeWindow.process = { env: { NODE_ENV: "production" } };
 require(["main"], () => {}, console.log);

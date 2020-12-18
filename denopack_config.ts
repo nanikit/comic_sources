@@ -47,7 +47,7 @@ for (const name of ${JSON.stringify(dependencies)}) {
   define(name, Function('require', 'exports', 'module', body));
 }
 
-unsafeWindow.process = { env: { NODE_ENV: 'development' } };
+unsafeWindow.process = { env: { NODE_ENV: 'production' } };
 require(['main'], () => {}, console.log);
 `;
 };
