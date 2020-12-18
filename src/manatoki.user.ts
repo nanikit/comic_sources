@@ -48,8 +48,7 @@ const comicSource: types.ComicSource = async () => {
 
 const getRoot = () => {
   const div = document.createElement('div');
-  div.style.width = '0';
-  div.style.height = '0';
+  div.setAttribute('style', 'width: 0; height: 0; position: fixed; top: 0; bottom: 0;');
   document.body.append(div);
   return div;
 };
@@ -92,5 +91,5 @@ main();
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
 // @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=880455
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=881809
 // ==/UserScript==
