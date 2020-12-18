@@ -5,13 +5,17 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012181506
+// @version        2012190845
 // @match          https://hiyobi.me/*
+// @connect        api.hiyobi.me
+// @connect        cdn.hiyobi.me
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @grant          GM_getResourceText
 // @grant          GM_openInTab
+// @grant          GM_xmlhttpRequest
 // @grant          window.close
+// @grant          unsafeWindow
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
@@ -30,6 +34,72 @@ define("main", (require, exports, module) => {
   "use strict";
 
   var vim_comic_viewer = require("vim_comic_viewer");
+
+  const gmFetch = (resource, init) => {
+    const method = init?.body ? "POST" : "GET";
+    let abort = undefined;
+    const promise = new Promise((resolve, reject) => {
+      const request = GM_xmlhttpRequest({
+        method,
+        url: resource,
+        headers: init?.headers,
+        data: init?.body,
+        onload: (response) => resolve(response.responseText),
+        onerror: reject,
+        onabort: reject,
+      });
+      abort = request.abort.bind(request);
+    });
+    return {
+      abort,
+      promise,
+    };
+  };
+  const timedOut = Symbol();
+  const gmFetchJson = async (resource, init) => {
+    const timer = async () => {
+      await vim_comic_viewer.utils.timeout(2000);
+      return timedOut;
+    };
+    let i = 0;
+    while (true) {
+      const { abort, promise } = gmFetch(resource, init);
+      try {
+        let result = await Promise.race([
+          promise,
+          timer(),
+        ]);
+        if (result !== timedOut) {
+          return JSON.parse(result);
+        }
+        abort();
+        console.log(`[timeout:${++i}] ${resource}`);
+      } catch (error) {
+        console.log(`[error:${++i}] ${resource}, ${error}`);
+      }
+      if (i > 10) {
+        throw new Error("receive timeout");
+      }
+    }
+  };
+
+  const hookFetch = () => {
+    const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
+    const fetchOverride = async (resource, init) => {
+      if (
+        typeof resource === "string" &&
+        resource.match(/^https:\/\/(api|cdn)\.hiyobi\.me\//)
+      ) {
+        const data = await gmFetchJson(resource, init);
+        return {
+          json: () => data,
+        };
+      } else {
+        return originalFetch(resource, init);
+      }
+    };
+    unsafeWindow.fetch = exportFunction(fetchOverride, unsafeWindow);
+  };
 
   const defaultFocusCss = `\r\n&& {\r\n  background: aliceblue;\r\n}`;
   const selectItem = (div) => {
@@ -226,12 +296,8 @@ define("main", (require, exports, module) => {
       observer.observe(element, options);
     });
   };
-  const fetchJson = async (url) => {
-    const response = await fetch(url);
-    return response.json();
-  };
   const fetchTitle = async (id) => {
-    const info = await fetchJson(`//api.hiyobi.me/gallery/${id}`);
+    const info = await gmFetchJson(`//api.hiyobi.me/gallery/${id}`);
     const point = `${id} ${info.title} - hiyobi.me`;
     document.title = point;
     const title = document.querySelector("title");
@@ -240,13 +306,8 @@ define("main", (require, exports, module) => {
     });
     document.title = point;
   };
-  const hookReaderPage = async () => {
-    window.addEventListener("keypress", onReaderKey);
-    await fetchTitle(getId());
-  };
-
   const fetchList = async (id) => {
-    const infos = await fetchJson(`//cdn.hiyobi.me/json/${id}_list.json`);
+    const infos = await gmFetchJson(`//cdn.hiyobi.me/json/${id}_list.json`);
     const getImageName = (page) => {
       return page.name;
     };
@@ -268,20 +329,25 @@ define("main", (require, exports, module) => {
     isApplicable: () => !!getId(),
     comicSource,
   };
+  const hookReaderPage = async () => {
+    document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
+    window.addEventListener("keypress", onReaderKey);
+    await Promise.all([
+      vim_comic_viewer.initializeWithDefault(hiyobiSource),
+      fetchTitle(getId()),
+    ]);
+  };
+
   const hookPage = async () => {
     try {
+      hookFetch();
       if (location.pathname.startsWith("/reader")) {
-        window.stop();
-        document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
-        await Promise.all([
-          vim_comic_viewer.initializeWithDefault(hiyobiSource),
-          hookReaderPage(),
-        ]);
+        await hookReaderPage();
       } else {
         await hookListPage$1();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   hookPage(); //
@@ -301,4 +367,4 @@ for (
 }
 
 unsafeWindow.process = { env: { NODE_ENV: "production" } };
-require(["main"], () => {}, console.log);
+require(["main"], () => {}, console.error);

@@ -1,57 +1,17 @@
-import { initializeWithDefault, types } from 'vim_comic_viewer';
+import { hookFetch } from './hiyobi/bypass_fetch.ts';
 import { hookListPage } from './hiyobi/list.ts';
-import { fetchJson, getId, hookReaderPage } from './hiyobi/reader.ts';
-
-type ImageInfo = {
-  hasavif: 0 | 1;
-  hash: string;
-  haswebp: 0 | 1;
-  width: number;
-  height: number;
-  name: string;
-};
-
-const fetchList = async (id: string) => {
-  const infos = (await fetchJson(`//cdn.hiyobi.me/json/${id}_list.json`)) as ImageInfo[];
-
-  const getImageName = (page: ImageInfo) => {
-    return page.name;
-  };
-
-  const getUrl = (page: ImageInfo) => {
-    const url = `https://cdn.hiyobi.me/data/${id}/${getImageName(page)}`;
-    return url;
-  };
-
-  return infos.map(getUrl);
-};
-
-const comicSource: types.ComicSource = () => {
-  const id = getId();
-  if (!id) {
-    throw new Error('히요비 만화 페이지가 아닙니다');
-  }
-
-  return fetchList(id);
-};
-
-const hiyobiSource: types.ViewerSource = {
-  name: 'hiyobi',
-  isApplicable: () => !!getId(),
-  comicSource,
-};
+import { hookReaderPage } from './hiyobi/reader.ts';
 
 const hookPage = async () => {
   try {
+    hookFetch();
     if (location.pathname.startsWith('/reader')) {
-      window.stop();
-      document.querySelectorAll('#root, #modal').forEach((x) => x.remove());
-      await Promise.all([initializeWithDefault(hiyobiSource), hookReaderPage()]);
+      await hookReaderPage();
     } else {
       await hookListPage();
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -67,11 +27,15 @@ hookPage();
 // @description:en press i to open
 // @version        ${date_version}
 // @match          https://hiyobi.me/*
+// @connect        api.hiyobi.me
+// @connect        cdn.hiyobi.me
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @grant          GM_getResourceText
 // @grant          GM_openInTab
+// @grant          GM_xmlhttpRequest
 // @grant          window.close
+// @grant          unsafeWindow
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
