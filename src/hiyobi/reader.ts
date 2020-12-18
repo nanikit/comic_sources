@@ -39,11 +39,12 @@ const fetchTitle = async (id: string) => {
   const info = (await fetchJson(`//api.hiyobi.me/gallery/${id}`)) as {
     title: string;
   };
-  document.title = `${id} ${info.title} - hiyobi.me`;
+  const point = `${id} ${info.title} - hiyobi.me`;
+  document.title = point;
 
   const title = document.querySelector('title')!;
   await observeOnce(title, { childList: true });
-  document.title = `${id} ${info.title} - hiyobi.me`;
+  document.title = point;
 };
 
 export const hookReaderPage = async () => {

@@ -43,7 +43,7 @@ const bindEnterOnSearchInput = () => {
 };
 
 const getNextPageUrl = () => {
-  const [, prefix, page, postfix] = location.href.match(/^(.*?\/)(\d+)[^\/]*$/) || [];
+  const [, prefix, page, postfix] = location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
   return `${prefix}${Number(page || 1) + 1}${postfix}`;
 };
 
