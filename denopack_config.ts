@@ -48,7 +48,7 @@ for (const name of ${JSON.stringify(dependencies)}) {
 }
 
 unsafeWindow.process = { env: { NODE_ENV: 'production' } };
-require(['main'], () => {}, console.log);
+require(['main'], () => {}, console.error);
 `;
 };
 

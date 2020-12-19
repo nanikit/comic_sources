@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        manatoki viewer
 // @description:en press i to open
-// @version        2012181506
+// @version        2012191022
 // @include        /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -117,4 +117,4 @@ for (
 }
 
 unsafeWindow.process = { env: { NODE_ENV: "production" } };
-require(["main"], () => {}, console.log);
+require(["main"], () => {}, console.error);
