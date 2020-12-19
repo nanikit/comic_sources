@@ -99,9 +99,10 @@ const bannerPlugin = () => {
 
 const json = Deno.readTextFileSync('./tsconfig.json');
 const compilerOptions = JSON.parse(json).compilerOptions;
+const importMap = JSON.parse(Deno.readTextFileSync('./import_map.json'));
 
 const config: RollupOptions = {
-  external: ['react', 'react-dom', '@stitches/react', 'vim_comic_viewer'],
+  external: [...Object.keys(importMap.imports)],
   plugins: [...useCache({ compilerOptions }), bannerPlugin()],
   output: {
     format: 'cjs',

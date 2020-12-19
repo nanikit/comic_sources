@@ -1,5 +1,9 @@
 {
   "imports": {
+    "react": "src/dummy.ts",
+    "react-dom": "src/dummy.ts",
+    "@stitches/core": "src/dummy.ts",
+    "@stitches/react": "src/dummy.ts",
     "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/e9774c43/src/mod.tsx"
   }
 }
