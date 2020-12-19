@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012191737
+// @version        2012191925
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -193,16 +193,21 @@ define("main", (require, exports, module) => {
   const getHitomiUrl = (id, kind) => {
     return `https://hitomi.la/${kind}/${id}.html`;
   };
+  const getCurrentPage = () => {
+    const [, page] = location.href.match(/\/(\d+)/) || [];
+    return Number(page || 1);
+  };
   const navigatePage = (offset) => {
-    const path = decodeURIComponent(location.pathname);
-    const page = /\d+/.exec(path);
-    if (page) {
-      const next = Math.max(1, Number(page[0]) + offset);
-      location.pathname = path.replace(page[0], next);
-    } else if (offset > 0) {
-      const regular = path === "/" ? "/list" : path;
-      const next = `${regular}/${1 + offset}`;
-      location.pathname = next.replace("//", "/");
+    const page = getCurrentPage();
+    const pageSelect = document.querySelector("select.form-control");
+    const next = `${Math.max(1, page + offset)}`;
+    if (pageSelect.value !== next) {
+      pageSelect.value = next;
+      pageSelect.dispatchEvent(
+        new Event("change", {
+          bubbles: true,
+        }),
+      );
     }
   };
   const focusCss = `& {\r\n  background: aliceblue;\r\n}`;
@@ -226,14 +231,8 @@ define("main", (require, exports, module) => {
       }
     });
   };
-  const getNextPageUrl = () => {
-    const [, prefix, page, postfix] =
-      location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
-    return `${prefix}${Number(page || 1) + 1}${postfix}`;
-  };
   const getNextQueryUrl = () => {
-    const [, , page] = location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
-    return `https://api.hiyobi.me/list/${Number(page || 1) + 1}`;
+    return `https://api.hiyobi.me/list/${getCurrentPage() + 1}`;
   };
   const prefetchUrl = (url, as) => {
     const preloader = document.createElement("link");
@@ -242,12 +241,11 @@ define("main", (require, exports, module) => {
     preloader.as = as || preloader.as;
     preloader.setAttribute("prefetch", "");
     if (new URL(url).origin !== location.origin) {
-      preloader.setAttribute("crossorigin", "anonymous");
+      preloader.setAttribute("crossorigin", "");
     }
     document.head.append(preloader);
   };
   const prefetchNextPage = () => {
-    prefetchUrl(getNextPageUrl(), "document");
     prefetchUrl(getNextQueryUrl(), "fetch");
   };
   const openCurrentInHitomi = (kind, element) => {

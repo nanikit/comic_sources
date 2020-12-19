@@ -4,16 +4,18 @@ export const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') 
   return `https://hitomi.la/${kind}/${id}.html`;
 };
 
+const getCurrentPage = () => {
+  const [, page] = location.href.match(/\/(\d+)/) || [];
+  return Number(page || 1);
+};
+
 const navigatePage = (offset: number) => {
-  const path = decodeURIComponent(location.pathname);
-  const page = /\d+/.exec(path);
-  if (page) {
-    const next = Math.max(1, Number(page[0]) + offset);
-    location.pathname = path.replace(page[0], (next as unknown) as string);
-  } else if (offset > 0) {
-    const regular = path === '/' ? '/list' : path;
-    const next = `${regular}/${1 + offset}`;
-    location.pathname = next.replace('//', '/');
+  const page = getCurrentPage();
+  const pageSelect = document.querySelector('select.form-control') as HTMLSelectElement;
+  const next = `${Math.max(1, page + offset)}`;
+  if (pageSelect.value !== next) {
+    pageSelect.value = next;
+    pageSelect.dispatchEvent(new Event('change', { bubbles: true }));
   }
 };
 
@@ -42,14 +44,8 @@ const bindEnterOnSearchInput = () => {
   });
 };
 
-const getNextPageUrl = () => {
-  const [, prefix, page, postfix] = location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
-  return `${prefix}${Number(page || 1) + 1}${postfix}`;
-};
-
 const getNextQueryUrl = () => {
-  const [, , page] = location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
-  return `https://api.hiyobi.me/list/${Number(page || 1) + 1}`;
+  return `https://api.hiyobi.me/list/${getCurrentPage() + 1}`;
 };
 
 const prefetchUrl = (url: string, as?: string) => {
@@ -59,13 +55,12 @@ const prefetchUrl = (url: string, as?: string) => {
   preloader.as = as || preloader.as;
   preloader.setAttribute('prefetch', '');
   if (new URL(url).origin !== location.origin) {
-    preloader.setAttribute('crossorigin', 'anonymous');
+    preloader.setAttribute('crossorigin', '');
   }
   document.head.append(preloader);
 };
 
 const prefetchNextPage = () => {
-  prefetchUrl(getNextPageUrl(), 'document');
   prefetchUrl(getNextQueryUrl(), 'fetch');
 };
 
