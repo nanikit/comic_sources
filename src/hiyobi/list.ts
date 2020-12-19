@@ -1,24 +1,5 @@
 import { hookListPage as hookPage } from './list-navigator.ts';
 
-export const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
-  return `https://hitomi.la/${kind}/${id}.html`;
-};
-
-const getCurrentPage = () => {
-  const [, page] = location.href.match(/\/(\d+)/) || [];
-  return Number(page || 1);
-};
-
-const navigatePage = (offset: number) => {
-  const page = getCurrentPage();
-  const pageSelect = document.querySelector('select.form-control') as HTMLSelectElement;
-  const next = `${Math.max(1, page + offset)}`;
-  if (pageSelect.value !== next) {
-    pageSelect.value = next;
-    pageSelect.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-};
-
 const focusCss = `& {
   background: aliceblue;
 }`;
@@ -44,10 +25,6 @@ const bindEnterOnSearchInput = () => {
   });
 };
 
-const getNextQueryUrl = () => {
-  return `https://api.hiyobi.me/list/${getCurrentPage() + 1}`;
-};
-
 const prefetchUrl = (url: string, as?: string) => {
   const preloader = document.createElement('link');
   preloader.rel = 'prefetch';
@@ -60,8 +37,31 @@ const prefetchUrl = (url: string, as?: string) => {
   document.head.append(preloader);
 };
 
-const prefetchNextPage = () => {
-  prefetchUrl(getNextQueryUrl(), 'fetch');
+const getCurrentPage = () => {
+  const [, page] = location.href.match(/\/(\d+)/) || [];
+  return Number(page || 1);
+};
+
+const prefetchPage = (page: number) => {
+  prefetchUrl(`https://api.hiyobi.me/list/${page}`, 'fetch');
+};
+
+const navigatePage = (offset: number) => {
+  const page = getCurrentPage();
+  const pageSelect = document.querySelector('select.form-control') as HTMLSelectElement;
+  const next = Math.max(1, page + offset);
+  if (pageSelect.value !== `${next}`) {
+    pageSelect.value = `${next}`;
+    pageSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    const nextOfNext = Math.max(1, next + offset);
+    if (nextOfNext !== next && Math.abs(offset) === 1) {
+      prefetchPage(nextOfNext);
+    }
+  }
+};
+
+export const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
+  return `https://hitomi.la/${kind}/${id}.html`;
 };
 
 const openCurrentInHitomi = (kind: 'galleries' | 'reader', element?: HTMLElement) => {
@@ -92,5 +92,7 @@ export const hookListPage = async () => {
     onKeyDown: handleOtherKey,
   });
   bindEnterOnSearchInput();
-  prefetchNextPage();
+  if (getCurrentPage() === 1) {
+    prefetchPage(2);
+  }
 };

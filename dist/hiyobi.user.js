@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012191925
+// @version        2012191938
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -190,26 +190,6 @@ define("main", (require, exports, module) => {
     insertFocusCss();
   };
 
-  const getHitomiUrl = (id, kind) => {
-    return `https://hitomi.la/${kind}/${id}.html`;
-  };
-  const getCurrentPage = () => {
-    const [, page] = location.href.match(/\/(\d+)/) || [];
-    return Number(page || 1);
-  };
-  const navigatePage = (offset) => {
-    const page = getCurrentPage();
-    const pageSelect = document.querySelector("select.form-control");
-    const next = `${Math.max(1, page + offset)}`;
-    if (pageSelect.value !== next) {
-      pageSelect.value = next;
-      pageSelect.dispatchEvent(
-        new Event("change", {
-          bubbles: true,
-        }),
-      );
-    }
-  };
   const focusCss = `& {\r\n  background: aliceblue;\r\n}`;
   const getItems = () => [
     ...document.querySelectorAll(".container > div"),
@@ -231,9 +211,6 @@ define("main", (require, exports, module) => {
       }
     });
   };
-  const getNextQueryUrl = () => {
-    return `https://api.hiyobi.me/list/${getCurrentPage() + 1}`;
-  };
   const prefetchUrl = (url, as) => {
     const preloader = document.createElement("link");
     preloader.rel = "prefetch";
@@ -245,8 +222,32 @@ define("main", (require, exports, module) => {
     }
     document.head.append(preloader);
   };
-  const prefetchNextPage = () => {
-    prefetchUrl(getNextQueryUrl(), "fetch");
+  const getCurrentPage = () => {
+    const [, page] = location.href.match(/\/(\d+)/) || [];
+    return Number(page || 1);
+  };
+  const prefetchPage = (page) => {
+    prefetchUrl(`https://api.hiyobi.me/list/${page}`, "fetch");
+  };
+  const navigatePage = (offset) => {
+    const page = getCurrentPage();
+    const pageSelect = document.querySelector("select.form-control");
+    const next = Math.max(1, page + offset);
+    if (pageSelect.value !== `${next}`) {
+      pageSelect.value = `${next}`;
+      pageSelect.dispatchEvent(
+        new Event("change", {
+          bubbles: true,
+        }),
+      );
+      const nextOfNext = Math.max(1, next + offset);
+      if (nextOfNext !== next && Math.abs(offset) === 1) {
+        prefetchPage(nextOfNext);
+      }
+    }
+  };
+  const getHitomiUrl = (id, kind) => {
+    return `https://hitomi.la/${kind}/${id}.html`;
   };
   const openCurrentInHitomi = (kind, element) => {
     const id = element?.querySelector?.("a")?.href?.match?.(/\d+$/)?.[0];
@@ -274,7 +275,9 @@ define("main", (require, exports, module) => {
       onKeyDown: handleOtherKey,
     });
     bindEnterOnSearchInput();
-    prefetchNextPage();
+    if (getCurrentPage() === 1) {
+      prefetchPage(2);
+    }
   };
 
   const getHitomiUrl$1 = (id, kind) => {
