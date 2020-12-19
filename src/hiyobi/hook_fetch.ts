@@ -66,6 +66,9 @@ export const hookFetch = () => {
     resource: RequestInfo,
     init: RequestInit,
   ): Promise<Response> => {
+    if (init.body === undefined) {
+      delete (init.headers as any)['Content-Type'];
+    }
     if (
       typeof resource === 'string' &&
       resource.match(/^https:\/\/(api|cdn)\.hiyobi\.me\//)

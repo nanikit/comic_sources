@@ -47,15 +47,26 @@ const getNextPageUrl = () => {
   return `${prefix}${Number(page || 1) + 1}${postfix}`;
 };
 
-const prefetchUrl = (url: string) => {
+const getNextQueryUrl = () => {
+  const [, , page] = location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
+  return `https://api.hiyobi.me/list/${Number(page || 1) + 1}`;
+};
+
+const prefetchUrl = (url: string, as?: string) => {
   const preloader = document.createElement('link');
   preloader.rel = 'prefetch';
   preloader.href = url;
+  preloader.as = as || preloader.as;
+  preloader.setAttribute('prefetch', '');
+  if (new URL(url).origin !== location.origin) {
+    preloader.setAttribute('crossorigin', 'anonymous');
+  }
   document.head.append(preloader);
 };
 
 const prefetchNextPage = () => {
-  prefetchUrl(getNextPageUrl());
+  prefetchUrl(getNextPageUrl(), 'document');
+  prefetchUrl(getNextQueryUrl(), 'fetch');
 };
 
 const openCurrentInHitomi = (kind: 'galleries' | 'reader', element?: HTMLElement) => {

@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012191426
+// @version        2012191737
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -87,6 +87,9 @@ define("main", (require, exports, module) => {
   };
   const hookFetch = () => {
     const fetchOverride = async (resource, init) => {
+      if (init.body === undefined) {
+        delete init.headers["Content-Type"];
+      }
       if (
         typeof resource === "string" &&
         resource.match(/^https:\/\/(api|cdn)\.hiyobi\.me\//)
@@ -228,14 +231,24 @@ define("main", (require, exports, module) => {
       location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
     return `${prefix}${Number(page || 1) + 1}${postfix}`;
   };
-  const prefetchUrl = (url) => {
+  const getNextQueryUrl = () => {
+    const [, , page] = location.href.match(/^(.*?\/)(\d+)([^\/]*)$/) || [];
+    return `https://api.hiyobi.me/list/${Number(page || 1) + 1}`;
+  };
+  const prefetchUrl = (url, as) => {
     const preloader = document.createElement("link");
     preloader.rel = "prefetch";
     preloader.href = url;
+    preloader.as = as || preloader.as;
+    preloader.setAttribute("prefetch", "");
+    if (new URL(url).origin !== location.origin) {
+      preloader.setAttribute("crossorigin", "anonymous");
+    }
     document.head.append(preloader);
   };
   const prefetchNextPage = () => {
-    prefetchUrl(getNextPageUrl());
+    prefetchUrl(getNextPageUrl(), "document");
+    prefetchUrl(getNextQueryUrl(), "fetch");
   };
   const openCurrentInHitomi = (kind, element) => {
     const id = element?.querySelector?.("a")?.href?.match?.(/\d+$/)?.[0];
