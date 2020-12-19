@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012191900
+// @version        2012191737
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -196,20 +196,14 @@ define("main", (require, exports, module) => {
   const navigatePage = (offset) => {
     const path = decodeURIComponent(location.pathname);
     const page = /\d+/.exec(path);
-    const pageSelect = document.querySelector("select.form-control");
     if (page) {
       const next = Math.max(1, Number(page[0]) + offset);
-      pageSelect.value = next;
+      location.pathname = path.replace(page[0], next);
     } else if (offset > 0) {
       const regular = path === "/" ? "/list" : path;
       const next = `${regular}/${1 + offset}`;
-      pageSelect.value = next;
+      location.pathname = next.replace("//", "/");
     }
-    pageSelect.dispatchEvent(
-      new Event("change", {
-        bubbles: true,
-      }),
-    );
   };
   const focusCss = `& {\r\n  background: aliceblue;\r\n}`;
   const getItems = () => [

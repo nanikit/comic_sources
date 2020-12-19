@@ -7,16 +7,14 @@ export const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') 
 const navigatePage = (offset: number) => {
   const path = decodeURIComponent(location.pathname);
   const page = /\d+/.exec(path);
-  const pageSelect = document.querySelector('select.form-control') as HTMLSelectElement;
   if (page) {
     const next = Math.max(1, Number(page[0]) + offset);
-    pageSelect.value = (next as unknown) as string;
+    location.pathname = path.replace(page[0], (next as unknown) as string);
   } else if (offset > 0) {
     const regular = path === '/' ? '/list' : path;
     const next = `${regular}/${1 + offset}`;
-    pageSelect.value = (next as unknown) as string;
+    location.pathname = next.replace('//', '/');
   }
-  pageSelect.dispatchEvent(new Event('change', {bubbles: true}));
 };
 
 const focusCss = `& {
