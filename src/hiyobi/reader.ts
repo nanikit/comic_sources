@@ -1,5 +1,5 @@
 import { initializeWithDefault, types } from 'vim_comic_viewer';
-import { gmFetchJson } from '../utils/gm_fetch.ts';
+import { retrialFetch } from './hook_fetch.ts';
 
 const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
   return `https://hitomi.la/${kind}/${id}.html`;
@@ -34,7 +34,8 @@ const observeOnce = async (element: Node, options: MutationObserverInit) => {
 };
 
 const fetchTitle = async (id: string) => {
-  const info = (await gmFetchJson(`//api.hiyobi.me/gallery/${id}`)) as { title: string };
+  const response = await retrialFetch(`//api.hiyobi.me/gallery/${id}`);
+  const info = response.json() as { title: string };
   const point = `${id} ${info.title} - hiyobi.me`;
   document.title = point;
 
@@ -53,9 +54,9 @@ type ImageInfo = {
 };
 
 const fetchList = async (id: string) => {
-  const infos = (await gmFetchJson(
-    `//cdn.hiyobi.me/json/${id}_list.json`,
-  )) as ImageInfo[];
+  const infos = (
+    await retrialFetch(`//cdn.hiyobi.me/json/${id}_list.json`)
+  ).json() as ImageInfo[];
 
   const getImageName = (page: ImageInfo) => {
     return page.name;

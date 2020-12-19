@@ -1,4 +1,4 @@
-import { hookFetch } from './hiyobi/bypass_fetch.ts';
+import { hookFetch } from './hiyobi/hook_fetch.ts';
 import { hookListPage } from './hiyobi/list.ts';
 import { hookReaderPage } from './hiyobi/reader.ts';
 
@@ -27,13 +27,10 @@ hookPage();
 // @description:en press i to open
 // @version        ${date_version}
 // @match          https://hiyobi.me/*
-// @connect        api.hiyobi.me
-// @connect        cdn.hiyobi.me
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @grant          GM_getResourceText
 // @grant          GM_openInTab
-// @grant          GM_xmlhttpRequest
 // @grant          window.close
 // @grant          unsafeWindow
 // @run-at         document-start

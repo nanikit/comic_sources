@@ -5,15 +5,12 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012190845
+// @version        2012191426
 // @match          https://hiyobi.me/*
-// @connect        api.hiyobi.me
-// @connect        cdn.hiyobi.me
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @grant          GM_getResourceText
 // @grant          GM_openInTab
-// @grant          GM_xmlhttpRequest
 // @grant          window.close
 // @grant          unsafeWindow
 // @run-at         document-start
@@ -35,65 +32,66 @@ define("main", (require, exports, module) => {
 
   var vim_comic_viewer = require("vim_comic_viewer");
 
-  const gmFetch = (resource, init) => {
-    const method = init?.body ? "POST" : "GET";
-    let abort = undefined;
-    const promise = new Promise((resolve, reject) => {
-      const request = GM_xmlhttpRequest({
-        method,
-        url: resource,
-        headers: init?.headers,
-        data: init?.body,
-        onload: (response) => resolve(response.responseText),
-        onerror: reject,
-        onabort: reject,
-      });
-      abort = request.abort.bind(request);
-    });
-    return {
-      abort,
-      promise,
-    };
-  };
   const timedOut = Symbol();
-  const gmFetchJson = async (resource, init) => {
+  const retry = async (worker, { onTimeout, onError, interval } = {}) => {
     const timer = async () => {
-      await vim_comic_viewer.utils.timeout(2000);
+      await vim_comic_viewer.utils.timeout(interval || 0);
       return timedOut;
     };
     let i = 0;
     while (true) {
-      const { abort, promise } = gmFetch(resource, init);
       try {
         let result = await Promise.race([
-          promise,
+          worker(),
           timer(),
         ]);
         if (result !== timedOut) {
-          return JSON.parse(result);
+          return result;
         }
-        abort();
-        console.log(`[timeout:${++i}] ${resource}`);
+        await onTimeout?.(++i);
       } catch (error) {
-        console.log(`[error:${++i}] ${resource}, ${error}`);
+        await onError?.(++i);
       }
       if (i > 10) {
-        throw new Error("receive timeout");
+        throw new Error("10 retries failed");
       }
     }
   };
-
+  const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
+  const retrialFetch = (resource, init) => {
+    const isImg = resource.match(/\.(jpe?g|webp|png|gif|avif)$/i);
+    let aborter;
+    let response;
+    const worker = async () => {
+      aborter = new AbortController();
+      response = await originalFetch(resource, {
+        ...init,
+        signal: aborter.signal,
+      });
+      const data = await (isImg ? response.blob() : response.json());
+      return {
+        blob: () => data,
+        json: () => data,
+      };
+    };
+    return retry(worker, {
+      onTimeout: (count) => {
+        aborter.abort();
+        console.log(`[timeout:${count}] ${resource}`);
+      },
+      onError: (count) => {
+        console.log(`[timeout:${count}] ${resource}`);
+      },
+      interval: isImg ? 5000 : 2000,
+    });
+  };
   const hookFetch = () => {
-    const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
     const fetchOverride = async (resource, init) => {
       if (
         typeof resource === "string" &&
         resource.match(/^https:\/\/(api|cdn)\.hiyobi\.me\//)
       ) {
-        const data = await gmFetchJson(resource, init);
-        return {
-          json: () => data,
-        };
+        return retrialFetch(resource, init);
       } else {
         return originalFetch(resource, init);
       }
@@ -297,7 +295,8 @@ define("main", (require, exports, module) => {
     });
   };
   const fetchTitle = async (id) => {
-    const info = await gmFetchJson(`//api.hiyobi.me/gallery/${id}`);
+    const response = await retrialFetch(`//api.hiyobi.me/gallery/${id}`);
+    const info = response.json();
     const point = `${id} ${info.title} - hiyobi.me`;
     document.title = point;
     const title = document.querySelector("title");
@@ -307,7 +306,8 @@ define("main", (require, exports, module) => {
     document.title = point;
   };
   const fetchList = async (id) => {
-    const infos = await gmFetchJson(`//cdn.hiyobi.me/json/${id}_list.json`);
+    const infos = (await retrialFetch(`//cdn.hiyobi.me/json/${id}_list.json`))
+      .json();
     const getImageName = (page) => {
       return page.name;
     };
