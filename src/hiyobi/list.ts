@@ -72,8 +72,15 @@ const openCurrentInHitomi = (kind: 'galleries' | 'reader', element?: HTMLElement
   GM_openInTab(getHitomiUrl(id, kind));
 };
 
+const toggleComment = (selected?: HTMLElement) => {
+  (selected?.querySelector?.('span[class$=chat]') as HTMLElement)?.click?.();
+};
+
 const handleOtherKey = (event: KeyboardEvent, selected?: HTMLElement) => {
   switch (event.key) {
+    case 'm':
+      toggleComment(selected);
+      break;
     case 'u':
       openCurrentInHitomi('galleries', selected);
       break;
