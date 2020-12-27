@@ -1,3 +1,4 @@
+import { utils } from 'vim_comic_viewer';
 import { hookListPage as hookPage } from './list-navigator.ts';
 
 const focusCss = `& {
@@ -42,8 +43,13 @@ const getCurrentPage = () => {
   return Number(page || 1);
 };
 
-const prefetchPage = (page: number) => {
-  prefetchUrl(`https://api.hiyobi.me/list/${page}`, 'fetch');
+const prefetchPage = async (page: number) => {
+  const url = location.href;
+  await utils.timeout(1500);
+  const isStaying = location.href === url;
+  if (isStaying) {
+    prefetchUrl(`https://api.hiyobi.me/list/${page}`, 'fetch');
+  }
 };
 
 const navigatePage = (offset: number) => {
