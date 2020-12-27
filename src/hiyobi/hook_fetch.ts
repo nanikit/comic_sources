@@ -31,8 +31,8 @@ const retry = async <T>(
       await onError?.(++i);
     }
 
-    if (i > 10) {
-      throw new Error('10 retries failed');
+    if (i > 5) {
+      throw new Error('5 retries failed');
     }
   }
 };
