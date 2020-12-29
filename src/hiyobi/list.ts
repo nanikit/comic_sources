@@ -1,5 +1,6 @@
 import { utils } from 'vim_comic_viewer';
 import { hookListPage as hookPage } from './list-navigator.ts';
+import { observeOnce } from './utils.ts';
 
 const focusCss = `& {
   background: aliceblue;
@@ -78,13 +79,20 @@ const openCurrentInHitomi = (kind: 'galleries' | 'reader', element?: HTMLElement
   GM_openInTab(getHitomiUrl(id, kind));
 };
 
-const toggleComment = (selected?: HTMLElement) => {
-  (selected?.querySelector?.('span[class$=chat]') as HTMLElement)?.click?.();
+const toggleComment = async (selected?: HTMLElement) => {
+  if (!selected) {
+    return;
+  }
+  (selected.querySelector('span[class$=chat]') as HTMLElement).click();
+  for (let i = 0; i < 2; i++) {
+    await observeOnce(selected, { childList: true, subtree: true });
+    selected.scrollIntoView({ block: 'center' });
+  }
 };
 
 const handleOtherKey = (event: KeyboardEvent, selected?: HTMLElement) => {
   switch (event.key) {
-    case 'm':
+    case 'o':
       toggleComment(selected);
       break;
     case 'u':
@@ -96,6 +104,19 @@ const handleOtherKey = (event: KeyboardEvent, selected?: HTMLElement) => {
   }
 };
 
+const injectCss = () => {
+  utils.insertCss(`
+.row > :last-child > ul {
+  display: flex;
+  flex-flow: row wrap;
+}
+.row > :last-child > ul > li {
+  flex: 1 1 250px;
+  margin: 2px;
+}
+`);
+};
+
 export const hookListPage = async () => {
   await hookPage({
     getItems,
@@ -104,6 +125,7 @@ export const hookListPage = async () => {
     navigatePage,
     onKeyDown: handleOtherKey,
   });
+  injectCss();
   bindEnterOnSearchInput();
   if (getCurrentPage() === 1) {
     prefetchPage(2);

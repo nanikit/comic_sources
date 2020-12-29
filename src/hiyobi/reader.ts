@@ -1,5 +1,6 @@
 import { initializeWithDefault, types } from 'vim_comic_viewer';
 import { retrialFetch } from './hook_fetch.ts';
+import { observeOnce } from './utils.ts';
 
 const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
   return `https://hitomi.la/${kind}/${id}.html`;
@@ -21,16 +22,6 @@ const onReaderKey = (event: KeyboardEvent) => {
       window.location.href = getHitomiUrl(getId()!, 'reader');
       break;
   }
-};
-
-const observeOnce = async (element: Node, options: MutationObserverInit) => {
-  return new Promise((resolve) => {
-    const observer = new MutationObserver((...args) => {
-      observer.disconnect();
-      resolve(args);
-    });
-    observer.observe(element, options);
-  });
 };
 
 const fetchTitle = async (id: string) => {
