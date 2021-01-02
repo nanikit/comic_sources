@@ -5,7 +5,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2012191938
+// @version        2101021512
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -15,17 +15,25 @@
 // @grant          unsafeWindow
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
+// @resource       jszip            https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
 // @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=881863
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=886848
 // ==/UserScript==
 "use strict";
 
 if (typeof define !== "function") {
   throw new Error("requirejs not found.");
 }
+
+requirejs.config({
+  config: {
+    vim_comic_viewer: { GM_xmlhttpRequest: window["GM_xmlhttpRequest"] },
+  },
+  enforceDefine: true,
+});
 
 define("main", (require, exports, module) => {
   "use strict";
@@ -52,8 +60,8 @@ define("main", (require, exports, module) => {
       } catch (error) {
         await onError?.(++i);
       }
-      if (i > 10) {
-        throw new Error("10 retries failed");
+      if (i > 5) {
+        throw new Error("5 retries failed");
       }
     }
   };
@@ -87,8 +95,8 @@ define("main", (require, exports, module) => {
   };
   const hookFetch = () => {
     const fetchOverride = async (resource, init) => {
-      if (init.body === undefined) {
-        delete init.headers["Content-Type"];
+      if (init?.body === undefined) {
+        delete init?.headers?.["Content-Type"];
       }
       if (
         typeof resource === "string" &&
@@ -190,6 +198,16 @@ define("main", (require, exports, module) => {
     insertFocusCss();
   };
 
+  const observeOnce = async (element, options) => {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((...args) => {
+        observer.disconnect();
+        resolve(args);
+      });
+      observer.observe(element, options);
+    });
+  };
+
   const focusCss = `& {\r\n  background: aliceblue;\r\n}`;
   const getItems = () => [
     ...document.querySelectorAll(".container > div"),
@@ -226,8 +244,13 @@ define("main", (require, exports, module) => {
     const [, page] = location.href.match(/\/(\d+)/) || [];
     return Number(page || 1);
   };
-  const prefetchPage = (page) => {
-    prefetchUrl(`https://api.hiyobi.me/list/${page}`, "fetch");
+  const prefetchPage = async (page) => {
+    const url = location.href;
+    await vim_comic_viewer.utils.timeout(1500);
+    const isStaying = location.href === url;
+    if (isStaying) {
+      prefetchUrl(`https://api.hiyobi.me/list/${page}`, "fetch");
+    }
   };
   const navigatePage = (offset) => {
     const page = getCurrentPage();
@@ -256,8 +279,26 @@ define("main", (require, exports, module) => {
     }
     GM_openInTab(getHitomiUrl(id, kind));
   };
+  const toggleComment = async (selected) => {
+    if (!selected) {
+      return;
+    }
+    selected.querySelector("span[class$=chat]").click();
+    for (let i = 0; i < 2; i++) {
+      await observeOnce(selected, {
+        childList: true,
+        subtree: true,
+      });
+      selected.scrollIntoView({
+        block: "center",
+      });
+    }
+  };
   const handleOtherKey = (event, selected) => {
     switch (event.key) {
+      case "o":
+        toggleComment(selected);
+        break;
       case "u":
         openCurrentInHitomi("galleries", selected);
         break;
@@ -265,6 +306,11 @@ define("main", (require, exports, module) => {
         openCurrentInHitomi("reader", selected);
         break;
     }
+  };
+  const injectCss = () => {
+    vim_comic_viewer.utils.insertCss(
+      `\r\n.row > :last-child > ul {\r\n  display: flex;\r\n  flex-flow: row wrap;\r\n}\r\n.row > :last-child > ul > li {\r\n  flex: 1 1 250px;\r\n  margin: 2px;\r\n}\r\n`,
+    );
   };
   const hookListPage$1 = async () => {
     await hookListPage({
@@ -274,6 +320,7 @@ define("main", (require, exports, module) => {
       navigatePage,
       onKeyDown: handleOtherKey,
     });
+    injectCss();
     bindEnterOnSearchInput();
     if (getCurrentPage() === 1) {
       prefetchPage(2);
@@ -299,19 +346,10 @@ define("main", (require, exports, module) => {
         break;
     }
   };
-  const observeOnce = async (element, options) => {
-    return new Promise((resolve) => {
-      const observer = new MutationObserver((...args) => {
-        observer.disconnect();
-        resolve(args);
-      });
-      observer.observe(element, options);
-    });
-  };
   const fetchTitle = async (id) => {
     const response = await retrialFetch(`//api.hiyobi.me/gallery/${id}`);
     const info = response.json();
-    const point = `${id} ${info.title} - hiyobi.me`;
+    const point = `${id} ${info.title}`;
     document.title = point;
     const title = document.querySelector("title");
     await observeOnce(title, {
@@ -369,6 +407,7 @@ define("main", (require, exports, module) => {
 
 for (
   const name of [
+    "jszip",
     "react",
     "react-dom",
     "@stitches/core",

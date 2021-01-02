@@ -1,5 +1,6 @@
 {
   "imports": {
+    "jszip": "src/dummy.ts",
     "react": "src/dummy.ts",
     "react-dom": "src/dummy.ts",
     "@stitches/core": "src/dummy.ts",
