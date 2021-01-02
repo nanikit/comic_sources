@@ -38,6 +38,13 @@ if (typeof define !== 'function') {
   throw new Error('requirejs not found.');
 }
 
+requirejs.config({
+  config: {
+    vim_comic_viewer: { GM_xmlhttpRequest: window['GM_xmlhttpRequest'] },
+  },
+  enforceDefine: true,
+});
+
 define('main', (require, exports, module) => {
 ${body}
 });
