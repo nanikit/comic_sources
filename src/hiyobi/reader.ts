@@ -27,7 +27,7 @@ const onReaderKey = (event: KeyboardEvent) => {
 const fetchTitle = async (id: string) => {
   const response = await retrialFetch(`//api.hiyobi.me/gallery/${id}`);
   const info = response.json() as { title: string };
-  const point = `${id} ${info.title} - hiyobi.me`;
+  const point = `${id} ${info.title}`;
   document.title = point;
 
   const title = document.querySelector('title')!;
