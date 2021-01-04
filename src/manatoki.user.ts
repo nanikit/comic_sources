@@ -79,8 +79,6 @@ main();
 // ==UserScript==
 // @name           마나토끼 뷰어
 // @description    i,j,k 키를 눌러보세요
-// @name:ko        마나토끼 뷰어
-// @description:ko i,j,k 키를 눌러보세요
 // @name:en        manatoki viewer
 // @description:en press i to open
 // @version        ${date_version}
@@ -98,5 +96,5 @@ main();
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
 // @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=887557
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=887558
 // ==/UserScript==
