@@ -30,7 +30,8 @@ const getUrl = (image: HTMLImageElement): string[] => {
   if (image.offsetParent === null) {
     return [];
   }
-  return Object.values(image.dataset) as string[];
+  const data = Object.values(image.dataset) as string[];
+  return data.length ? data : [image.src];
 };
 
 const getUrls = (): string[] => {

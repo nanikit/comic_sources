@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        manatoki viewer
 // @description:en press i to open
-// @version        2101141609
+// @version        2101141707
 // @include        /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -68,7 +68,10 @@ define("main", (require, exports, module) => {
     if (image.offsetParent === null) {
       return [];
     }
-    return Object.values(image.dataset);
+    const data = Object.values(image.dataset);
+    return data.length ? data : [
+      image.src,
+    ];
   };
   const getUrls = () => {
     const imgs = document.querySelectorAll("div.view-padding img");
