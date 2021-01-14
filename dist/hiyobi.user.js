@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2101041750
+// @version        2101141533
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -18,7 +18,7 @@
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
 // @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=887558
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=890989
 // ==/UserScript==
 "use strict";
 
@@ -108,7 +108,7 @@ define("main", (require, exports, module) => {
     unsafeWindow.fetch = exportFunction(fetchOverride, unsafeWindow);
   };
 
-  const defaultFocusCss = `\r\n&& {\r\n  background: aliceblue;\r\n}`;
+  const defaultFocusCss = `\n&& {\n  background: aliceblue;\n}`;
   const selectItem = (div) => {
     div.classList.add("key-nav-focus");
     const { left, top, width, height } = div.getBoundingClientRect();
@@ -206,7 +206,7 @@ define("main", (require, exports, module) => {
     });
   };
 
-  const focusCss = `& {\r\n  background: aliceblue;\r\n}`;
+  const focusCss = `& {\n  background: aliceblue;\n}`;
   const getItems = () => [
     ...document.querySelectorAll(".container > div"),
   ];
@@ -307,7 +307,7 @@ define("main", (require, exports, module) => {
   };
   const injectCss = () => {
     vim_comic_viewer.utils.insertCss(
-      `\r\n.row > :last-child > ul {\r\n  display: flex;\r\n  flex-flow: row wrap;\r\n}\r\n.row > :last-child > ul > li {\r\n  flex: 1 1 250px;\r\n  margin: 2px;\r\n}\r\n`,
+      `\n.row > :last-child > ul {\n  display: flex;\n  flex-flow: row wrap;\n}\n.row > :last-child > ul > li {\n  flex: 1 1 250px;\n  margin: 2px;\n}\n`,
     );
   };
   const hookListPage$1 = async () => {
