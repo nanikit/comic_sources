@@ -1,10 +1,9 @@
-import { hookFetch } from './hiyobi/hook_fetch.ts';
 import { hookListPage } from './hiyobi/list.ts';
 import { hookReaderPage } from './hiyobi/reader.ts';
 
 const hookPage = async () => {
   try {
-    hookFetch();
+    // hookFetch();
     if (location.pathname.startsWith('/reader')) {
       await hookReaderPage();
     } else {
