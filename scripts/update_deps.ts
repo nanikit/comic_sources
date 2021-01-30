@@ -65,6 +65,7 @@ const main = async () => {
   const result = await Promise.all([
     pipeline(`${Deno.cwd()}\\src\\manatoki.user.ts`),
     pipeline(`${Deno.cwd()}\\src\\hiyobi.user.ts`),
+    pipeline(`${Deno.cwd()}\\src\\toon11.user.ts`),
   ]);
 
   console.log(result);
