@@ -40,7 +40,7 @@ const retry = async <T>(
     if (count <= i) {
       return task as Promise<T>;
     }
-    interval *= 1.5;
+    interval *= Math.sqrt(2);
   }
 };
 
@@ -56,17 +56,18 @@ export const retrialFetch = (resource: string, init?: RequestInit) => {
     const data = await (isImg ? response.blob() : response.json());
     return { blob: () => data, json: () => data };
   };
+  const retryCount = 5;
   return retry(worker, {
     onTimeout: (count) => {
       console.log(`[timeout:${count}] ${resource}`);
-      if (count < 3) {
+      if (count < retryCount) {
         aborter.abort();
       }
     },
     onError: (count) => {
       console.log(`[timeout:${count}] ${resource}`);
     },
-    retryCount: 3,
+    retryCount,
     initialInterval: isImg ? 5000 : 2000,
   });
 };

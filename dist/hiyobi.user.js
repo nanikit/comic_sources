@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2101311617
+// @version        2101311636
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -68,7 +68,7 @@ define("main", (require, exports, module) => {
       if (count <= i) {
         return task;
       }
-      interval *= 1.5;
+      interval *= Math.sqrt(2);
     }
   };
   const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
@@ -91,14 +91,14 @@ define("main", (require, exports, module) => {
     return retry(worker, {
       onTimeout: (count) => {
         console.log(`[timeout:${count}] ${resource}`);
-        if (count < 3) {
+        if (count < 5) {
           aborter.abort();
         }
       },
       onError: (count) => {
         console.log(`[timeout:${count}] ${resource}`);
       },
-      retryCount: 3,
+      retryCount: 5,
       initialInterval: isImg ? 5000 : 2000,
     });
   };
