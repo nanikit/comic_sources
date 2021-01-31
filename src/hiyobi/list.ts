@@ -55,8 +55,13 @@ const prefetchPage = async (page: number) => {
 
 const navigatePage = (offset: number) => {
   const page = getCurrentPage();
-  const pageSelect = document.querySelector('select.form-control') as HTMLSelectElement;
+  const pageSelect = document.querySelector('select.form-control') as
+    | HTMLSelectElement
+    | undefined;
   const next = Math.max(1, page + offset);
+  if (!pageSelect) {
+    return;
+  }
   if (pageSelect.value !== `${next}`) {
     pageSelect.value = `${next}`;
     pageSelect.dispatchEvent(new Event('change', { bubbles: true }));

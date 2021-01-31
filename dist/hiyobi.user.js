@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2101311546
+// @version        2101311553
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -264,6 +264,9 @@ define("main", (require, exports, module) => {
     const page = getCurrentPage();
     const pageSelect = document.querySelector("select.form-control");
     const next = Math.max(1, page + offset);
+    if (!pageSelect) {
+      return;
+    }
     if (pageSelect.value !== `${next}`) {
       pageSelect.value = `${next}`;
       pageSelect.dispatchEvent(
