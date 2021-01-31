@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        2101302048
+// @version        2101311533
 // @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -61,7 +61,6 @@ define("main", (require, exports, module) => {
   };
   const comicSource = async () => {
     registerEpisodeNavigator();
-    console.log("asdf");
     while (true) {
       const urls = unsafeWindow.img_list;
       if (urls) {

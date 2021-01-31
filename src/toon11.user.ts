@@ -23,7 +23,6 @@ const isApplicable = () => {
 
 const comicSource: types.ComicSource = async () => {
   registerEpisodeNavigator();
-  console.log('asdf');
   while (true) {
     const urls = (unsafeWindow as any).img_list;
     if (urls) {
