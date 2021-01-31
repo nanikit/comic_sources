@@ -3,7 +3,6 @@ import { hookReaderPage } from './hiyobi/reader.ts';
 
 const hookPage = async () => {
   try {
-    // hookFetch();
     if (location.pathname.startsWith('/reader')) {
       await hookReaderPage();
     } else {

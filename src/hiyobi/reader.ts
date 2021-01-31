@@ -1,5 +1,4 @@
 import { initializeWithDefault, types } from 'vim_comic_viewer';
-import { retrialFetch } from './hook_fetch.ts';
 import { observeOnce } from './utils.ts';
 
 const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
@@ -25,8 +24,8 @@ const onReaderKey = (event: KeyboardEvent) => {
 };
 
 const fetchTitle = async (id: string) => {
-  const response = await retrialFetch(`//api.hiyobi.me/gallery/${id}`);
-  const info = response.json() as { title: string };
+  const response = await fetch(`//api.hiyobi.me/gallery/${id}`);
+  const info = (await response.json()) as { title: string };
   const point = `${id} ${info.title}`;
   document.title = point;
 
@@ -45,9 +44,8 @@ type ImageInfo = {
 };
 
 const fetchList = async (id: string) => {
-  const infos = (
-    await retrialFetch(`//cdn.hiyobi.me/json/${id}_list.json`)
-  ).json() as ImageInfo[];
+  const response = await fetch(`//cdn.hiyobi.me/json/${id}_list.json`);
+  const infos = (await response.json()) as ImageInfo[];
 
   const getImageName = (page: ImageInfo) => {
     return page.name;
