@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2101311537
+// @version        2101311546
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -37,6 +37,85 @@ define("main", (require, exports, module) => {
   "use strict";
 
   var vim_comic_viewer = require("vim_comic_viewer");
+
+  const timedOut = Symbol();
+  const retry = async (
+    worker,
+    { onTimeout, onError, initialInterval, retryCount } = {},
+  ) => {
+    const count = retryCount || 3;
+    let interval = initialInterval || 2000;
+    let i = 0;
+    while (true) {
+      const timer = async () => {
+        await vim_comic_viewer.utils.timeout(interval || 0);
+        return timedOut;
+      };
+      try {
+        let result = await Promise.race([
+          worker(),
+          timer(),
+        ]);
+        if (result !== timedOut) {
+          return result;
+        }
+        await onTimeout?.(++i);
+      } catch (error) {
+        await onError?.(++i);
+      }
+      if (count < i) {
+        throw new Error(`${count} retries failed`);
+      }
+      interval *= 1.5;
+    }
+  };
+  const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
+  const retrialFetch = (resource, init) => {
+    const isImg = resource.match(/\.(jpe?g|webp|png|gif|avif)$/i);
+    let aborter;
+    let response;
+    const worker = async () => {
+      aborter = new AbortController();
+      response = await originalFetch(resource, {
+        ...init,
+        signal: aborter.signal,
+      });
+      const data = await (isImg ? response.blob() : response.json());
+      return {
+        blob: () => data,
+        json: () => data,
+      };
+    };
+    return retry(worker, {
+      onTimeout: (count) => {
+        console.log(`[timeout:${count}] ${resource}`);
+        if (count < 3) {
+          aborter.abort();
+        }
+      },
+      onError: (count) => {
+        console.log(`[timeout:${count}] ${resource}`);
+      },
+      retryCount: 3,
+      initialInterval: isImg ? 5000 : 2000,
+    });
+  };
+  const hookFetch = () => {
+    const fetchOverride = async (resource, init) => {
+      if (init?.body === undefined) {
+        delete init?.headers?.["Content-Type"];
+      }
+      if (
+        typeof resource === "string" &&
+        resource.match(/^https:\/\/(api|cdn)\.hiyobi\.me\//)
+      ) {
+        return retrialFetch(resource, init);
+      } else {
+        return originalFetch(resource, init);
+      }
+    };
+    unsafeWindow.fetch = exportFunction(fetchOverride, unsafeWindow);
+  };
 
   const defaultFocusCss = `\n&& {\n  background: aliceblue;\n}`;
   const selectItem = (div) => {
@@ -276,8 +355,8 @@ define("main", (require, exports, module) => {
     }
   };
   const fetchTitle = async (id) => {
-    const response = await fetch(`//api.hiyobi.me/gallery/${id}`);
-    const info = await response.json();
+    const response = await retrialFetch(`//api.hiyobi.me/gallery/${id}`);
+    const info = response.json();
     const point = `${id} ${info.title}`;
     document.title = point;
     const title = document.querySelector("title");
@@ -287,8 +366,8 @@ define("main", (require, exports, module) => {
     document.title = point;
   };
   const fetchList = async (id) => {
-    const response = await fetch(`//cdn.hiyobi.me/json/${id}_list.json`);
-    const infos = await response.json();
+    const infos = (await retrialFetch(`//cdn.hiyobi.me/json/${id}_list.json`))
+      .json();
     const getImageName = (page) => {
       return page.name;
     };
@@ -321,6 +400,7 @@ define("main", (require, exports, module) => {
 
   const hookPage = async () => {
     try {
+      hookFetch();
       if (location.pathname.startsWith("/reader")) {
         await hookReaderPage();
       } else {
