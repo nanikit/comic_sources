@@ -7,20 +7,24 @@ const retry = async <T>(
   {
     onTimeout,
     onError,
-    interval,
+    initialInterval,
+    retryCount,
   }: {
     onTimeout?: (count: number) => void | Promise<void>;
     onError?: (count: number) => void | Promise<void>;
-    interval?: number;
+    initialInterval?: number;
+    retryCount?: number;
   } = {},
 ): Promise<T> => {
-  const timer = async () => {
-    await utils.timeout(interval || 0);
-    return timedOut;
-  };
-
+  const count = retryCount || 3;
+  let interval = initialInterval || 2000;
   let i = 0;
   while (true) {
+    const timer = async () => {
+      await utils.timeout(interval || 0);
+      return timedOut;
+    };
+
     try {
       let result = await Promise.race([worker(), timer()]);
       if (result !== timedOut) {
@@ -31,9 +35,10 @@ const retry = async <T>(
       await onError?.(++i);
     }
 
-    if (i > 5) {
-      throw new Error('5 retries failed');
+    if (count < i) {
+      throw new Error(`${count} retries failed`);
     }
+    interval *= 1.5;
   }
 };
 
@@ -57,7 +62,7 @@ export const retrialFetch = (resource: string, init?: RequestInit) => {
     onError: (count) => {
       console.log(`[timeout:${count}] ${resource}`);
     },
-    interval: isImg ? 5000 : 2000,
+    initialInterval: isImg ? 5000 : 2000,
   });
 };
 
