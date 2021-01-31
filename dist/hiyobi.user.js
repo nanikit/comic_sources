@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2101311553
+// @version        2101311617
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -51,9 +51,11 @@ define("main", (require, exports, module) => {
         await vim_comic_viewer.utils.timeout(interval || 0);
         return timedOut;
       };
+      let task = undefined;
       try {
+        task = worker();
         let result = await Promise.race([
-          worker(),
+          task,
           timer(),
         ]);
         if (result !== timedOut) {
@@ -63,8 +65,8 @@ define("main", (require, exports, module) => {
       } catch (error) {
         await onError?.(++i);
       }
-      if (count < i) {
-        throw new Error(`${count} retries failed`);
+      if (count <= i) {
+        return task;
       }
       interval *= 1.5;
     }

@@ -25,8 +25,10 @@ const retry = async <T>(
       return timedOut;
     };
 
+    let task = undefined;
     try {
-      let result = await Promise.race([worker(), timer()]);
+      task = worker();
+      let result = await Promise.race([task, timer()]);
       if (result !== timedOut) {
         return result as T;
       }
@@ -35,8 +37,8 @@ const retry = async <T>(
       await onError?.(++i);
     }
 
-    if (count < i) {
-      throw new Error(`${count} retries failed`);
+    if (count <= i) {
+      return task as Promise<T>;
     }
     interval *= 1.5;
   }
