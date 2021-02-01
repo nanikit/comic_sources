@@ -2,7 +2,7 @@ import { utils } from 'vim_comic_viewer';
 import { hookListPage as hookPage } from './list-navigator.ts';
 import { observeOnce } from './utils.ts';
 
-const focusCss = `& {
+const focusCss = `&& {
   background: aliceblue;
 }`;
 
