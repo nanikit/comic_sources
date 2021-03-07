@@ -3,11 +3,11 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        manatoki viewer
 // @description:en press i to open
-// @version        2101302048
+// @version        2103071336
 // @include        /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
-// @connect        newtoki3.org
+// @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
 // @grant          window.close

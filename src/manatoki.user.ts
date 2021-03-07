@@ -90,7 +90,7 @@ main();
 // @include        /^https:\/\/manatoki\d+\.net\/comic\/\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
-// @connect        newtoki3.org
+// @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
 // @grant          window.close
