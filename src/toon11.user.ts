@@ -1,17 +1,19 @@
-import { initializeWithDefault, types, utils } from 'vim_comic_viewer';
+import { initializeWithDefault, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
-  window.addEventListener('keydown', (event: KeyboardEvent) => {
+  window.addEventListener("keydown", (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
       return;
     }
     switch (event.key) {
-      case 'h':
-        (document.querySelector('.left-episode') as HTMLButtonElement)?.click?.();
+      case "h":
+        (document.querySelector(".left-episode") as HTMLButtonElement)
+          ?.click?.();
         break;
-      case 'l':
-        (document.querySelector('.right-episode') as HTMLButtonElement)?.click?.();
+      case "l":
+        (document.querySelector(".right-episode") as HTMLButtonElement)
+          ?.click?.();
         break;
     }
   });
@@ -33,8 +35,11 @@ const comicSource: types.ComicSource = async () => {
 };
 
 const getRoot = () => {
-  const div = document.createElement('div');
-  div.setAttribute('style', 'width: 0; height: 0; position: fixed; top: 0; bottom: 0;');
+  const div = document.createElement("div");
+  div.setAttribute(
+    "style",
+    "width: 0; height: 0; position: fixed; top: 0; bottom: 0;",
+  );
   document.body.append(div);
   return div;
 };
@@ -42,7 +47,7 @@ const getRoot = () => {
 const main = async () => {
   await utils.waitDomContent(document);
   const manatokiSource: types.ViewerSource = {
-    name: '11toon',
+    name: "11toon",
     isApplicable,
     comicSource,
     getRoot,

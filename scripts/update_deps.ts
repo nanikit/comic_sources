@@ -1,6 +1,6 @@
 const getLibraryUrl = async () => {
   const response = await fetch(
-    'https://greasyfork.org/ko/scripts/417893-vim-comic-viewer',
+    "https://greasyfork.org/ko/scripts/417893-vim-comic-viewer",
   );
   const html = await response.text();
   const url = html.match(/<code>\/\/ @require (.*?)<\/code>/);
@@ -12,41 +12,41 @@ const replaceFile = async (path: string, url: string) => {
   const pattern = /https:.*?viewer\.js\?version=\d+/;
   const replaced = source.replace(pattern, url);
   if (source === replaced && !source.match(pattern)) {
-    return 'replacement not found';
+    return "replacement not found";
   }
   await Deno.writeTextFile(path, replaced);
-  return '';
+  return "";
 };
 
 const build = async (path: string) => {
   const cmd = [
     Deno.execPath(),
-    'run',
-    '--unstable',
-    '--allow-all',
-    'https://deno.land/x/denopack@0.10.0/cli.ts',
-    '--config',
+    "run",
+    "--unstable",
+    "--allow-all",
+    "https://raw.githubusercontent.com/jeiea/denopack/deno-1.7/cli.ts",
+    "--config",
     `denopack_config.ts`,
-    '--dir',
+    "--dir",
     `${Deno.cwd()}\\dist`,
-    '--input',
+    "--input",
     path,
   ];
-  const process = Deno.run({ cmd, stdout: 'piped', stderr: 'piped' });
+  const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
   const status = await process.status();
   if (!status.success) {
     const s = await process.output();
     const e = await process.stderrOutput();
-    const decoder = new TextDecoder('utf-8');
+    const decoder = new TextDecoder("utf-8");
     return decoder.decode(s) + decoder.decode(e);
   }
-  return '';
+  return "";
 };
 
 const main = async () => {
   const url = await getLibraryUrl();
   if (!url) {
-    console.log('url fetch failed');
+    console.log("url fetch failed");
     return;
   }
 
@@ -59,7 +59,7 @@ const main = async () => {
     if (error) {
       return error;
     }
-    return '';
+    return "";
   };
 
   const result = await Promise.all([

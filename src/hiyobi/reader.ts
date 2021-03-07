@@ -1,8 +1,8 @@
-import { initializeWithDefault, types } from 'vim_comic_viewer';
-import { retrialFetch } from './hook_fetch.ts';
-import { observeOnce } from './utils.ts';
+import { initializeWithDefault, types } from "vim_comic_viewer";
+import { retrialFetch } from "./hook_fetch.ts";
+import { observeOnce } from "./utils.ts";
 
-const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
+const getHitomiUrl = (id: number | string, kind: "reader" | "galleries") => {
   return `https://hitomi.la/${kind}/${id}.html`;
 };
 
@@ -12,14 +12,14 @@ export const getId = () => {
 
 const onReaderKey = (event: KeyboardEvent) => {
   switch (event.key) {
-    case 'o':
+    case "o":
       window.close();
       break;
-    case 'u':
-      window.location.href = getHitomiUrl(getId()!, 'galleries');
+    case "u":
+      window.location.href = getHitomiUrl(getId()!, "galleries");
       break;
-    case 'p':
-      window.location.href = getHitomiUrl(getId()!, 'reader');
+    case "p":
+      window.location.href = getHitomiUrl(getId()!, "reader");
       break;
   }
 };
@@ -30,7 +30,7 @@ const fetchTitle = async (id: string) => {
   const point = `${id} ${info.title}`;
   document.title = point;
 
-  const title = document.querySelector('title')!;
+  const title = document.querySelector("title")!;
   await observeOnce(title, { childList: true });
   document.title = point;
 };
@@ -64,20 +64,23 @@ const fetchList = async (id: string) => {
 const comicSource: types.ComicSource = () => {
   const id = getId();
   if (!id) {
-    throw new Error('히요비 만화 페이지가 아닙니다');
+    throw new Error("히요비 만화 페이지가 아닙니다");
   }
 
   return fetchList(id);
 };
 
 const hiyobiSource: types.ViewerSource = {
-  name: 'hiyobi',
+  name: "hiyobi",
   isApplicable: () => !!getId(),
   comicSource,
 };
 
 export const hookReaderPage = async () => {
-  document.querySelectorAll('#root, #modal').forEach((x) => x.remove());
-  window.addEventListener('keypress', onReaderKey);
-  await Promise.all([initializeWithDefault(hiyobiSource), fetchTitle(getId()!)]);
+  document.querySelectorAll("#root, #modal").forEach((x) => x.remove());
+  window.addEventListener("keypress", onReaderKey);
+  await Promise.all([
+    initializeWithDefault(hiyobiSource),
+    fetchTitle(getId()!),
+  ]);
 };

@@ -1,40 +1,42 @@
-import { utils } from 'vim_comic_viewer';
-import { hookListPage as hookPage } from './list-navigator.ts';
-import { observeOnce } from './utils.ts';
+import { utils } from "vim_comic_viewer";
+import { hookListPage as hookPage } from "./list-navigator.ts";
+import { observeOnce } from "./utils.ts";
 
 const focusCss = `&& {
   background: aliceblue;
 }`;
 
-const getItems = () => [...(document.querySelectorAll('.container > div') as any)];
+const getItems =
+  () => [...(document.querySelectorAll(".container > div") as any)];
 
 const enter = (element: HTMLElement) => {
-  const anchor = element.querySelector('a');
+  const anchor = element.querySelector("a");
   if (anchor) {
     GM_openInTab(anchor.href);
   }
 };
 
 const bindEnterOnSearchInput = () => {
-  const input = document.querySelector('.tag-editor') as HTMLInputElement;
+  const input = document.querySelector(".tag-editor") as HTMLInputElement;
   if (!input) {
     return;
   }
-  input.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      (document.querySelector('.btn-outline-secondary') as HTMLButtonElement)?.click?.();
+  input.addEventListener("keydown", (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      (document.querySelector(".btn-outline-secondary") as HTMLButtonElement)
+        ?.click?.();
     }
   });
 };
 
 const prefetchUrl = (url: string, as?: string) => {
-  const preloader = document.createElement('link');
-  preloader.rel = 'prefetch';
+  const preloader = document.createElement("link");
+  preloader.rel = "prefetch";
   preloader.href = url;
   preloader.as = as || preloader.as;
-  preloader.setAttribute('prefetch', '');
+  preloader.setAttribute("prefetch", "");
   if (new URL(url).origin !== location.origin) {
-    preloader.setAttribute('crossorigin', '');
+    preloader.setAttribute("crossorigin", "");
   }
   document.head.append(preloader);
 };
@@ -49,13 +51,13 @@ const prefetchPage = async (page: number) => {
   await utils.timeout(1500);
   const isStaying = location.href === url;
   if (isStaying) {
-    prefetchUrl(`https://api.hiyobi.me/list/${page}`, 'fetch');
+    prefetchUrl(`https://api.hiyobi.me/list/${page}`, "fetch");
   }
 };
 
 const navigatePage = (offset: number) => {
   const page = getCurrentPage();
-  const pageSelect = document.querySelector('select.form-control') as
+  const pageSelect = document.querySelector("select.form-control") as
     | HTMLSelectElement
     | undefined;
   const next = Math.max(1, page + offset);
@@ -64,7 +66,7 @@ const navigatePage = (offset: number) => {
   }
   if (pageSelect.value !== `${next}`) {
     pageSelect.value = `${next}`;
-    pageSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    pageSelect.dispatchEvent(new Event("change", { bubbles: true }));
     const nextOfNext = Math.max(1, next + offset);
     if (nextOfNext !== next && Math.abs(offset) === 1) {
       prefetchPage(nextOfNext);
@@ -72,12 +74,18 @@ const navigatePage = (offset: number) => {
   }
 };
 
-export const getHitomiUrl = (id: number | string, kind: 'reader' | 'galleries') => {
+export const getHitomiUrl = (
+  id: number | string,
+  kind: "reader" | "galleries",
+) => {
   return `https://hitomi.la/${kind}/${id}.html`;
 };
 
-const openCurrentInHitomi = (kind: 'galleries' | 'reader', element?: HTMLElement) => {
-  const id = element?.querySelector?.('a')?.href?.match?.(/\d+$/)?.[0];
+const openCurrentInHitomi = (
+  kind: "galleries" | "reader",
+  element?: HTMLElement,
+) => {
+  const id = element?.querySelector?.("a")?.href?.match?.(/\d+$/)?.[0];
   if (!id) {
     return;
   }
@@ -88,23 +96,23 @@ const toggleComment = async (selected?: HTMLElement) => {
   if (!selected) {
     return;
   }
-  (selected.querySelector('span[class$=chat]') as HTMLElement).click();
+  (selected.querySelector("span[class$=chat]") as HTMLElement).click();
   for (let i = 0; i < 2; i++) {
     await observeOnce(selected, { childList: true, subtree: true });
-    selected.scrollIntoView({ block: 'center' });
+    selected.scrollIntoView({ block: "center" });
   }
 };
 
 const handleOtherKey = (event: KeyboardEvent, selected?: HTMLElement) => {
   switch (event.key) {
-    case 'o':
+    case "o":
       toggleComment(selected);
       break;
-    case 'u':
-      openCurrentInHitomi('galleries', selected);
+    case "u":
+      openCurrentInHitomi("galleries", selected);
       break;
-    case 'p':
-      openCurrentInHitomi('reader', selected);
+    case "p":
+      openCurrentInHitomi("reader", selected);
       break;
   }
 };

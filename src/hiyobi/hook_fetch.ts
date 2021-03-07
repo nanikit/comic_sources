@@ -1,5 +1,5 @@
-import { utils } from 'vim_comic_viewer';
-import '../tampermonkey.d.ts';
+import { utils } from "vim_comic_viewer";
+import "../tampermonkey.d.ts";
 
 const timedOut = Symbol();
 const retry = async <T>(
@@ -52,7 +52,10 @@ export const retrialFetch = (resource: string, init?: RequestInit) => {
   let response: Response;
   const worker = async () => {
     aborter = new AbortController();
-    response = await originalFetch(resource, { ...init, signal: aborter.signal });
+    response = await originalFetch(resource, {
+      ...init,
+      signal: aborter.signal,
+    });
     const data = await (isImg ? response.blob() : response.json());
     return { blob: () => data, json: () => data };
   };
@@ -78,10 +81,10 @@ export const hookFetch = () => {
     init: RequestInit,
   ): Promise<Response> => {
     if (init?.body === undefined) {
-      delete (init?.headers as any)?.['Content-Type'];
+      delete (init?.headers as any)?.["Content-Type"];
     }
     if (
-      typeof resource === 'string' &&
+      typeof resource === "string" &&
       resource.match(/^https:\/\/(api|cdn)\.hiyobi\.me\//)
     ) {
       return retrialFetch(resource, init) as any;

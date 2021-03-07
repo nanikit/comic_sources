@@ -2,13 +2,14 @@ import {
   OutputOptions,
   RollupOptions,
   useCache,
-} from 'https://deno.land/x/denopack@0.10.0/mod.ts';
+  useCompile,
+} from "https://raw.githubusercontent.com/jeiea/denopack/deno-1.7/mod.ts";
 
 const denoFmt = async (code: string) => {
   const process = Deno.run({
-    cmd: ['deno', 'fmt', '-'],
-    stdin: 'piped',
-    stdout: 'piped',
+    cmd: ["deno", "fmt", "-"],
+    stdin: "piped",
+    stdout: "piped",
   });
   const input = new TextEncoder().encode(code);
   await process.stdin.write(input);
@@ -60,8 +61,11 @@ require(['main'], () => {}, console.error);
 };
 
 const replaceVersion = (header: string): string => {
-  const dateVersion = new Date().toISOString().replace(/\D+/g, '').substr(2, 10);
-  return header.replace('${date_version}', dateVersion);
+  const dateVersion = new Date().toISOString().replace(/\D+/g, "").substr(
+    2,
+    10,
+  );
+  return header.replace("${date_version}", dateVersion);
 };
 
 const postprocess = (code: string) => {
@@ -72,9 +76,11 @@ const postprocess = (code: string) => {
     return code;
   }
 
-  let transforming = code.replace(header, '');
+  let transforming = code.replace(header, "");
 
-  const dependencies = [...header.matchAll(/@resource\s+(\S+)\s+.*?\.js.*?$/gm)];
+  const dependencies = [
+    ...header.matchAll(/@resource\s+(\S+)\s+.*?\.js.*?$/gm),
+  ];
   if (dependencies.length) {
     const aliases = dependencies.map((x) => x[1]);
     transforming = implantRequireJs(aliases, transforming);
@@ -86,14 +92,14 @@ const postprocess = (code: string) => {
 
 const bannerPlugin = () => {
   return {
-    name: 'tampermonkey-header-plugin',
+    name: "tampermonkey-header-plugin",
     generateBundle: async (
       _options: OutputOptions,
       bundle: { [fileName: string]: AssetInfo | ChunkInfo },
       _isWrite: boolean,
     ) => {
       for (const [_name, output] of Object.entries(bundle)) {
-        if (output.type !== 'chunk') {
+        if (output.type !== "chunk") {
           continue;
         }
         let transforming = postprocess(output.code);
@@ -104,25 +110,26 @@ const bannerPlugin = () => {
   };
 };
 
-const json = Deno.readTextFileSync('./tsconfig.json');
+const json = Deno.readTextFileSync("./tsconfig.json");
 const compilerOptions = JSON.parse(json).compilerOptions;
-const importMap = JSON.parse(Deno.readTextFileSync('./import_map.json'));
+const importMap = JSON.parse(Deno.readTextFileSync("./import_map.json"));
 
+const s = [useCompile, useCache];
 const config: RollupOptions = {
   external: [...Object.keys(importMap.imports)],
   plugins: [...useCache({ compilerOptions }), bannerPlugin()],
   output: {
-    format: 'cjs',
+    format: "cjs",
   },
 };
 
 export default config;
 
 type AssetInfo = {
-  type: 'asset';
+  type: "asset";
 };
 
 type ChunkInfo = {
   code: string;
-  type: 'chunk';
+  type: "chunk";
 };

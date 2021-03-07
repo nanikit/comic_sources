@@ -1,4 +1,4 @@
-import { utils } from 'vim_comic_viewer';
+import { utils } from "vim_comic_viewer";
 
 const defaultFocusCss = `
 && {
@@ -6,7 +6,7 @@ const defaultFocusCss = `
 }`;
 
 const selectItem = (div: HTMLElement): void => {
-  div.classList.add('key-nav-focus');
+  div.classList.add("key-nav-focus");
 
   const { left, top, width, height } = div.getBoundingClientRect();
   const centerX = left + width / 2;
@@ -17,7 +17,7 @@ const selectItem = (div: HTMLElement): void => {
 };
 
 const getFocusedItem = () =>
-  (document.querySelector('.key-nav-focus') as HTMLElement) || undefined;
+  (document.querySelector(".key-nav-focus") as HTMLElement) || undefined;
 
 export const hookListPage = async (configuration: {
   focusCss: string;
@@ -42,7 +42,7 @@ export const hookListPage = async (configuration: {
     if (index === -1) {
       return;
     }
-    focus.classList.remove('key-nav-focus');
+    focus.classList.remove("key-nav-focus");
     let next = index + (forward ? 1 : -1);
     next = Math.max(0, Math.min(next, items.length - 1));
     selectItem(items[next]);
@@ -57,10 +57,10 @@ export const hookListPage = async (configuration: {
 
   const handlePageKeypress = (event: KeyboardEvent) => {
     switch (event.key) {
-      case 'h':
+      case "h":
         navigatePage!!(-1);
         break;
-      case 'l':
+      case "l":
         navigatePage!!(+1);
         break;
       default: {
@@ -71,17 +71,17 @@ export const hookListPage = async (configuration: {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    if ((event.target as HTMLElement).tagName === 'INPUT') {
+    if ((event.target as HTMLElement).tagName === "INPUT") {
       return;
     }
     switch (event.key) {
-      case 'j':
+      case "j":
         navigateItem(true);
         break;
-      case 'k':
+      case "k":
         navigateItem(false);
         break;
-      case 'i': {
+      case "i": {
         const item = getFocusedItem();
         if (item) {
           enter(item as HTMLElement);
@@ -100,10 +100,10 @@ export const hookListPage = async (configuration: {
 
   const insertFocusCss = () => {
     const content = configuration.focusCss || defaultFocusCss;
-    utils.insertCss(content.replace(/&/g, '.key-nav-focus'));
+    utils.insertCss(content.replace(/&/g, ".key-nav-focus"));
   };
 
-  window.addEventListener('keypress', handleKeyPress);
+  window.addEventListener("keypress", handleKeyPress);
   await utils.waitDomContent(document);
   insertFocusCss();
 };
