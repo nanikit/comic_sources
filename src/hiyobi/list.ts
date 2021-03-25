@@ -1,3 +1,4 @@
+/// <reference path="../tampermonkey.d.ts" />
 import { utils } from "vim_comic_viewer";
 import { hookListPage as hookPage } from "./list-navigator.ts";
 import { observeOnce } from "./utils.ts";
@@ -119,13 +120,18 @@ const handleOtherKey = (event: KeyboardEvent, selected?: HTMLElement) => {
 
 const injectCss = () => {
   utils.insertCss(`
-.row > :last-child > ul {
+.row > :last-child ul {
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: column wrap;
+  max-height: 70vh;
+  overflow: auto;
 }
-.row > :last-child > ul > li {
-  flex: 1 1 250px;
+.row > :last-child li {
   margin: 2px;
+  max-width: 33.3%;
+  max-height: 23.3vh;
+  flex: 0 1 auto;
+  overflow: auto;
 }
 `);
 };

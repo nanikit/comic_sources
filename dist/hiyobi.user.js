@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hiyobi viewer
 // @description:en press i to open
-// @version        2102011301
+// @version        2103270535
 // @match          https://hiyobi.me/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -322,7 +322,7 @@ define("main", (require, exports, module) => {
   };
   const injectCss = () => {
     vim_comic_viewer.utils.insertCss(
-      `\n.row > :last-child > ul {\n  display: flex;\n  flex-flow: row wrap;\n}\n.row > :last-child > ul > li {\n  flex: 1 1 250px;\n  margin: 2px;\n}\n`,
+      `\n.row > :last-child ul {\n  display: flex;\n  flex-flow: column wrap;\n  max-height: 70vh;\n  overflow: auto;\n}\n.row > :last-child li {\n  margin: 2px;\n  max-width: 33.3%;\n  max-height: 23.3vh;\n  flex: 0 1 auto;\n  overflow: auto;\n}\n`,
     );
   };
   const hookListPage$1 = async () => {
