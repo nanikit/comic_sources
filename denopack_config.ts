@@ -68,6 +68,10 @@ const replaceVersion = (header: string): string => {
   return header.replace("${date_version}", dateVersion);
 };
 
+const removePragma = (code: string): string => {
+  return code.replace(/\/\/\/\s*?<reference\s.*?\/>\s*?\n/g, "");
+};
+
 const postprocess = (code: string) => {
   const header = code.match(
     /(?:^\s*\/\/.*\r?\n?)*?(?:^\s*\/\/.*?==UserScript==.*?\r?\n?)(?:^\s*\/\/.*\r?\n?)+/m,
@@ -86,6 +90,7 @@ const postprocess = (code: string) => {
     transforming = implantRequireJs(aliases, transforming);
   }
 
+  transforming = removePragma(transforming);
   transforming = replaceVersion(header) + transforming;
   return transforming;
 };
