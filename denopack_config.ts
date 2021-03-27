@@ -115,7 +115,7 @@ const bannerPlugin = () => {
   };
 };
 
-const json = Deno.readTextFileSync("./tsconfig.json");
+const json = await Deno.readTextFile("./deno.tsconfig.json");
 const compilerOptions = JSON.parse(json).compilerOptions;
 const importMap = JSON.parse(Deno.readTextFileSync("./import_map.json"));
 

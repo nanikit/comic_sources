@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.unstable", "dom", "dom.iterable"],
+    "strict": true
+  },
+  "include": ["./src"]
+}
