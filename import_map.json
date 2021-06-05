@@ -1,10 +1,10 @@
 {
   "imports": {
-    "jszip": "./src/dummy.ts",
-    "react": "./src/dummy.ts",
-    "react-dom": "./src/dummy.ts",
-    "@stitches/core": "./src/dummy.ts",
-    "@stitches/react": "./src/dummy.ts",
+    "jszip": "https://cdn.jsdelivr.net/gh/jeiea/deno_types@3897165/jszip/v3.5.0/mod.d.ts",
+    "react": "https://esm.sh/react@17.0.2",
+    "react-dom": "https://esm.sh/react-dom@17.0.2",
+    "@stitches/core": "https://esm.sh/@stitches/core@0.2.0-canary.2",
+    "@stitches/react": "https://esm.sh/@stitches/react@0.2.0-canary.2",
     "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/2ea3ba0d/src/mod.tsx"
   }
 }
