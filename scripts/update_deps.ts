@@ -24,7 +24,7 @@ const build = async (path: string) => {
     "run",
     "--unstable",
     "--allow-all",
-    "https://raw.githubusercontent.com/jeiea/denopack/deno-1.7/cli.ts",
+    "https://raw.githubusercontent.com/jeiea/denopack/patch/cli.ts",
     "--config",
     `denopack_config.ts`,
     "--dir",
