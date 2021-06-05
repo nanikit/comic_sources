@@ -66,6 +66,7 @@ const main = async () => {
     pipeline(`${Deno.cwd()}\\src\\manatoki.user.ts`),
     pipeline(`${Deno.cwd()}\\src\\hiyobi.user.ts`),
     pipeline(`${Deno.cwd()}\\src\\toon11.user.ts`),
+    pipeline(`${Deno.cwd()}\\src\\hitomi.user.ts`),
   ]);
 
   for await (const error of result) {
