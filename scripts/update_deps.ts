@@ -26,7 +26,7 @@ const build = async (path: string) => {
     "--allow-all",
     "https://raw.githubusercontent.com/jeiea/denopack/patch/cli.ts",
     "--config",
-    `denopack_config.ts`,
+    `build_src/denopack_config.ts`,
     "--dir",
     `${Deno.cwd()}\\dist`,
     "--input",
@@ -68,7 +68,11 @@ const main = async () => {
     pipeline(`${Deno.cwd()}\\src\\toon11.user.ts`),
   ]);
 
-  console.log(result);
+  for await (const error of result) {
+    if (error) {
+      console.log(error);
+    }
+  }
 };
 
 main();
