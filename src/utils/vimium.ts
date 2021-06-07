@@ -1,4 +1,4 @@
-import { domContentLoaded, insertCss } from "./util.ts";
+import { domContentLoaded, insertCss } from "./dom_util.ts";
 
 const defaultFocusCss = `
 && {

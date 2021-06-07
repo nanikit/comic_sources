@@ -1,5 +1,6 @@
 import { installPreloadMore } from "./reader/preload.ts";
 import { initializeWithDefault, types, utils } from "vim_comic_viewer";
+import { getText } from "../utils/util.ts";
 
 const onReaderKey = (event: KeyboardEvent) => {
   switch (event.key) {
@@ -11,11 +12,6 @@ const onReaderKey = (event: KeyboardEvent) => {
 
 const getId = (): string | undefined => {
   return location.href.match(/([^/]+)\.html/)?.[1];
-};
-
-const getText = async (url: string): Promise<string> => {
-  const response = await fetch(url);
-  return response.text();
 };
 
 type ImageInfo = {

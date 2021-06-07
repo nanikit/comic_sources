@@ -1,4 +1,4 @@
-import { timeout, waitDomContent } from "../../utils/util.ts";
+import { timeout, waitDomContent } from "../../utils/dom_util.ts";
 
 const getNextPageUrl = (): string => {
   const url = new URL(location.href);
