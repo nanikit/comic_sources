@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hitomi viewer
 // @description:en press i to open
-// @version        2106061207
+// @version        2106071657
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -18,9 +18,9 @@
 // @resource       jszip            https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.2.0-canary.2/dist/index.cjs
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.2.0-canary.2/dist/index.cjs
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=895743
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.1.9/dist/index.cjs
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.1.9/dist/index.cjs
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=938197
 // ==/UserScript==
 "use strict";
 
@@ -42,8 +42,13 @@ define("main", (require, exports, module) => {
 
   const timeout = (millisecond) =>
     new Promise((resolve) => setTimeout(resolve, millisecond));
+  const getText = async (url) => {
+    const response = await fetch(url);
+    return response.text();
+  };
+
   const waitDomContent = (document) =>
-    document.readyState === "loading"
+    document?.readyState === "loading"
       ? new Promise((r) =>
         document.addEventListener("readystatechange", r, {
           once: true,
@@ -55,7 +60,7 @@ define("main", (require, exports, module) => {
     style.innerHTML = css;
     document.head.append(style);
   };
-  const domContentLoaded = waitDomContent(document);
+  const domContentLoaded = waitDomContent(window.document);
 
   const defaultFocusCss = `\r\n&& {\r\n  background: aliceblue;\r\n}`;
   const selectItem = (div) => {
@@ -233,10 +238,6 @@ define("main", (require, exports, module) => {
   };
   const getId = () => {
     return location.href.match(/([^/]+)\.html/)?.[1];
-  };
-  const getText = async (url) => {
-    const response = await fetch(url);
-    return response.text();
   };
   const findSource = (picture) => {
     const imgOrSource = picture.querySelector("[src], [srcset]");

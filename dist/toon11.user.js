@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        2101311533
+// @version        2106071657
 // @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -13,12 +13,12 @@
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       jszip            https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js
-// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.1/umd/react.production.min.js
-// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.1/umd/react-dom.production.min.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.0.3-canary.4/dist/core.cjs.prod.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.0.3-canary.4/dist/react.cjs.prod.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=895743
+// @resource       jszip            https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js
+// @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js
+// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.1.9/dist/index.cjs
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.1.9/dist/index.cjs
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=938197
 // ==/UserScript==
 "use strict";
 
