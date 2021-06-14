@@ -1,4 +1,5 @@
 import { initializeWithDefault, types, utils } from "vim_comic_viewer";
+import { observeOnce } from "../utils/dom_util.ts";
 import { getText } from "../utils/util.ts";
 
 const onReaderKey = (event: KeyboardEvent) => {
@@ -72,24 +73,22 @@ const comicSource: types.ComicSource = async () => {
   };
   const infoJs = await getText(getInfoUrl(id));
   const info = Function(`${infoJs}; return galleryinfo;`)() as GalleryInfo;
+  prependIdToTitle(info);
 
   const urls = info.files.map((file) => findSource(makeImageElement(id, file)));
   return urls as string[];
 };
 
-declare let desktop_init: () => void;
-const prependIdToTitle = () => {
-  const original = desktop_init;
-  desktop_init = () => {
-    const id = location.pathname.match(/\d+/)?.[0];
-    document.title = `${id} ${document.title}`;
-    original();
-  };
+const prependIdToTitle = async (info: GalleryInfo) => {
+  const title = document.querySelector("title")!;
+  for (let i = 0; i < 2; i++) {
+    document.title = `${info.id} ${info.title}`;
+    await observeOnce(title, { childList: true });
+  }
 };
 
 export const hookReaderPage = async () => {
   await utils.waitDomContent(document);
-  prependIdToTitle();
   const hitomiSource: types.ViewerSource = {
     name: "manatoki",
     comicSource,

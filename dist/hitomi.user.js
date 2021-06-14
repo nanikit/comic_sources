@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hitomi viewer
 // @description:en press i to open
-// @version        2106091631
+// @version        2106141814
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -61,6 +61,15 @@ define("main", (require, exports, module) => {
     document.head.append(style);
   };
   const domContentLoaded = waitDomContent(window.document);
+  const observeOnce = async (element, options) => {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((...args) => {
+        observer.disconnect();
+        resolve(args);
+      });
+      observer.observe(element, options);
+    });
+  };
 
   const defaultFocusCss = `\n&& {\n  background: aliceblue;\n}`;
   const selectItem = (div) => {
@@ -240,6 +249,10 @@ define("main", (require, exports, module) => {
     return location.href.match(/([^/]+)\.html/)?.[1];
   };
   const findSource = (picture) => {
+    const src = picture.getAttribute("src");
+    if (src) {
+      return src;
+    }
     const imgOrSource = picture.querySelector("[src], [srcset]");
     return (imgOrSource?.getAttribute("src") ??
       imgOrSource?.getAttribute("srcset")) ?? undefined;
@@ -255,23 +268,23 @@ define("main", (require, exports, module) => {
     )();
     const infoJs = await getText(getInfoUrl(id));
     const info = Function(`${infoJs}; return galleryinfo;`)();
+    prependIdToTitle(info);
     const urls = info.files.map((file) =>
       findSource(makeImageElement(id, file))
     );
     return urls;
   };
-  const prependIdToTitle = () => {
-    const original = desktop_init;
-    desktop_init = () => {
-      const id = location.pathname.match(/\d+/)?.[0];
-      document.title = `${id} ${document.title}`;
-      original();
-    };
+  const prependIdToTitle = async (info) => {
+    const title = document.querySelector("title");
+    for (let i = 0; i < 2; i++) {
+      document.title = `${info.id} ${info.title}`;
+      await observeOnce(title, {
+        childList: true,
+      });
+    }
   };
   const hookReaderPage = async () => {
     await vim_comic_viewer.utils.waitDomContent(document);
-    prependIdToTitle();
-    // installPreloadMore();
     const hitomiSource = {
       name: "manatoki",
       comicSource,
@@ -281,15 +294,11 @@ define("main", (require, exports, module) => {
   };
 
   const initialize = async () => {
-    try {
-      const { pathname } = location;
-      if (pathname.startsWith("/reader")) {
-        await hookReaderPage();
-      } else {
-        await hookListPage();
-      }
-    } catch (error) {
-      console.error(error);
+    const { pathname } = location;
+    if (pathname.startsWith("/reader")) {
+      await hookReaderPage();
+    } else if (!/^\/(manga|doujinshi|cg)\//.test(pathname)) {
+      await hookListPage();
     }
   };
   initialize(); //
