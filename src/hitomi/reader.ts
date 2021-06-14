@@ -40,6 +40,11 @@ type GalleryInfo = {
 };
 
 const findSource = (picture: HTMLElement): string | undefined => {
+  const src = picture.getAttribute("src");
+  if (src) {
+    return src;
+  }
+
   const imgOrSource = picture.querySelector("[src], [srcset]");
   return imgOrSource?.getAttribute("src") ??
     imgOrSource?.getAttribute("srcset") ?? undefined;
