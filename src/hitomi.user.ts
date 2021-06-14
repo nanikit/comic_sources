@@ -2,15 +2,11 @@ import { hookListPage } from "./hitomi/list.ts";
 import { hookReaderPage } from "./hitomi/reader.ts";
 
 const initialize = async () => {
-  try {
-    const { pathname } = location;
-    if (pathname.startsWith("/reader")) {
-      await hookReaderPage();
-    } else {
-      await hookListPage();
-    }
-  } catch (error) {
-    console.error(error);
+  const { pathname } = location;
+  if (pathname.startsWith("/reader")) {
+    await hookReaderPage();
+  } else if (!/^\/(manga|doujinshi|cg)\//.test(pathname)) {
+    await hookListPage();
   }
 };
 
