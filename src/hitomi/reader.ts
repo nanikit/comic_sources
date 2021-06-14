@@ -1,4 +1,3 @@
-import { installPreloadMore } from "./reader/preload.ts";
 import { initializeWithDefault, types, utils } from "vim_comic_viewer";
 import { getText } from "../utils/util.ts";
 
@@ -86,7 +85,6 @@ const prependIdToTitle = () => {
 export const hookReaderPage = async () => {
   await utils.waitDomContent(document);
   prependIdToTitle();
-  // installPreloadMore();
   const hitomiSource: types.ViewerSource = {
     name: "manatoki",
     comicSource,
