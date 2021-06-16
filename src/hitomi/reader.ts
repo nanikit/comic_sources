@@ -1,5 +1,5 @@
 import { initializeWithDefault, types, utils } from "vim_comic_viewer";
-import { observeOnce } from "../utils/dom_util.ts";
+import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { getText } from "../utils/util.ts";
 
 const onReaderKey = (event: KeyboardEvent) => {
@@ -87,6 +87,15 @@ const prependIdToTitle = async (info: GalleryInfo) => {
   }
 };
 
+const overrideCss = `
+.vim_comic_viewer ::-webkit-scrollbar {
+  width: 12px !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+`;
+
 export const hookReaderPage = async () => {
   await utils.waitDomContent(document);
   const hitomiSource: types.ViewerSource = {
@@ -94,5 +103,6 @@ export const hookReaderPage = async () => {
     comicSource,
   };
   await initializeWithDefault(hitomiSource);
+  insertCss(overrideCss);
   window.addEventListener("keypress", onReaderKey);
 };

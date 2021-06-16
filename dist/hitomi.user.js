@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hitomi viewer
 // @description:en press i to open
-// @version        2106141814
+// @version        2106161602
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -283,6 +283,8 @@ define("main", (require, exports, module) => {
       });
     }
   };
+  const overrideCss =
+    `\n.vim_comic_viewer ::-webkit-scrollbar {\n  width: 12px !important;\n}\n::-webkit-scrollbar-thumb {\n  background: #888;\n}\n`;
   const hookReaderPage = async () => {
     await vim_comic_viewer.utils.waitDomContent(document);
     const hitomiSource = {
@@ -290,6 +292,7 @@ define("main", (require, exports, module) => {
       comicSource,
     };
     await vim_comic_viewer.initializeWithDefault(hitomiSource);
+    insertCss(overrideCss);
     window.addEventListener("keypress", onReaderKey);
   };
 
