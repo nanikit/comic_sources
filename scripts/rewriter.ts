@@ -103,5 +103,6 @@ export const main = async () => {
     pipeline(`${Deno.cwd()}\\src\\manatoki.user.ts`),
     pipeline(`${Deno.cwd()}\\src\\toon11.user.ts`),
     pipeline(`${Deno.cwd()}\\src\\hitomi.user.ts`),
+    pipeline(`${Deno.cwd()}\\src\\arca.user.ts`),
   ]);
 };
