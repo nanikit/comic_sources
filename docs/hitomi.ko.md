@@ -8,7 +8,7 @@
    ([크롬, 웨일용](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en),
    [파폭용](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/))
 
-2. [히토미 뷰어 스크립트](https://greasyfork.org/scripts/428229/code/hitomi_viewer.user.js)를
+2. [히토미 뷰어 스크립트](https://greasyfork.org/scripts/428229-/code/hitomi_viewer.user.js)를
    설치합니다. (확장을 설치해야 설치 페이지가 열립니다)
 
 3. 히토미 페이지를 새로고침하고 주소 표시줄 오른쪽에 빨간 숫자가 뜨는지 확인합니다.
