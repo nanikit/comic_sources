@@ -1,4 +1,4 @@
-import { initializeWithDefault, types, utils } from "vim_comic_viewer";
+import { initialize, types, utils } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { getText } from "../utils/util.ts";
 
@@ -98,11 +98,7 @@ const overrideCss = `
 
 export const hookReaderPage = async () => {
   await utils.waitDomContent(document);
-  const hitomiSource: types.ViewerSource = {
-    name: "manatoki",
-    comicSource,
-  };
-  await initializeWithDefault(hitomiSource);
+  await initialize({ source: comicSource, imageProps: { loading: "lazy" } });
   insertCss(overrideCss);
   window.addEventListener("keypress", onReaderKey);
 };

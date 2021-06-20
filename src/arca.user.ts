@@ -1,5 +1,5 @@
 /// <reference types="./tampermonkey.d.ts" />
-import { initializeWithDefault, types, utils } from "vim_comic_viewer";
+import { initialize, types, utils } from "vim_comic_viewer";
 
 const comicSource: types.ComicSource = async () => {
   const imgs = [
@@ -10,12 +10,7 @@ const comicSource: types.ComicSource = async () => {
 
 const main = async () => {
   await utils.waitDomContent(document);
-  const arcaSource: types.ViewerSource = {
-    name: "arca",
-    comicSource,
-  };
-
-  await initializeWithDefault(arcaSource);
+  await initialize({ source: comicSource });
 };
 
 main();

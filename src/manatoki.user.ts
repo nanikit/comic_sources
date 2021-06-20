@@ -1,4 +1,4 @@
-import { initializeWithDefault, types, utils } from "vim_comic_viewer";
+import { initialize, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
   window.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -52,27 +52,11 @@ const comicSource: types.ComicSource = async () => {
   return urls;
 };
 
-const getRoot = () => {
-  const div = document.createElement("div");
-  div.setAttribute(
-    "style",
-    "width: 0; height: 0; position: fixed; top: 0; bottom: 0;",
-  );
-  document.body.append(div);
-  return div;
-};
-
 const main = async () => {
   await utils.waitDomContent(document);
-  const manatokiSource: types.ViewerSource = {
-    name: "manatoki",
-    isApplicable,
-    comicSource,
-    getRoot,
-  };
 
   try {
-    await initializeWithDefault(manatokiSource);
+    await initialize({ source: comicSource });
   } catch (error) {
     console.log(error);
   }
@@ -99,7 +83,7 @@ main();
 // @resource       jszip            https://cdn.jsdelivr.net/npm/jszip@3.6.0/dist/jszip.min.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.2.0-canary.4/dist/index.cjs
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.2.0-canary.4/dist/index.cjs
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=939136
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.2.0/dist/index.cjs
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.2.0/dist/index.cjs
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=942458
 // ==/UserScript==

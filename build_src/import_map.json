@@ -5,6 +5,6 @@
     "react-dom": "https://esm.sh/react-dom@17.0.2",
     "@stitches/core": "https://esm.sh/@stitches/core@0.2.0-canary.2",
     "@stitches/react": "https://esm.sh/@stitches/react@0.2.0-canary.2",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/078cd162/src/mod.tsx"
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/90c631ab/src/mod.tsx"
   }
 }
