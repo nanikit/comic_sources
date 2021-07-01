@@ -3,11 +3,11 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        2107011305
+// @version        2107011313
 // @include        /^https?:\/\/11toon\d+\.com\/content/\d+/\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
-// @connect        11toon5.com
+// @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
 // @grant          window.close
@@ -65,8 +65,10 @@ define("main", (require, exports, module) => {
     const response = await fetch(`/iapi/t5?id=${match[1]}&parent=${match[2]}`);
     const json = await response.json();
     const { data: { SucData: { Image: { file, imagelist } } } } = json;
+    const base = new URL(file);
+    base.protocol = "https";
     const fileNames = JSON.parse(imagelist);
-    const urls = fileNames.map((x) => `${file}${x}`);
+    const urls = fileNames.map((x) => `${base}${x}`);
     return urls;
   };
   const main = async () => {
