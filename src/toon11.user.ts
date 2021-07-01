@@ -9,11 +9,11 @@ const registerEpisodeNavigator = () => {
     }
     switch (event.key) {
       case "h":
-        (document.querySelector(".left-episode") as HTMLButtonElement)
+        (document.querySelectorAll(".top-tit a")[0] as HTMLAnchorElement)
           ?.click?.();
         break;
       case "l":
-        (document.querySelector(".right-episode") as HTMLButtonElement)
+        (document.querySelectorAll(".top-tit a")[1] as HTMLAnchorElement)
           ?.click?.();
         break;
     }
@@ -22,13 +22,17 @@ const registerEpisodeNavigator = () => {
 
 const comicSource: types.ComicSource = async () => {
   registerEpisodeNavigator();
-  while (true) {
-    const urls = (unsafeWindow as any).img_list;
-    if (urls) {
-      return urls;
-    }
-    await utils.timeout(10);
+  const match = location.href.match(/content\/(\d+)\/(\d+)/);
+  if (!match) {
+    return [];
   }
+
+  const response = await fetch(`/iapi/t5?id=${match[1]}&parent=${match[2]}`);
+  const json = await response.json();
+  const { data: { SucData: { Image: { file, imagelist } } } } = json;
+  const fileNames = JSON.parse(imagelist) as string[];
+  const urls = fileNames.map((x) => `${file}${x}`);
+  return urls;
 };
 
 const main = async () => {
@@ -50,7 +54,7 @@ main();
 // @name:en        11toon viewer
 // @description:en press i to open
 // @version        ${date_version}
-// @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board.php\?bo_table=toons&wr_id=\d+/
+// @include        /^https?:\/\/11toon\d+\.com\/content/\d+/\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        11toon5.com
