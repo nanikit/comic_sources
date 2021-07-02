@@ -1,4 +1,5 @@
 import { getText } from "../src/utils/util.ts";
+import { expandGlob } from "../deps.ts";
 
 const getLibraryUrl = async () => {
   const html = await getText(
@@ -99,10 +100,9 @@ export const main = async () => {
     console.log(`Rewrited ${path}`);
   };
 
-  await Promise.all([
-    pipeline(`${Deno.cwd()}\\src\\manatoki.user.ts`),
-    pipeline(`${Deno.cwd()}\\src\\toon11.user.ts`),
-    pipeline(`${Deno.cwd()}\\src\\hitomi.user.ts`),
-    pipeline(`${Deno.cwd()}\\src\\arca.user.ts`),
-  ]);
+  const promises = [];
+  for await (const entry of expandGlob("./src/*.user.ts")) {
+    promises.push(pipeline(entry.path));
+  }
+  return Promise.all(promises);
 };
