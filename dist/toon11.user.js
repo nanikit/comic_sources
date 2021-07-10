@@ -3,8 +3,8 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        2107101533
-// @include        /^https?:\/\/11toon\d+\.com\/content/\d+/\d+/
+// @version        2107101540
+// @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @include        /^https?:\/\/www\.spotv24\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -49,28 +49,23 @@ define("main", (require, exports, module) => {
       }
       switch (event.key) {
         case "h":
-          document.querySelectorAll(".top-tit a")[0]?.click?.();
+          document.querySelector(".left-episode")?.click?.();
           break;
         case "l":
-          document.querySelectorAll(".top-tit a")[1]?.click?.();
+          document.querySelector(".right-episode")?.click?.();
           break;
       }
     });
   };
   const comicSource = async () => {
     registerEpisodeNavigator();
-    const match = location.href.match(/content\/(\d+)\/(\d+)/);
-    if (!match) {
-      return [];
+    while (true) {
+      const urls = unsafeWindow.img_list;
+      if (urls) {
+        return urls;
+      }
+      await vim_comic_viewer.utils.timeout(10);
     }
-    const response = await fetch(`/iapi/t5?id=${match[1]}&parent=${match[2]}`);
-    const json = await response.json();
-    const { data: { SucData: { Image: { file, imagelist } } } } = json;
-    const base = new URL(file);
-    base.protocol = "https";
-    const fileNames = JSON.parse(imagelist);
-    const urls = fileNames.map((x) => `${base}${x}`);
-    return urls;
   };
   const main = async () => {
     await vim_comic_viewer.utils.waitDomContent(document);
