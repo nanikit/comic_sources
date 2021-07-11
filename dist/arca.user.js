@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        arca viewer
 // @description:en press i to open
-// @version        2107111809
+// @version        2107111819
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -76,13 +76,17 @@ define("main", (require, exports, module) => {
     });
   };
   const getOriginalLink = (img) => {
-    const url = new URL(img.src);
-    url.search = "?type=orig";
-    return `${url}`;
+    const link = img.parentElement?.href;
+    if (link) {
+      return link;
+    }
+    return img.src;
   };
   const comicSource = async () => {
     const imgs = [
-      ...document.querySelectorAll(".article-content img"),
+      ...document.querySelectorAll(
+        ".article-content img, .article-content video",
+      ),
     ];
     return imgs.map(getOriginalLink);
   };

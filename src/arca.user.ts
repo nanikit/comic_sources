@@ -31,14 +31,19 @@ const registerGlobalKeyHandler = () => {
 };
 
 const getOriginalLink = (img: HTMLImageElement) => {
-  const url = new URL(img.src);
-  url.search = "?type=orig";
-  return `${url}`;
+  const link = (img.parentElement as HTMLAnchorElement)?.href;
+  if (link) {
+    return link;
+  }
+
+  return img.src;
 };
 
 const comicSource: types.ComicSource = async () => {
   const imgs = [
-    ...document.querySelectorAll(".article-content img"),
+    ...document.querySelectorAll(
+      ".article-content img, .article-content video",
+    ),
   ] as HTMLImageElement[];
   return imgs.map(getOriginalLink);
 };
