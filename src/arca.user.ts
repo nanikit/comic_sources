@@ -1,6 +1,22 @@
 /// <reference types="./tampermonkey.d.ts" />
 import { initialize, types, utils } from "vim_comic_viewer";
 
+const registerGlobalKeyHandler = () => {
+  window.addEventListener("keydown", (event: KeyboardEvent) => {
+    const { ctrlKey, shiftKey, altKey } = event;
+    if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
+      return;
+    }
+    switch (event.key) {
+      case "m":
+        document.querySelector("#comment > *")!.scrollIntoView({
+          block: "center",
+        });
+        break;
+    }
+  });
+};
+
 const comicSource: types.ComicSource = async () => {
   const imgs = [
     ...document.querySelectorAll(".article-content img"),
@@ -10,6 +26,7 @@ const comicSource: types.ComicSource = async () => {
 
 const main = async () => {
   await utils.waitDomContent(document);
+  registerGlobalKeyHandler();
   await initialize({ source: comicSource });
 };
 
