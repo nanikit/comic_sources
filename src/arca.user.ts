@@ -15,19 +15,36 @@ const registerGlobalKeyHandler = () => {
         break;
     }
   });
+  window.addEventListener("keydown", async (event: KeyboardEvent) => {
+    const { ctrlKey, shiftKey, altKey } = event;
+    if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
+      return;
+    }
+    switch (event.key) {
+      case "i":
+        await utils.waitDomContent(document);
+        const controller = await initialize({ source: comicSource });
+        controller.toggleFullscreen();
+        break;
+    }
+  }, { once: true });
+};
+
+const getOriginalLink = (img: HTMLImageElement) => {
+  const url = new URL(img.src);
+  url.search = "?type=orig";
+  return `${url}`;
 };
 
 const comicSource: types.ComicSource = async () => {
   const imgs = [
     ...document.querySelectorAll(".article-content img"),
   ] as HTMLImageElement[];
-  return imgs.map((x) => x.src);
+  return imgs.map(getOriginalLink);
 };
 
 const main = async () => {
-  await utils.waitDomContent(document);
   registerGlobalKeyHandler();
-  await initialize({ source: comicSource });
 };
 
 main();

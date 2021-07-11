@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        arca viewer
 // @description:en press i to open
-// @version        2107111749
+// @version        2107111809
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -55,19 +55,39 @@ define("main", (require, exports, module) => {
           break;
       }
     });
+    window.addEventListener("keydown", async (event) => {
+      const { ctrlKey, shiftKey, altKey } = event;
+      if (
+        ctrlKey || shiftKey || altKey || vim_comic_viewer.utils.isTyping(event)
+      ) {
+        return;
+      }
+      switch (event.key) {
+        case "i":
+          await vim_comic_viewer.utils.waitDomContent(document);
+          const controller = await vim_comic_viewer.initialize({
+            source: comicSource,
+          });
+          controller.toggleFullscreen();
+          break;
+      }
+    }, {
+      once: true,
+    });
+  };
+  const getOriginalLink = (img) => {
+    const url = new URL(img.src);
+    url.search = "?type=orig";
+    return `${url}`;
   };
   const comicSource = async () => {
     const imgs = [
       ...document.querySelectorAll(".article-content img"),
     ];
-    return imgs.map((x) => x.src);
+    return imgs.map(getOriginalLink);
   };
   const main = async () => {
-    await vim_comic_viewer.utils.waitDomContent(document);
     registerGlobalKeyHandler();
-    await vim_comic_viewer.initialize({
-      source: comicSource,
-    });
   };
   main(); //
 });
