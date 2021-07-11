@@ -8,9 +8,11 @@ const registerEpisodeNavigator = () => {
     }
     switch (event.key) {
       case "h":
+      case "ArrowLeft":
         (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
         break;
       case "l":
+      case "ArrowRight":
         (document.getElementById("goNextBtn") as HTMLAnchorElement)?.click?.();
         break;
       case "m":
@@ -85,5 +87,5 @@ main();
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js
 // @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.2.0/dist/index.cjs
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.2.0/dist/index.cjs
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=949412
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=949418
 // ==/UserScript==
