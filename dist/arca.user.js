@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        arca viewer
 // @description:en press i to open
-// @version        2107111819
+// @version        2107120339
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -39,8 +39,18 @@ define("main", (require, exports, module) => {
 
   var vim_comic_viewer = require("vim_comic_viewer");
 
+  const searchImages = () => {
+    return [
+      ...document.querySelectorAll(
+        ".article-content img, .article-content video",
+      ),
+    ];
+  };
+  const getOriginalLink = (imgOrVideo) => {
+    return imgOrVideo.parentElement?.href ?? imgOrVideo.src;
+  };
   const registerGlobalKeyHandler = () => {
-    window.addEventListener("keydown", (event) => {
+    window.addEventListener("keydown", async (event) => {
       const { ctrlKey, shiftKey, altKey } = event;
       if (
         ctrlKey || shiftKey || altKey || vim_comic_viewer.utils.isTyping(event)
@@ -53,7 +63,20 @@ define("main", (require, exports, module) => {
             block: "center",
           });
           break;
+        case ";":
+          event.stopImmediatePropagation();
+          const binary = await vim_comic_viewer.download(
+            searchImages().map(getOriginalLink),
+          );
+          await vim_comic_viewer.utils.save(
+            new Blob([
+              binary,
+            ]),
+          );
+          break;
       }
+    }, {
+      capture: true,
     });
     window.addEventListener("keydown", async (event) => {
       const { ctrlKey, shiftKey, altKey } = event;
@@ -75,20 +98,15 @@ define("main", (require, exports, module) => {
       once: true,
     });
   };
-  const getOriginalLink = (img) => {
-    const link = img.parentElement?.href;
-    if (link) {
-      return link;
+  const getOriginalIfGif = (imgOrVideo) => {
+    const link = imgOrVideo.parentElement?.href;
+    if (!link || !new URL(link).pathname.endsWith(".gif")) {
+      return imgOrVideo.src;
     }
-    return img.src;
+    return link;
   };
   const comicSource = async () => {
-    const imgs = [
-      ...document.querySelectorAll(
-        ".article-content img, .article-content video",
-      ),
-    ];
-    return imgs.map(getOriginalLink);
+    return searchImages().map(getOriginalIfGif);
   };
   const main = async () => {
     registerGlobalKeyHandler();

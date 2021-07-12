@@ -1,8 +1,21 @@
 /// <reference types="./tampermonkey.d.ts" />
-import { initialize, types, utils } from "vim_comic_viewer";
+import { download, initialize, types, utils } from "vim_comic_viewer";
+
+const searchImages = () => {
+  return [
+    ...document.querySelectorAll(
+      ".article-content img, .article-content video",
+    ),
+  ] as (HTMLImageElement | HTMLVideoElement)[];
+};
+
+const getOriginalLink = (imgOrVideo: HTMLImageElement | HTMLVideoElement) => {
+  return (imgOrVideo.parentElement as HTMLAnchorElement)?.href ??
+    imgOrVideo.src;
+};
 
 const registerGlobalKeyHandler = () => {
-  window.addEventListener("keydown", (event: KeyboardEvent) => {
+  window.addEventListener("keydown", async (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
       return;
@@ -13,8 +26,13 @@ const registerGlobalKeyHandler = () => {
           block: "center",
         });
         break;
+      case ";":
+        event.stopImmediatePropagation();
+        const binary = await download(searchImages().map(getOriginalLink));
+        await utils.save(new Blob([binary]));
+        break;
     }
-  });
+  }, { capture: true });
   window.addEventListener("keydown", async (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
@@ -30,22 +48,17 @@ const registerGlobalKeyHandler = () => {
   }, { once: true });
 };
 
-const getOriginalLink = (img: HTMLImageElement) => {
-  const link = (img.parentElement as HTMLAnchorElement)?.href;
-  if (link) {
-    return link;
+const getOriginalIfGif = (imgOrVideo: HTMLImageElement | HTMLVideoElement) => {
+  const link = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
+  if (!link || !new URL(link).pathname.endsWith(".gif")) {
+    return imgOrVideo.src;
   }
 
-  return img.src;
+  return link;
 };
 
 const comicSource: types.ComicSource = async () => {
-  const imgs = [
-    ...document.querySelectorAll(
-      ".article-content img, .article-content video",
-    ),
-  ] as HTMLImageElement[];
-  return imgs.map(getOriginalLink);
+  return searchImages().map(getOriginalIfGif);
 };
 
 const main = async () => {
