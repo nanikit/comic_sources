@@ -28,8 +28,6 @@
 - <kbd>i</kbd>: 뷰어 열기/닫기
 - <kbd>j</kbd>, <kbd>↓</kbd>: 다음 페이지
 - <kbd>k</kbd>, <kbd>↑</kbd>: 이전 페이지
-- <kbd>l</kbd>, <kbd>→</kbd>: 다음 화
-- <kbd>h</kbd>, <kbd>←</kbd>: 이전 화
 - <kbd>o</kbd>: 탭 닫기
 - <kbd>;</kbd>: 다운로드
 - <kbd>'</kbd>: 이미지 새로고침
