@@ -77,7 +77,7 @@ main();
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
-// @connect        *.namu.la
+// @connect        namu.la
 // @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
