@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        arca viewer
 // @description:en press i to open
-// @version        2107221255
+// @version        2108091442
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -95,6 +95,7 @@ define("main", (require, exports, module) => {
           break;
       }
     }, {
+      capture: true,
       once: true,
     });
   };

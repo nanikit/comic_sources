@@ -45,7 +45,7 @@ const registerGlobalKeyHandler = () => {
         controller.toggleFullscreen();
         break;
     }
-  }, { once: true });
+  }, { capture: true, once: true });
 };
 
 const getOriginalIfGif = (imgOrVideo: HTMLImageElement | HTMLVideoElement) => {
