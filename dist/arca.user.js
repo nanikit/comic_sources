@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        arca viewer
 // @description:en press i to open
-// @version        2108091442
+// @version        2108251433
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -50,6 +50,7 @@ define("main", (require, exports, module) => {
     return imgOrVideo.parentElement?.href ?? imgOrVideo.src;
   };
   const registerGlobalKeyHandler = () => {
+    let isViewerInitialized = false;
     window.addEventListener("keydown", async (event) => {
       const { ctrlKey, shiftKey, altKey } = event;
       if (
@@ -74,19 +75,11 @@ define("main", (require, exports, module) => {
             ]),
           );
           break;
-      }
-    }, {
-      capture: true,
-    });
-    window.addEventListener("keydown", async (event) => {
-      const { ctrlKey, shiftKey, altKey } = event;
-      if (
-        ctrlKey || shiftKey || altKey || vim_comic_viewer.utils.isTyping(event)
-      ) {
-        return;
-      }
-      switch (event.key) {
         case "i":
+          if (isViewerInitialized) {
+            break;
+          }
+          isViewerInitialized = true;
           await vim_comic_viewer.utils.waitDomContent(document);
           const controller = await vim_comic_viewer.initialize({
             source: comicSource,
@@ -96,7 +89,6 @@ define("main", (require, exports, module) => {
       }
     }, {
       capture: true,
-      once: true,
     });
   };
   const getOriginalIfGif = (imgOrVideo) => {

@@ -15,6 +15,8 @@ const getOriginalLink = (imgOrVideo: HTMLImageElement | HTMLVideoElement) => {
 };
 
 const registerGlobalKeyHandler = () => {
+  let isViewerInitialized = false;
+
   window.addEventListener("keydown", async (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
@@ -31,21 +33,18 @@ const registerGlobalKeyHandler = () => {
         const binary = await download(searchImages().map(getOriginalLink));
         await utils.save(new Blob([binary]));
         break;
-    }
-  }, { capture: true });
-  window.addEventListener("keydown", async (event: KeyboardEvent) => {
-    const { ctrlKey, shiftKey, altKey } = event;
-    if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
-      return;
-    }
-    switch (event.key) {
       case "i":
+        if (isViewerInitialized) {
+          break;
+        }
+        isViewerInitialized = true;
+
         await utils.waitDomContent(document);
         const controller = await initialize({ source: comicSource });
         controller.toggleFullscreen();
         break;
     }
-  }, { capture: true, once: true });
+  }, { capture: true });
 };
 
 const getOriginalIfGif = (imgOrVideo: HTMLImageElement | HTMLVideoElement) => {
