@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        arca viewer
 // @description:en press i to open
-// @version        2108251433
+// @version        2109061708
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -49,7 +49,17 @@ define("main", (require, exports, module) => {
   const getOriginalLink = (imgOrVideo) => {
     return imgOrVideo.parentElement?.href ?? imgOrVideo.src;
   };
-  const registerGlobalKeyHandler = () => {
+  const getOriginalIfGif = (imgOrVideo) => {
+    const link = imgOrVideo.parentElement?.href;
+    if (!link || !new URL(link).pathname.endsWith(".gif")) {
+      return imgOrVideo.src;
+    }
+    return link;
+  };
+  const comicSource = async () => {
+    return searchImages().map(getOriginalIfGif);
+  };
+  const registerGlobalKeyHandler = async () => {
     let isViewerInitialized = false;
     window.addEventListener("keydown", async (event) => {
       const { ctrlKey, shiftKey, altKey } = event;
@@ -91,18 +101,8 @@ define("main", (require, exports, module) => {
       capture: true,
     });
   };
-  const getOriginalIfGif = (imgOrVideo) => {
-    const link = imgOrVideo.parentElement?.href;
-    if (!link || !new URL(link).pathname.endsWith(".gif")) {
-      return imgOrVideo.src;
-    }
-    return link;
-  };
-  const comicSource = async () => {
-    return searchImages().map(getOriginalIfGif);
-  };
   const main = async () => {
-    registerGlobalKeyHandler();
+    await registerGlobalKeyHandler();
   };
   main(); //
 });
