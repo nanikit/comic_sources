@@ -54,6 +54,7 @@ const findSource = (picture: HTMLElement): string | undefined => {
 const comicSource: types.ComicSource = async () => {
   const id = getId()!;
   const [commonJs, readerJs] = await Promise.all([
+    getText("https://ltn.hitomi.la/gg.js"),
     getText("https://ltn.hitomi.la/common.js"),
     getText("https://ltn.hitomi.la/reader.js"),
   ]);
