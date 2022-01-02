@@ -1,11 +1,7 @@
 export * from "./util.ts";
+import { utils } from "vim_comic_viewer";
 
-export const waitDomContent = (document: HTMLDocument) =>
-  document?.readyState === "loading"
-    ? new Promise((r) =>
-      document.addEventListener("readystatechange", r, { once: true })
-    )
-    : true;
+export const waitDomContent = utils.waitDomContent;
 
 export const insertCss = (css: string) => {
   const style = document.createElement("style");
