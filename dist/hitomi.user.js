@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hitomi viewer
 // @description:en press i to open
-// @version        2107111734
+// @version        2201021643
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -18,9 +18,9 @@
 // @resource       fflate           https://cdn.jsdelivr.net/npm/fflate@0.7.1/lib/browser.cjs
 // @resource       react            https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js
-// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.2.0/dist/index.cjs
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@0.2.0/dist/index.cjs
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=949418
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1004531
+// @resource       @stitches/core   https://cdn.jsdelivr.net/npm/@stitches/core@0.2.0/dist/index.cjs
 // ==/UserScript==
 "use strict";
 
@@ -47,14 +47,7 @@ define("main", (require, exports, module) => {
     return response.text();
   };
 
-  const waitDomContent = (document) =>
-    document?.readyState === "loading"
-      ? new Promise((r) =>
-        document.addEventListener("readystatechange", r, {
-          once: true,
-        })
-      )
-      : true;
+  const waitDomContent = vim_comic_viewer.utils.waitDomContent;
   const insertCss = (css) => {
     const style = document.createElement("style");
     style.innerHTML = css;
@@ -71,7 +64,10 @@ define("main", (require, exports, module) => {
     });
   };
 
-  const defaultFocusCss = `\n&& {\n  background: aliceblue;\n}`;
+  const defaultFocusCss = `
+&& {
+  background: aliceblue;
+}`;
   const selectItem = (div) => {
     div.classList.add("key-nav-focus");
     const { left, top, width, height } = div.getBoundingClientRect();
@@ -103,7 +99,7 @@ define("main", (require, exports, module) => {
       next = Math.max(0, Math.min(next, items.length - 1));
       selectItem(items[next]);
     };
-    const forward = (event) => {
+    const forward1 = (event) => {
       if (onKeyDown) {
         const focus = getFocusedItem();
         onKeyDown(event, focus);
@@ -118,7 +114,7 @@ define("main", (require, exports, module) => {
           navigatePage(+1);
           break;
         default: {
-          forward(event);
+          forward1(event);
           break;
         }
       }
@@ -145,7 +141,7 @@ define("main", (require, exports, module) => {
           if (navigatePage) {
             handlePageKeypress(event);
           } else {
-            forward(event);
+            forward1(event);
           }
           break;
       }
@@ -260,12 +256,18 @@ define("main", (require, exports, module) => {
   const comicSource = async () => {
     const id = getId();
     const [commonJs, readerJs] = await Promise.all([
+      getText("https://ltn.hitomi.la/gg.js"),
       getText("https://ltn.hitomi.la/common.js"),
       getText("https://ltn.hitomi.la/reader.js"),
     ]);
-    const { makeImageElement, getInfoUrl } = Function(
-      `${commonJs}; ${readerJs};\n    return {\n      makeImageElement: make_image_element,\n      getInfoUrl: (id) => {\n        return '//'+domain+'/galleries/'+id+'.js'\n      },\n    };\n  `,
-    )();
+    const { makeImageElement, getInfoUrl } = Function(`${commonJs}; ${readerJs};
+    return {
+      makeImageElement: make_image_element,
+      getInfoUrl: (id) => {
+        return '//'+domain+'/galleries/'+id+'.js'
+      },
+    };
+  `)();
     const infoJs = await getText(getInfoUrl(id));
     const info = Function(`${infoJs}; return galleryinfo;`)();
     prependIdToTitle(info);
@@ -283,8 +285,14 @@ define("main", (require, exports, module) => {
       });
     }
   };
-  const overrideCss =
-    `\n.vim_comic_viewer ::-webkit-scrollbar {\n  width: 12px !important;\n}\n::-webkit-scrollbar-thumb {\n  background: #888;\n}\n`;
+  const overrideCss = `
+.vim_comic_viewer ::-webkit-scrollbar {
+  width: 12px !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+`;
   const hookReaderPage = async () => {
     await vim_comic_viewer.utils.waitDomContent(document);
     await vim_comic_viewer.initialize({
@@ -313,9 +321,9 @@ for (
     "fflate",
     "react",
     "react-dom",
-    "@stitches/core",
     "@stitches/react",
     "vim_comic_viewer",
+    "@stitches/core",
   ]
 ) {
   const body = GM_getResourceText(name);
