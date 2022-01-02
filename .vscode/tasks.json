@@ -4,14 +4,14 @@
     {
       "label": "denopack",
       "type": "shell",
-      "command": "deno run --unstable --allow-all https://raw.githubusercontent.com/jeiea/denopack/patch/cli.ts --config build_src/denopack_config.ts --dir dist --input ${file}",
+      "command": "deno run --unstable --allow-all https://raw.githubusercontent.com/jeiea/denopack/deno-1.16.4/cli.ts --config build_src/denopack_config.ts --dir dist --input ${file}",
       "group": "build",
       "problemMatcher": []
     },
     {
       "label": "denopack watch",
       "type": "shell",
-      "command": "deno run --unstable --allow-all https://raw.githubusercontent.com/jeiea/denopack/patch/cli.ts --config build_src/denopack_config.ts --dir dist --input ${file} --watch src",
+      "command": "deno run --unstable --allow-all https://raw.githubusercontent.com/jeiea/denopack/deno-1.16.4/cli.ts --config build_src/denopack_config.ts --dir dist --input ${file} --watch src",
       "group": {
         "kind": "build",
         "isDefault": true

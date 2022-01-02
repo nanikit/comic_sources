@@ -73,7 +73,7 @@ const build = async (path: string): Promise<void> => {
     "run",
     "--unstable",
     "--allow-all",
-    "https://raw.githubusercontent.com/jeiea/denopack/patch/cli.ts",
+    "https://raw.githubusercontent.com/jeiea/denopack/deno-1.16.4/cli.ts",
     "--config",
     `build_src/denopack_config.ts`,
     "--dir",
