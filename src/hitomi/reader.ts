@@ -1,11 +1,13 @@
+/// <reference types="../tampermonkey.d.ts" />
+
 import { initialize, types, utils } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
-import { getText } from "../utils/util.ts";
+import { timeout } from "../utils/util.ts";
 
 const onReaderKey = (event: KeyboardEvent) => {
   switch (event.key) {
     case "o":
-      window.close();
+      close();
       break;
   }
 };
@@ -108,5 +110,5 @@ export const hookReaderPage = async () => {
   await utils.waitDomContent(document);
   await initialize({ source: comicSource, imageProps: { loading: "lazy" } });
   insertCss(overrideCss);
-  window.addEventListener("keypress", onReaderKey);
+  addEventListener("keypress", onReaderKey);
 };

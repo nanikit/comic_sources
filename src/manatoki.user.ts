@@ -1,7 +1,7 @@
 import { initialize, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
-  window.addEventListener("keydown", (event: KeyboardEvent) => {
+  addEventListener("keydown", (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
       return;
@@ -25,10 +25,6 @@ const registerEpisodeNavigator = () => {
   });
 };
 
-const isApplicable = () => {
-  return !!location.href.match(/https:\/\/manatoki\d+\.net\/comic\/\d+/);
-};
-
 const getUrl = (image: HTMLImageElement): string[] => {
   if (image.offsetParent === null) {
     return [];
@@ -42,13 +38,10 @@ const getUrls = (): string[] => {
     "div.view-padding img",
   ) as unknown) as Iterable<HTMLImageElement>;
   const urls = [...imgs].flatMap(getUrl);
-  if (urls.length === 0) {
-    debugger;
-  }
   return urls as string[];
 };
 
-const comicSource: types.ComicSource = async () => {
+const comicSource: types.ComicSource = () => {
   registerEpisodeNavigator();
   const urls = getUrls();
   return urls;

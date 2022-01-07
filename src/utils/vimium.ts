@@ -58,10 +58,10 @@ export const hookListPage = async (configuration: {
   const handlePageKeypress = (event: KeyboardEvent) => {
     switch (event.key) {
       case "h":
-        navigatePage!!(-1);
+        navigatePage!(-1);
         break;
       case "l":
-        navigatePage!!(+1);
+        navigatePage!(+1);
         break;
       default: {
         forward(event);
@@ -103,7 +103,7 @@ export const hookListPage = async (configuration: {
     insertCss(content.replace(/&/g, ".key-nav-focus"));
   };
 
-  window.addEventListener("keypress", handleKeyPress);
+  addEventListener("keypress", handleKeyPress);
   await domContentLoaded;
   insertFocusCss();
 };

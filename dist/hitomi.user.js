@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hitomi viewer
 // @description:en press i to open
-// @version        2201061846
+// @version        2201072016
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -41,10 +41,6 @@ define("main", (require, exports, module) => {
 
   const timeout = (millisecond) =>
     new Promise((resolve) => setTimeout(resolve, millisecond));
-  const getText = async (url) => {
-    const response = await fetch(url);
-    return response.text();
-  };
 
   const waitDomContent = vim_comic_viewer.utils.waitDomContent;
   const insertCss = (css) => {
@@ -53,7 +49,7 @@ define("main", (require, exports, module) => {
     document.head.append(style);
   };
   const domContentLoaded = waitDomContent(window.document);
-  const observeOnce = async (element, options) => {
+  const observeOnce = (element, options) => {
     return new Promise((resolve) => {
       const observer = new MutationObserver((...args) => {
         observer.disconnect();
@@ -149,7 +145,7 @@ define("main", (require, exports, module) => {
       const content = configuration.focusCss || defaultFocusCss;
       insertCss(content.replace(/&/g, ".key-nav-focus"));
     };
-    window.addEventListener("keypress", handleKeyPress);
+    addEventListener("keypress", handleKeyPress);
     await domContentLoaded;
     insertFocusCss();
   };
@@ -195,11 +191,11 @@ define("main", (require, exports, module) => {
     new Promise((resolve) => {
       const listener = () => {
         if (document.body.scrollHeight / 2 < window.scrollY) {
-          window.removeEventListener("scroll", listener);
+          removeEventListener("scroll", listener);
           resolve();
         }
       };
-      window.addEventListener("scroll", listener);
+      addEventListener("scroll", listener);
     });
   const triggerPagePreload = async () => {
     const url = getNextPageUrl();
@@ -236,7 +232,7 @@ define("main", (require, exports, module) => {
   const onReaderKey = (event) => {
     switch (event.key) {
       case "o":
-        window.close();
+        close();
         break;
     }
   };
@@ -252,24 +248,26 @@ define("main", (require, exports, module) => {
     return (imgOrSource?.getAttribute("src") ??
       imgOrSource?.getAttribute("srcset")) ?? undefined;
   };
+  const waitUnsafeObject = async (name) => {
+    while (true) {
+      const target = unsafeWindow[name];
+      if (target) {
+        if (typeof target == "function") {
+          return target.bind(unsafeWindow);
+        }
+        return target;
+      }
+      await timeout(100);
+    }
+  };
   const comicSource = async () => {
     const id = getId();
-    const [commonJs, readerJs] = await Promise.all([
-      getText("https://ltn.hitomi.la/gg.js"),
-      getText("https://ltn.hitomi.la/common.js"),
-      getText("https://ltn.hitomi.la/reader.js"),
-    ]);
-    const { makeImageElement, getInfoUrl } = Function(`${commonJs}; ${readerJs};
-    return {
-      makeImageElement: make_image_element,
-      getInfoUrl: (id) => {
-        return '//'+domain+'/galleries/'+id+'.js'
-      },
-    };
-  `)();
-    const infoJs = await getText(getInfoUrl(id));
-    const info = Function(`${infoJs}; return galleryinfo;`)();
+    const info = await waitUnsafeObject("galleryinfo");
     prependIdToTitle(info);
+    const gg = await waitUnsafeObject("gg");
+    const guardless = `${gg.m}`.slice(14, -2).replace(/return 4;/g, "");
+    unsafeWindow.gg.m = Function("g", guardless);
+    const makeImageElement = await waitUnsafeObject("make_image_element");
     const urls = info.files.map((file) =>
       findSource(makeImageElement(id, file))
     );
@@ -301,7 +299,7 @@ define("main", (require, exports, module) => {
       },
     });
     insertCss(overrideCss);
-    window.addEventListener("keypress", onReaderKey);
+    addEventListener("keypress", onReaderKey);
   };
 
   const initialize = async () => {

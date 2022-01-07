@@ -11,7 +11,7 @@ export const insertCss = (css: string) => {
 
 export const domContentLoaded = waitDomContent(window.document);
 
-export const observeOnce = async (
+export const observeOnce = (
   element: Node,
   options: MutationObserverInit,
 ) => {

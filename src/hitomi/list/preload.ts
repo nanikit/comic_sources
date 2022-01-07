@@ -44,11 +44,11 @@ const waitPageOverHalf = () =>
   new Promise<void>((resolve) => {
     const listener = () => {
       if (document.body.scrollHeight / 2 < window.scrollY) {
-        window.removeEventListener("scroll", listener);
+        removeEventListener("scroll", listener);
         resolve();
       }
     };
-    window.addEventListener("scroll", listener);
+    addEventListener("scroll", listener);
   });
 
 export const triggerPagePreload = async () => {

@@ -2,7 +2,7 @@
 import { initialize, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
-  window.addEventListener("keydown", (event: KeyboardEvent) => {
+  addEventListener("keydown", (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
       return;
@@ -23,7 +23,7 @@ const registerEpisodeNavigator = () => {
 const comicSource: types.ComicSource = async () => {
   registerEpisodeNavigator();
   while (true) {
-    const urls = (unsafeWindow as any).img_list;
+    const urls = (unsafeWindow as unknown as { img_list: string[] }).img_list;
     if (urls) {
       return urls;
     }

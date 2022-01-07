@@ -1,5 +1,6 @@
 {
   "deno.enable": true,
+  "deno.lint": true,
   "deno.unstable": true,
   "deno.importMap": "./build_src/import_map.json",
   "typescript.validate.enable": false,

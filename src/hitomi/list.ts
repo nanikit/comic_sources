@@ -9,8 +9,10 @@ const navigatePage = (offset: number) => {
   location.search = search.toString();
 };
 
-const getItems =
-  () => [...(document.querySelectorAll(".gallery-content > div") as any)];
+const getItems = () =>
+  [
+    ...(document.querySelectorAll(".gallery-content > div")),
+  ] as HTMLDivElement[];
 
 const enter = (element: HTMLElement) => {
   const anchor = element.querySelector?.("a");
