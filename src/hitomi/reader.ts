@@ -51,32 +51,39 @@ const findSource = (picture: HTMLElement): string | undefined => {
     imgOrSource?.getAttribute("srcset") ?? undefined;
 };
 
+const waitUnsafeObject = async (name: string) => {
+  while (true) {
+    const target = (unsafeWindow as unknown as Record<string, unknown>)[name];
+    if (target) {
+      if (typeof target == "function") {
+        return target.bind(unsafeWindow);
+      }
+      return target;
+    }
+    await timeout(100);
+  }
+};
+
 const comicSource: types.ComicSource = async () => {
   const id = getId()!;
-  const [commonJs, readerJs] = await Promise.all([
-    getText("https://ltn.hitomi.la/gg.js"),
-    getText("https://ltn.hitomi.la/common.js"),
-    getText("https://ltn.hitomi.la/reader.js"),
-  ]);
-
-  const { makeImageElement, getInfoUrl } = Function(
-    `${commonJs}; ${readerJs};
-    return {
-      makeImageElement: make_image_element,
-      getInfoUrl: (id) => {
-        return '//'+domain+'/galleries/'+id+'.js'
-      },
-    };
-  `,
-  )() as {
-    makeImageElement: (id: string, file: ImageInfo) => HTMLElement;
-    getInfoUrl: (id: string) => string;
-  };
-  const infoJs = await getText(getInfoUrl(id));
-  const info = Function(`${infoJs}; return galleryinfo;`)() as GalleryInfo;
+  const info = await waitUnsafeObject("galleryinfo");
   prependIdToTitle(info);
 
-  const urls = info.files.map((file) => findSource(makeImageElement(id, file)));
+  const gg = await waitUnsafeObject("gg");
+
+  const guardless = `${gg.m}`.slice(14, -2).replace(/return 4;/g, "");
+  (unsafeWindow as unknown as { gg: { m: unknown } }).gg.m = Function(
+    "g",
+    guardless,
+  );
+
+  const makeImageElement = await waitUnsafeObject("make_image_element") as (
+    id: string,
+    file: unknown,
+  ) => HTMLElement;
+  const urls = info.files.map((file: ImageInfo) =>
+    findSource(makeImageElement(id, file))
+  );
   return urls as string[];
 };
 
