@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        hitomi viewer
 // @description:en press i to open
-// @version        2201261314
+// @version        2202060238
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -205,9 +205,10 @@ define("main", (require, exports, module) => {
   };
 
   const navigatePage = (offset) => {
-    const hash = location.hash || "#1";
-    const page = Number(hash.replace("#", ""));
-    location.hash = `#${page + offset}`;
+    const search = new URLSearchParams(location.search);
+    const page = search.get("page") || "1";
+    search.set("page", Math.max(1, Number(page) + offset).toString());
+    location.search = search.toString();
   };
   const getItems = () => [
     ...document.querySelectorAll(".gallery-content > div"),
