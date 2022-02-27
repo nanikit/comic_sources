@@ -15,8 +15,10 @@ initialize();
 //
 // ==UserScript==
 // @name           히토미 뷰어
-// @description    i,j,k 키를 눌러보세요
+// @name:ko        히토미 뷰어
 // @name:en        hitomi viewer
+// @description    i,j,k 키를 눌러보세요
+// @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
 // @version        ${date_version}
 // @match          https://hitomi.la/*

@@ -62,8 +62,10 @@ main();
 //
 // ==UserScript==
 // @name           마나토끼 뷰어
-// @description    i,j,k 키를 눌러보세요
+// @name:ko        마나토끼 뷰어
 // @name:en        manatoki viewer
+// @description    i,j,k 키를 눌러보세요
+// @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
 // @version        ${date_version}
 // @include        /^https:\/\/manatoki\d+\.net\/comic\/\d+/

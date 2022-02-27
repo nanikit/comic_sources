@@ -71,8 +71,10 @@ main();
 //
 // ==UserScript==
 // @name           아카 뷰어
-// @description    i,j,k 키를 눌러보세요
+// @name:ko        아카 뷰어
 // @name:en        arca viewer
+// @description    i,j,k 키를 눌러보세요
+// @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
 // @version        ${date_version}
 // @match          https://arca.live/b/*/*
