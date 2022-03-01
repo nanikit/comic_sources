@@ -3,6 +3,8 @@ import {
   denoFmt,
   Plugin,
 } from "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/main/build_src/utils.ts";
+import importMap from "./import_map.json" assert { type: "json" };
+import tsconfig from "./deno.tsconfig.json" assert { type: "json" };
 
 const implantRequireJs = (dependencies: string[], body: string) => {
   return `'use strict';
@@ -81,8 +83,4 @@ const bannerPlugin: Plugin = {
   },
 };
 
-export default createConfig({
-  importMap: new URL("import_map.json", import.meta.url),
-  tsconfig: new URL("deno.tsconfig.json", import.meta.url),
-  plugins: [bannerPlugin],
-});
+export default createConfig({ importMap, tsconfig, plugins: [bannerPlugin] });
