@@ -15,7 +15,7 @@ if (typeof define !== 'function') {
 
 requirejs.config({
   config: {
-    vim_comic_viewer: { GM_xmlhttpRequest: window['GM_xmlhttpRequest'] },
+    vim_comic_viewer: { GM_xmlhttpRequest },
   },
   enforceDefine: true,
 });
