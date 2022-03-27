@@ -2,7 +2,7 @@ import {
   createConfig,
   denoFmt,
   Plugin,
-} from "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/main/build_src/utils.ts";
+} from "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/39e75df2905fc686cdba2da48f1b96eb2398fe9f/build_src/utils.ts";
 import importMap from "./import_map.json" assert { type: "json" };
 import tsconfig from "./deno.tsconfig.json" assert { type: "json" };
 
@@ -35,9 +35,9 @@ require(['main'], () => {}, console.error);
 };
 
 const replaceVersion = (header: string): string => {
-  const dateVersion = new Date().toISOString().replace(/\D+/g, "").substr(
+  const dateVersion = new Date().toISOString().replace(/\D+/g, "").slice(
     2,
-    10,
+    12,
   );
   return header.replace("${date_version}", dateVersion);
 };
