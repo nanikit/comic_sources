@@ -64,6 +64,9 @@ const registerGlobalKeyHandler = () => {
 
 const main = () => {
   registerGlobalKeyHandler();
+  utils.insertCss(`.vim_comic_viewer > :first-child {
+    background: var(--color-bg-body);
+  }`);
 };
 
 main();
