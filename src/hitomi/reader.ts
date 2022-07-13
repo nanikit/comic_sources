@@ -1,5 +1,3 @@
-/// <reference types="../tampermonkey.d.ts" />
-
 import { initialize, types, utils } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { timeout } from "../utils/util.ts";

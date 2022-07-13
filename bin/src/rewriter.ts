@@ -1,5 +1,5 @@
-import { getText } from "../src/utils/util.ts";
-import { expandGlob } from "../deps.ts";
+import { getText } from "../../src/utils/util.ts";
+import { expandGlob } from "./deps.ts";
 
 const getLibraryUrl = async () => {
   const html = await getText(
@@ -68,26 +68,25 @@ const replaceFile = async (
 };
 
 const build = async (path: string): Promise<void> => {
+  const buildScript = new URL(`${import.meta.url}/../../build.ts`);
   const cmd = [
     Deno.execPath(),
     "run",
     "--unstable",
     "--allow-all",
-    "https://raw.githubusercontent.com/jeiea/denopack/deno-1.20.3/cli.ts",
     "--config",
-    `build_src/denopack_config.ts`,
-    "--dir",
-    `${Deno.cwd()}\\dist`,
-    "--input",
+    `deno-react.json`,
+    `${buildScript}`,
     path,
   ];
   const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
   const status = await process.status();
   if (!status.success) {
-    const s = await process.output();
-    const e = await process.stderrOutput();
+    const stdout = await process.output();
+    const stderr = await process.stderrOutput();
     const decoder = new TextDecoder("utf-8");
-    throw new Error(`${decoder.decode(s)} ${decoder.decode(e)}`);
+    const output = `${decoder.decode(stdout)} ${decoder.decode(stderr)}`;
+    console.log(output);
   }
 };
 

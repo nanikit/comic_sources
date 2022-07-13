@@ -2,12 +2,12 @@
   "deno.enable": true,
   "deno.lint": true,
   "deno.unstable": true,
-  "deno.importMap": "./build_src/import_map.json",
+  "deno.importMap": "./import_map.json",
+  "deno.config": "./deno-react.json",
   "typescript.validate.enable": false,
   "javascript.validate.enable": false,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
-  "deno.config": "./build_src/deno.tsconfig.json",
   "editor.defaultFormatter": "denoland.vscode-deno"
 }

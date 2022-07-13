@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ES2021",
+      "dom",
+      "DOM.Iterable",
+      "deno.ns",
+      "deno.unstable"
+    ]
+  },
+  "include": [
+    "./src"
+  ]
+}
