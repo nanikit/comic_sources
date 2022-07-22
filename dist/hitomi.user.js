@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2207221649
+// @version        2207221650
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -203,8 +203,10 @@ var triggerPagePreload = async () => {
 
 // src/hitomi/list.ts
 var navigatePage = (offset) => {
-  const page = Number(location.hash || 1);
-  location.hash = `${Math.max(1, page + offset)}`;
+  const search = new URLSearchParams(location.search);
+  const page = search.get("page") || "1";
+  search.set("page", Math.max(1, Number(page) + offset).toString());
+  location.search = search.toString();
 };
 var getItems = () => [
   ...document.querySelectorAll(".gallery-content > div")

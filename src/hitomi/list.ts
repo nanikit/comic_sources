@@ -2,8 +2,10 @@ import { hookListPage as hookPage } from "../utils/vimium.ts";
 import { triggerPagePreload } from "./list/preload.ts";
 
 const navigatePage = (offset: number) => {
-  const page = Number(location.hash || 1);
-  location.hash = `${Math.max(1, page + offset)}`;
+  const search = new URLSearchParams(location.search);
+  const page = search.get("page") || "1";
+  search.set("page", Math.max(1, Number(page) + offset).toString());
+  location.search = search.toString();
 };
 
 const getItems = () =>
