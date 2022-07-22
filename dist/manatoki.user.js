@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2207221631
+// @version        2207221649
 // @match          https://*.net/comic/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -15,13 +15,13 @@
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
+// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@1.2.8/dist/index.cjs
 // @resource       fflate           https://cdn.jsdelivr.net/npm/fflate@0.7.3/lib/browser.cjs
+// @resource       object-assign    https://cdn.jsdelivr.net/npm/object-assign@4.1.1/index.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@1.2.8/dist/index.cjs
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1072989
-// @resource       object-assign    https://cdn.jsdelivr.net/npm/object-assign@4.1.1/index.js
 // @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1073010
 // ==/UserScript==
 // @deno-types="tampermonkey"
 // deno-fmt-ignore-file
@@ -33,9 +33,6 @@ if (typeof define !== 'function') {
 }
 
 requirejs.config({
-  config: {
-    vim_comic_viewer: { GM_xmlhttpRequest },
-  },
   enforceDefine: true,
 });
 
@@ -100,7 +97,7 @@ main();
 
 });
 
-for (const name of ["fflate","react","react-dom","@stitches/react","vim_comic_viewer","object-assign","scheduler"]) {
+for (const name of ["@stitches/react","fflate","object-assign","react","react-dom","scheduler","vim_comic_viewer"]) {
   const body = GM_getResourceText(name);
   define(name, Function('require', 'exports', 'module', body));
 }
