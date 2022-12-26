@@ -76,9 +76,11 @@ export const hookListPage = async (configuration: {
     }
     switch (event.key) {
       case "j":
+      case "J":
         navigateItem(true);
         break;
       case "k":
+      case "K":
         navigateItem(false);
         break;
       case "i": {
