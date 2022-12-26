@@ -1,4 +1,4 @@
-import { basename } from "https://deno.land/std@0.148.0/path/win32.ts";
+import { basename } from "https://deno.land/std@0.170.0/path/win32.ts";
 import importMap from "../import_map.json" assert { type: "json" };
 import { esbuild, expandGlob } from "./src/deps.ts";
 
