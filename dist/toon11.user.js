@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        2207261426
+// @version        2212261729
 // @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @include        /^https?:\/\/www\.spotv24\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
@@ -35,6 +35,7 @@ requirejs.config({
 });
 
 define('main', (require, exports, module) => {
+
 
 // src/toon11.user.ts
 var import_vim_comic_viewer = require("vim_comic_viewer");

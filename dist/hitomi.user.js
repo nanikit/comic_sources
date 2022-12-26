@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2207261426
+// @version        2212261729
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -38,6 +38,7 @@ requirejs.config({
 });
 
 define('main', (require, exports, module) => {
+
 
 // src/utils/util.ts
 var timeout = (millisecond) => new Promise((resolve) => setTimeout(resolve, millisecond));
@@ -122,9 +123,11 @@ var hookListPage = async (configuration) => {
     }
     switch (event.key) {
       case "j":
+      case "J":
         navigateItem(true);
         break;
       case "k":
+      case "K":
         navigateItem(false);
         break;
       case "i": {
@@ -264,9 +267,14 @@ var comicSource = async () => {
   prependIdToTitle(info);
   const gg = await waitUnsafeObject("gg");
   const guardless = `${gg.m}`.slice(14, -2).replace(/return 4;/g, "");
-  unsafeWindow.gg.m = Function("g", guardless);
+  unsafeWindow.gg.m = Function(
+    "g",
+    guardless
+  );
   const makeImageElement = await waitUnsafeObject("make_image_element");
-  const urls = info.files.map((file) => findSource(makeImageElement(id, file)));
+  const urls = info.files.map(
+    (file) => findSource(makeImageElement(id, file))
+  );
   return urls;
 };
 var prependIdToTitle = async (info) => {

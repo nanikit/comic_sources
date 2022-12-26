@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2207261426
+// @version        2212261729
 // @match          https://*.net/comic/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -37,6 +37,7 @@ requirejs.config({
 });
 
 define('main', (require, exports, module) => {
+
 
 // src/manatoki.user.ts
 var import_vim_comic_viewer = require("vim_comic_viewer");
@@ -72,7 +73,9 @@ var getUrl = (image) => {
   return data.length ? data : [image.src];
 };
 var getUrls = () => {
-  const imgs = document.querySelectorAll("div.view-padding img");
+  const imgs = document.querySelectorAll(
+    "div.view-padding img"
+  );
   const urls = [...imgs].flatMap(getUrl);
   return urls;
 };
