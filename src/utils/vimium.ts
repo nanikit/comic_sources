@@ -74,13 +74,11 @@ export const hookListPage = async (configuration: {
     if ((event.target as HTMLElement).tagName === "INPUT") {
       return;
     }
-    switch (event.key) {
+    switch (event.key.toLowerCase()) {
       case "j":
-      case "J":
         navigateItem(true);
         break;
       case "k":
-      case "K":
         navigateItem(false);
         break;
       case "i": {

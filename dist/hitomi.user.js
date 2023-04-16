@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2212261729
+// @version        2304160029
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -121,13 +121,11 @@ var hookListPage = async (configuration) => {
     if (event.target.tagName === "INPUT") {
       return;
     }
-    switch (event.key) {
+    switch (event.key.toLowerCase()) {
       case "j":
-      case "J":
         navigateItem(true);
         break;
       case "k":
-      case "K":
         navigateItem(false);
         break;
       case "i": {
@@ -155,77 +153,59 @@ var hookListPage = async (configuration) => {
   insertFocusCss();
 };
 
-// src/hitomi/list/preload.ts
-var getNextPageUrl = () => {
-  const url = new URL(location.href);
-  const search = url.searchParams;
-  const nextPage = `${Number(search.get("page") || "1") + 1}`;
-  search.set("page", nextPage);
-  return url.toString();
-};
-var prefetchUrl = (url) => {
-  const preloader = document.createElement("link");
-  preloader.rel = "prefetch";
-  preloader.href = url;
-  document.head.append(preloader);
-};
-var getShadowedIframe = (url) => {
-  var _a, _b;
-  const iframe = document.createElement("iframe");
-  iframe.src = url;
-  const div = document.createElement("div");
-  div.style.display = "none";
-  div.attachShadow({ mode: "open" });
-  (_b = (_a = div.shadowRoot) == null ? void 0 : _a.append) == null ? void 0 : _b.call(_a, iframe);
-  return [div, iframe];
-};
-var preloadUrl = async (url) => {
-  const [div, iframe] = getShadowedIframe(url);
-  document.body.append(div);
-  while (!iframe.contentDocument) {
-    await timeout(100);
-  }
-  await waitDomContent(iframe.contentDocument);
-  prefetchUrl(url);
-};
-var waitPageOverHalf = () => new Promise((resolve) => {
-  const listener = () => {
-    if (document.body.scrollHeight / 2 < window.scrollY) {
-      removeEventListener("scroll", listener);
-      resolve();
-    }
-  };
-  addEventListener("scroll", listener);
-});
-var triggerPagePreload = async () => {
-  const url = getNextPageUrl();
-  prefetchUrl(url);
-  await waitPageOverHalf();
-  await preloadUrl(url);
-};
-
 // src/hitomi/list.ts
-var navigatePage = (offset) => {
-  const search = new URLSearchParams(location.search);
-  const page = search.get("page") || "1";
-  search.set("page", Math.max(1, Number(page) + offset).toString());
-  location.search = search.toString();
-};
-var getItems = () => [
-  ...document.querySelectorAll(".gallery-content > div")
-];
-var enter = (element) => {
+async function hookListPage2() {
+  await hookListPage({ enter, getItems, navigatePage });
+}
+function enter(element) {
   var _a, _b, _c, _d;
   const anchor = (_a = element.querySelector) == null ? void 0 : _a.call(element, "a");
   const fileName = (_d = (_c = (_b = anchor == null ? void 0 : anchor.href) == null ? void 0 : _b.match) == null ? void 0 : _c.call(_b, /\d+\.html/)) == null ? void 0 : _d[0];
   if (fileName) {
     GM_openInTab(`${location.origin}/reader/${fileName}`);
   }
-};
-var hookListPage2 = async () => {
-  await hookListPage({ enter, getItems, navigatePage });
-  triggerPagePreload();
-};
+}
+function getItems() {
+  return [
+    ...document.querySelectorAll(".gallery-content > div")
+  ];
+}
+function navigatePage(offset) {
+  const link = getOffsetUrl(offset);
+  if (link) {
+    location.href = link;
+  }
+}
+function getOffsetUrl(offset) {
+  const page = getPageList();
+  if (!page) {
+    return;
+  }
+  const { index, links } = page;
+  return links[index + offset];
+}
+function getPageList(href) {
+  var _a, _b;
+  const url = href != null ? href : location.href;
+  const lastItem = document.querySelector(".page-container li:last-child");
+  if (!(lastItem == null ? void 0 : lastItem.textContent)) {
+    return;
+  }
+  const lastPage = parseInt(lastItem.textContent);
+  const currentPage = parseInt((_b = (_a = url.match(/\d+$/)) == null ? void 0 : _a[0]) != null ? _b : "1");
+  const anchor = document.querySelectorAll(
+    ".page-container li>a[href]"
+  )[1];
+  if (!anchor) {
+    return { links: [url], index: 0 };
+  }
+  const prefix = anchor.href.replace(/\d+$/, "");
+  const links = [];
+  for (let i = 1; i <= lastPage; i++) {
+    links.push(`${prefix}${i}`);
+  }
+  return { links, index: currentPage - 1 };
+}
 
 // src/hitomi/reader.ts
 var import_vim_comic_viewer2 = require("vim_comic_viewer");

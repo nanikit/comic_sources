@@ -10,7 +10,7 @@
     {
       "label": "Watch",
       "type": "shell",
-      "command": "deno run --allow-all --import-map import_map.json --watch=${file} bin/build.ts \"${file}\"",
+      "command": "deno run --allow-all --import-map import_map.json bin/build.ts --watch \"${file}\"",
       "group": {
         "kind": "build",
         "isDefault": true

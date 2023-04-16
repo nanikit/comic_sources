@@ -1,4 +1,5 @@
-import { basename } from "https://deno.land/std@0.170.0/path/win32.ts";
+import { parse } from "https://deno.land/std@0.183.0/flags/mod.ts";
+import { basename } from "https://deno.land/std@0.183.0/path/win32.ts";
 import importMap from "../import_map.json" assert { type: "json" };
 import { esbuild, expandGlob } from "./src/deps.ts";
 
@@ -47,14 +48,17 @@ const getHeader = (code: string) => {
   return header.replace("${date_version}", dateVersion);
 };
 
-const build = async (entryPoint: string): Promise<esbuild.BuildResult> => {
+const build = async (
+  entryPoint: string,
+  { watch }: { watch?: boolean },
+): Promise<void> => {
   const code = await Deno.readTextFile(entryPoint);
   const header = `${getHeader(code)}${requireJs}`;
   const dependencies = getDependencies(header);
   const footer = getFooter(dependencies);
   const fileName = basename(entryPoint);
 
-  const result = await esbuild.build({
+  const context = await esbuild.context({
     allowOverwrite: true,
     banner: { js: `${header}\n` },
     footer: { js: footer },
@@ -67,21 +71,29 @@ const build = async (entryPoint: string): Promise<esbuild.BuildResult> => {
     outfile: `dist/${fileName.replace(".ts", ".js")}`,
     treeShaking: true,
   });
-  console.log(`${entryPoint}: ${JSON.stringify(result)}`);
-  return result;
+  if (watch) {
+    await context.watch();
+  } else {
+    const result = await context.rebuild();
+    console.log(`${entryPoint}: ${JSON.stringify(result)}`);
+  }
 };
 
 const main = async () => {
+  const { watch, _: patterns } = parse(Deno.args, { boolean: ["watch"] });
   try {
     try {
-      const glob = Deno.args[0];
       const builds = [];
-      for await (const walk of expandGlob(glob)) {
-        builds.push(build(walk.path));
+      for (const pattern of patterns) {
+        for await (const walk of expandGlob(`${pattern}`)) {
+          builds.push(build(walk.path, { watch: watch ?? false }));
+        }
       }
       await Promise.all(builds);
     } finally {
-      esbuild.stop();
+      if (!watch) {
+        esbuild.stop();
+      }
     }
   } catch (error) {
     console.error(error);

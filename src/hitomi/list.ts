@@ -1,27 +1,62 @@
 import { hookListPage as hookPage } from "../utils/vimium.ts";
-import { triggerPagePreload } from "./list/preload.ts";
 
-const navigatePage = (offset: number) => {
-  const search = new URLSearchParams(location.search);
-  const page = search.get("page") || "1";
-  search.set("page", Math.max(1, Number(page) + offset).toString());
-  location.search = search.toString();
-};
-
-const getItems = () =>
-  [
-    ...(document.querySelectorAll(".gallery-content > div")),
-  ] as HTMLDivElement[];
-
-const enter = (element: HTMLElement) => {
+export async function hookListPage() {
+  await hookPage({ enter, getItems, navigatePage });
+}
+function enter(element: HTMLElement) {
   const anchor = element.querySelector?.("a");
   const fileName = anchor?.href?.match?.(/\d+\.html/)?.[0];
   if (fileName) {
     GM_openInTab(`${location.origin}/reader/${fileName}`);
   }
-};
+}
 
-export const hookListPage = async () => {
-  await hookPage({ enter, getItems, navigatePage });
-  triggerPagePreload();
-};
+function getItems() {
+  return [
+    ...(document.querySelectorAll(".gallery-content > div")),
+  ] as HTMLDivElement[];
+}
+
+function navigatePage(offset: number) {
+  const link = getOffsetUrl(offset);
+  if (link) {
+    location.href = link;
+  }
+}
+
+function getOffsetUrl(offset: number): string | undefined {
+  const page = getPageList();
+  if (!page) {
+    return;
+  }
+
+  const { index, links } = page;
+  return links[index + offset];
+}
+
+function getPageList(
+  href?: string,
+): { links: string[]; index: number } | undefined {
+  const url = href ?? location.href;
+
+  const lastItem = document.querySelector(".page-container li:last-child");
+  if (!lastItem?.textContent) {
+    return;
+  }
+
+  const lastPage = parseInt(lastItem.textContent);
+  const currentPage = parseInt(url.match(/\d+$/)?.[0] ?? "1");
+  const anchor = document.querySelectorAll(
+    ".page-container li>a[href]",
+  )[1] as HTMLAnchorElement | null;
+  if (!anchor) {
+    return { links: [url], index: 0 };
+  }
+
+  const prefix = anchor.href.replace(/\d+$/, "");
+  const links = [];
+  for (let i = 1; i <= lastPage; i++) {
+    links.push(`${prefix}${i}`);
+  }
+  return { links, index: currentPage - 1 };
+}
