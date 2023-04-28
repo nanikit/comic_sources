@@ -70,6 +70,10 @@
     "https://deno.land/x/esbuild@v0.16.10/mod.d.ts": "512cc3135020e8b8ff9e291cb545c4a65e5e6cede6aa9182310eb7abbad8f8e7",
     "https://deno.land/x/esbuild@v0.16.10/mod.js": "2f5fff339b2971e114ee72ef8b97d34c9fdc21d6254dc194635ed2e2be090a2e",
     "https://deno.land/x/esbuild@v0.17.16/mod.d.ts": "dc279a3a46f084484453e617c0cabcd5b8bd1920c0e562e4ea02dfc828c8f968",
-    "https://deno.land/x/esbuild@v0.17.16/mod.js": "5d7e63d0fe5cd00697ad81a5dfd1346f436cff4e16aa544adc4a1bbdea683e07"
+    "https://deno.land/x/esbuild@v0.17.16/mod.js": "5d7e63d0fe5cd00697ad81a5dfd1346f436cff4e16aa544adc4a1bbdea683e07",
+    "https://deno.land/x/esbuild@v0.17.18/mod.d.ts": "dc279a3a46f084484453e617c0cabcd5b8bd1920c0e562e4ea02dfc828c8f968",
+    "https://deno.land/x/esbuild@v0.17.18/mod.js": "84b5044def8a2e94770b79d295a1dd74f5ee453514c5b4f33571e22e1c882898",
+    "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/4283d954b2715f89ac2f57bcf1e8bbb20d96ecd3/tool/build/components.ts": "127eaed045b711b9c8783a9455c9e2f7ca751a8be6655897f4f7a00354df83d6",
+    "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/c31452638c155f33a899d3425e67809f13ebc7e4/tool/build/components.ts": "c28934c139d483269ffd6b109b3cfd9a823e62f055eeda19f2a017bd2cd0a488"
   }
 }

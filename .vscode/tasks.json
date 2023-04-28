@@ -2,15 +2,18 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build all",
-      "type": "shell",
-      "command": "deno run --allow-all --import-map import_map.json bin/build.ts src/*.user.ts",
+      "label": "build",
+      "type": "deno",
+      "command": "task",
+      "args": ["build"],
+      "group": "none",
       "problemMatcher": "$deno"
     },
     {
-      "label": "Watch",
-      "type": "shell",
-      "command": "deno run --allow-all --import-map import_map.json bin/build.ts --watch \"${file}\"",
+      "label": "watch",
+      "type": "deno",
+      "command": "task",
+      "args": ["watch"],
       "group": {
         "kind": "build",
         "isDefault": true

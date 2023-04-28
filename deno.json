@@ -10,5 +10,10 @@
   },
   "include": [
     "./src"
-  ]
+  ],
+  "tasks": {
+    "build": "deno run --allow-all --import-map import_map.json -- tool/build.ts",
+    "watch": "deno run --allow-all --import-map import_map.json -- tool/build.ts --watch 'src/*.user.ts'",
+    "update-deps": "deno run --allow-all --import-map import_map.json -- tool/update_deps.ts"
+  }
 }

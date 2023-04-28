@@ -69,8 +69,7 @@ const replaceFile = async (
 
 const build = async (path: string): Promise<void> => {
   const buildScript = new URL(`${import.meta.url}/../../build.ts`);
-  const cmd = [
-    Deno.execPath(),
+  const args = [
     "run",
     "--unstable",
     "--allow-all",
@@ -79,14 +78,18 @@ const build = async (path: string): Promise<void> => {
     `${buildScript}`,
     path,
   ];
-  const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
-  const status = await process.status();
-  if (!status.success) {
-    const stdout = await process.output();
-    const stderr = await process.stderrOutput();
+  const process = new Deno.Command(Deno.execPath(), {
+    args,
+    stdout: "piped",
+    stderr: "piped",
+  });
+  const output = await process.output();
+  if (!output.success) {
     const decoder = new TextDecoder("utf-8");
-    const output = `${decoder.decode(stdout)} ${decoder.decode(stderr)}`;
-    console.log(output);
+    const log = `${decoder.decode(output.stdout)} ${
+      decoder.decode(output.stderr)
+    }`;
+    console.log(log);
   }
 };
 
