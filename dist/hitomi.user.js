@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2304160029
+// @version        2304282227
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -18,12 +18,12 @@
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
 // @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@1.2.8/dist/index.cjs
-// @resource       fflate           https://cdn.jsdelivr.net/npm/fflate@0.7.3/lib/browser.cjs
+// @resource       fflate           https://cdn.jsdelivr.net/npm/fflate@0.7.4/lib/browser.cjs
 // @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       object-assign    https://cdn.jsdelivr.net/npm/object-assign@4.1.1/index.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1074462
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1182991
 // ==/UserScript==
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
@@ -38,12 +38,7 @@ requirejs.config({
 });
 
 define('main', (require, exports, module) => {
-
-
-// src/utils/util.ts
 var timeout = (millisecond) => new Promise((resolve) => setTimeout(resolve, millisecond));
-
-// src/utils/dom_util.ts
 var import_vim_comic_viewer = require("vim_comic_viewer");
 var waitDomContent = import_vim_comic_viewer.utils.waitDomContent;
 var insertCss = (css) => {
@@ -61,8 +56,6 @@ var observeOnce = (element, options) => {
     observer.observe(element, options);
   });
 };
-
-// src/utils/vimium.ts
 var defaultFocusCss = `
 && {
   background: aliceblue;
@@ -152,8 +145,6 @@ var hookListPage = async (configuration) => {
   await domContentLoaded;
   insertFocusCss();
 };
-
-// src/hitomi/list.ts
 async function hookListPage2() {
   await hookListPage({ enter, getItems, navigatePage });
 }
@@ -206,8 +197,6 @@ function getPageList(href) {
   }
   return { links, index: currentPage - 1 };
 }
-
-// src/hitomi/reader.ts
 var import_vim_comic_viewer2 = require("vim_comic_viewer");
 var onReaderKey = (event) => {
   switch (event.key) {
@@ -278,8 +267,6 @@ var hookReaderPage = async () => {
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
 };
-
-// src/hitomi.user.ts
 var initialize2 = async () => {
   const { pathname } = location;
   if (pathname.startsWith("/reader")) {
