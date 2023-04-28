@@ -25,7 +25,7 @@
 
 ### 만화 페이지
 
-- <kbd>i</kbd>: 뷰어 열기/닫기
+- <kbd>i</kbd>, <kbd>Enter</kbd>, <kbd>NumPad0</kbd>: 뷰어 열기/닫기
 - <kbd>j</kbd>, <kbd>↓</kbd>: 다음 페이지
 - <kbd>k</kbd>, <kbd>↑</kbd>: 이전 페이지
 - <kbd>o</kbd>: 탭 닫기
