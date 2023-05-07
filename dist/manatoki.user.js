@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name           마나토끼 뷰어
-// @name:ko        마나토끼 뷰어
-// @name:en        manatoki viewer
+// @name           토끼 뷰어
+// @name:ko        토끼 뷰어
+// @name:en        toki viewer
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2304282227
+// @version        2305071814
 // @match          https://*.net/comic/*
+// @match          https://*.com/webtoon/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        *
@@ -82,7 +83,7 @@ var comicSource = () => {
   return urls;
 };
 var main = async () => {
-  if (!location.origin.includes("manatoki")) {
+  if (!location.origin.match(/manatoki|newtoki/)) {
     return;
   }
   (0, import_vim_comic_viewer.setGmXhr)(GM_xmlhttpRequest);
