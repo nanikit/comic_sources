@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2304282227
+// @version        2305201848
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -205,19 +205,6 @@ var onReaderKey = (event) => {
       break;
   }
 };
-var getId = () => {
-  var _a;
-  return (_a = location.href.match(/([^/]+)\.html/)) == null ? void 0 : _a[1];
-};
-var findSource = (picture) => {
-  var _a, _b;
-  const src = picture.getAttribute("src");
-  if (src) {
-    return src;
-  }
-  const imgOrSource = picture.querySelector("[src], [srcset]");
-  return (_b = (_a = imgOrSource == null ? void 0 : imgOrSource.getAttribute("src")) != null ? _a : imgOrSource == null ? void 0 : imgOrSource.getAttribute("srcset")) != null ? _b : void 0;
-};
 var waitUnsafeObject = async (name) => {
   while (true) {
     const target = unsafeWindow[name];
@@ -231,7 +218,6 @@ var waitUnsafeObject = async (name) => {
   }
 };
 var comicSource = async () => {
-  const id = getId();
   const info = await waitUnsafeObject("galleryinfo");
   prependIdToTitle(info);
   const gg = await waitUnsafeObject("gg");
@@ -240,9 +226,25 @@ var comicSource = async () => {
     "g",
     guardless
   );
-  const makeImageElement = await waitUnsafeObject("make_image_element");
+  const make_source_element = await waitUnsafeObject("make_source_element");
+  exec(() => {
+    const base2 = `${make_source_element}`.match(
+      /url_from_url_from_hash\(.*?'(.*?)'\)/
+    )[1];
+    Object.assign(window, { base: base2 });
+  });
+  const base = unsafeWindow.base;
+  const urlFromUrlFromHash = await waitUnsafeObject(
+    "url_from_url_from_hash"
+  );
   const urls = info.files.map(
-    (file) => findSource(makeImageElement(id, file))
+    (file) => urlFromUrlFromHash(
+      info.id,
+      file,
+      file.hasavif ? "avif" : file.haswebp ? "webp" : "jpg",
+      void 0,
+      base
+    )
   );
   return urls;
 };
@@ -267,6 +269,13 @@ var hookReaderPage = async () => {
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
 };
+function exec(fn) {
+  const script = document.createElement("script");
+  script.setAttribute("type", "application/javascript");
+  script.textContent = "(" + fn + ")();";
+  document.body.appendChild(script);
+  document.body.removeChild(script);
+}
 var initialize2 = async () => {
   const { pathname } = location;
   if (pathname.startsWith("/reader")) {

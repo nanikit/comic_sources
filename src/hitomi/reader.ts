@@ -10,10 +10,6 @@ const onReaderKey = (event: KeyboardEvent) => {
   }
 };
 
-const getId = (): string | undefined => {
-  return location.href.match(/([^/]+)\.html/)?.[1];
-};
-
 type ImageInfo = {
   hasavif: 0 | 1;
   hash: string;
@@ -40,17 +36,6 @@ type GalleryInfo = {
   type: string;
 };
 
-const findSource = (picture: HTMLElement): string | undefined => {
-  const src = picture.getAttribute("src");
-  if (src) {
-    return src;
-  }
-
-  const imgOrSource = picture.querySelector("[src], [srcset]");
-  return imgOrSource?.getAttribute("src") ??
-    imgOrSource?.getAttribute("srcset") ?? undefined;
-};
-
 const waitUnsafeObject = async (name: string) => {
   while (true) {
     const target = (unsafeWindow as unknown as Record<string, unknown>)[name];
@@ -65,8 +50,7 @@ const waitUnsafeObject = async (name: string) => {
 };
 
 const comicSource: types.ComicSource = async () => {
-  const id = getId()!;
-  const info = await waitUnsafeObject("galleryinfo");
+  const info = await waitUnsafeObject("galleryinfo") as GalleryInfo;
   prependIdToTitle(info);
 
   const gg = await waitUnsafeObject("gg");
@@ -76,13 +60,32 @@ const comicSource: types.ComicSource = async () => {
     "g",
     guardless,
   );
+  const make_source_element = await waitUnsafeObject("make_source_element");
+  exec(() => {
+    const base = `${make_source_element}`.match(
+      /url_from_url_from_hash\(.*?'(.*?)'\)/,
+    )![1];
+    Object.assign(window, { base });
+  });
+  const base = (unsafeWindow as unknown as { base: string }).base;
 
-  const makeImageElement = await waitUnsafeObject("make_image_element") as (
-    id: string,
-    file: unknown,
-  ) => HTMLElement;
+  const urlFromUrlFromHash = await waitUnsafeObject(
+    "url_from_url_from_hash",
+  ) as (
+    galleryId: string,
+    file: ImageInfo,
+    type: string,
+    extension?: string,
+    base?: string,
+  ) => string;
   const urls = info.files.map((file: ImageInfo) =>
-    findSource(makeImageElement(id, file))
+    urlFromUrlFromHash(
+      info.id,
+      file,
+      file.hasavif ? "avif" : file.haswebp ? "webp" : "jpg",
+      undefined,
+      base,
+    )
   );
   return urls as string[];
 };
@@ -110,3 +113,11 @@ export const hookReaderPage = async () => {
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
 };
+
+function exec(fn: () => void) {
+  const script = document.createElement("script");
+  script.setAttribute("type", "application/javascript");
+  script.textContent = "(" + fn + ")();";
+  document.body.appendChild(script);
+  document.body.removeChild(script);
+}
