@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2304282227
+// @version        2305241137
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -79,6 +79,8 @@ var registerGlobalKeyHandler = () => {
         await import_vim_comic_viewer.utils.save(new Blob([binary]));
         break;
       }
+      case "Insert":
+      case "Enter":
       case "i": {
         if (isViewerInitialized) {
           break;

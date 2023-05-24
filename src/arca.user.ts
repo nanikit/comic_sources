@@ -72,6 +72,8 @@ const registerGlobalKeyHandler = () => {
         await utils.save(new Blob([binary]));
         break;
       }
+      case "Insert":
+      case "Enter":
       case "i": {
         if (isViewerInitialized) {
           break;
