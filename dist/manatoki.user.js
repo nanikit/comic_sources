@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2305071814
+// @version        2305251355
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
@@ -22,7 +22,7 @@
 // @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
 // @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1182991
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1195373
 // ==/UserScript==
 // @deno-types="tampermonkey"
 // deno-fmt-ignore-file
