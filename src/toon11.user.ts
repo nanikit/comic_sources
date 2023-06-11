@@ -11,6 +11,8 @@
 // @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
+// @grant          GM_getValue
+// @grant          GM_setValue
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
@@ -20,9 +22,9 @@
 // @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
 // @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1195373
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1203635
 // ==/UserScript==
-import { initialize, types, utils } from "vim_comic_viewer";
+import { initialize, setTampermonkeyApi, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
   addEventListener("keydown", (event: KeyboardEvent) => {
@@ -56,6 +58,7 @@ const comicSource: types.ComicSource = async () => {
 
 const main = async () => {
   await utils.waitDomContent(document);
+  setTampermonkeyApi({ GM_setValue, GM_getValue });
 
   try {
     await initialize({ source: comicSource });

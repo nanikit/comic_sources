@@ -12,7 +12,9 @@
 // @connect        self
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
+// @grant          GM_getValue
 // @grant          GM_openInTab
+// @grant          GM_setValue
 // @grant          window.close
 // @grant          unsafeWindow
 // @run-at         document-start
@@ -23,7 +25,7 @@
 // @resource       object-assign    https://cdn.jsdelivr.net/npm/object-assign@4.1.1/index.js
 // @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
 // @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1195373
+// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1203635
 // ==/UserScript==
 import { hookListPage } from "./hitomi/list.ts";
 import { hookReaderPage } from "./hitomi/reader.ts";

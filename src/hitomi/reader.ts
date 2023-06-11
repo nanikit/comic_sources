@@ -1,4 +1,4 @@
-import { initialize, types, utils } from "vim_comic_viewer";
+import { initialize, setTampermonkeyApi, types, utils } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { timeout } from "../utils/util.ts";
 
@@ -109,6 +109,7 @@ const overrideCss = `
 
 export const hookReaderPage = async () => {
   await utils.waitDomContent(document);
+  setTampermonkeyApi({ GM_setValue, GM_getValue });
   await initialize({ source: comicSource, imageProps: { loading: "lazy" } });
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
