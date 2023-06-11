@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        2306111344
+// @version        2306111348
 // @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @include        /^https?:\/\/www\.spotv24\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
@@ -11,6 +11,8 @@
 // @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
+// @grant          GM_getValue
+// @grant          GM_setValue
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
@@ -65,6 +67,7 @@ var comicSource = async () => {
 };
 var main = async () => {
   await import_vim_comic_viewer.utils.waitDomContent(document);
+  (0, import_vim_comic_viewer.setTampermonkeyApi)({ GM_setValue, GM_getValue });
   try {
     await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
   } catch (error) {

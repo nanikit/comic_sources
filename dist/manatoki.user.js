@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2306111344
+// @version        2306111348
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
@@ -13,6 +13,8 @@
 // @connect        *
 // @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
+// @grant          GM_getValue
+// @grant          GM_setValue
 // @grant          window.close
 // @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
