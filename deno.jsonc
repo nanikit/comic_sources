@@ -1,0 +1,31 @@
+{
+  "lock": false,
+  "compilerOptions": {
+    "lib": [
+      "ES2021",
+      "dom",
+      "DOM.Iterable",
+      "deno.ns",
+      "deno.unstable"
+    ]
+  },
+  "include": [
+    "./src"
+  ],
+  "tasks": {
+    "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/8becb5e0f6450b7c11df3567ba560f5e111d1955/mod.ts --watch 'src/*.user.ts' -o dist",
+    "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/8becb5e0f6450b7c11df3567ba560f5e111d1955/mod.ts --watch 'src/*.user.ts' -o dist",
+    "update-deps": "deno run --allow-all --import-map import_map.json -- tool/update_deps.ts"
+  },
+  "imports": {
+    "@stitches/react": "npm:@stitches/react@1.3.1-1",
+    "fflate": "npm:fflate@0.8.1",
+    "jotai": "npm:jotai@2.4.2",
+    "jotai/utils": "npm:jotai@2.4.2/utils",
+    "react-dom": "npm:@types/react-dom",
+    "react": "npm:@types/react",
+    "react/jsx-runtime": "npm:@types/react/jsx-runtime",
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/07e5025a3186688fde1e6696333adea50a4e54c8/src/mod.tsx",
+    "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts"
+  }
+}

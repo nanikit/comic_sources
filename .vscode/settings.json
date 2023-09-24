@@ -2,8 +2,6 @@
   "deno.enable": true,
   "deno.lint": true,
   "deno.unstable": true,
-  "deno.importMap": "./import_map.json",
-  "deno.config": "./deno-react.json",
   "typescript.validate.enable": false,
   "javascript.validate.enable": false,
   "editor.codeActionsOnSave": {
