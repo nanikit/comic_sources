@@ -3,7 +3,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @name:en        11toon viewer
 // @description:en press i to open
-// @version        ${date_version}
+// @version        {date_version}
 // @include        /^https?:\/\/www\.11toon\d+\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @include        /^https?:\/\/www\.spotv24\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
@@ -24,7 +24,7 @@
 // @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1203649
 // ==/UserScript==
-import { initialize, setTampermonkeyApi, types, utils } from "vim_comic_viewer";
+import { initialize, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
   addEventListener("keydown", (event: KeyboardEvent) => {
@@ -58,7 +58,6 @@ const comicSource: types.ComicSource = async () => {
 
 const main = async () => {
   await utils.waitDomContent(document);
-  setTampermonkeyApi({ GM_setValue, GM_getValue });
 
   try {
     await initialize({ source: comicSource });

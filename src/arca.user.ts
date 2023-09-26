@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        ${date_version}
+// @version        {date_version}
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -15,24 +15,11 @@
 // @grant          GM_getResourceText
 // @grant          GM_getValue
 // @grant          GM_setValue
-// @grant          window.close
-// @run-at         document-start
+// @run-at         document-end
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@1.2.8/dist/index.cjs
-// @resource       fflate           https://cdn.jsdelivr.net/npm/fflate@0.7.4/lib/browser.cjs
-// @resource       object-assign    https://cdn.jsdelivr.net/npm/object-assign@4.1.1/index.js
-// @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
-// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
-// @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1203649
 // ==/UserScript==
-import {
-  download,
-  initialize,
-  setTampermonkeyApi,
-  types,
-  utils,
-} from "vim_comic_viewer";
+import { initialize, types, utils } from "vim_comic_viewer";
 
 const searchImages = () => {
   return [
@@ -61,7 +48,7 @@ const comicSource: types.ComicSource = () => {
 };
 
 const registerGlobalKeyHandler = () => {
-  let isViewerInitialized = false;
+  let viewer: Awaited<ReturnType<typeof initialize>> | null = null;
 
   addEventListener("keydown", async (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
@@ -76,21 +63,20 @@ const registerGlobalKeyHandler = () => {
         break;
       case ";": {
         event.stopImmediatePropagation();
-        const binary = await download(searchImages().map(getOriginalLink));
-        await utils.save(new Blob([binary]));
+        await viewer?.downloader.downloadAndSave({
+          images: searchImages().map(getOriginalLink),
+        });
         break;
       }
       case "Insert":
       case "Enter":
       case "i": {
-        if (isViewerInitialized) {
+        if (viewer) {
           break;
         }
-        isViewerInitialized = true;
 
-        await utils.waitDomContent(document);
-        const controller = await initialize({ source: comicSource });
-        controller.toggleFullscreen();
+        viewer = await initialize({ source: comicSource });
+        viewer.toggleFullscreen();
         break;
       }
     }
@@ -98,7 +84,6 @@ const registerGlobalKeyHandler = () => {
 };
 
 const main = () => {
-  setTampermonkeyApi({ GM_xmlhttpRequest, GM_setValue, GM_getValue });
   registerGlobalKeyHandler();
 };
 

@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        ${date_version}
+// @version        {date_version}
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
@@ -28,7 +28,7 @@
 // ==/UserScript==
 // @deno-types="tampermonkey"
 import type {} from "tampermonkey";
-import { initialize, setTampermonkeyApi, types, utils } from "vim_comic_viewer";
+import { initialize, types, utils } from "vim_comic_viewer";
 
 const registerEpisodeNavigator = () => {
   addEventListener("keydown", (event: KeyboardEvent) => {
@@ -82,7 +82,6 @@ const main = async () => {
     return;
   }
 
-  setTampermonkeyApi({ GM_xmlhttpRequest, GM_getValue, GM_setValue });
   await utils.waitDomContent(document);
 
   try {
