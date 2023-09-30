@@ -10,27 +10,10 @@
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        self
-// @grant          GM_xmlhttpRequest
-// @grant          GM_getResourceText
-// @grant          GM_getValue
-// @grant          GM_openInTab
-// @grant          GM_setValue
-// @grant          window.close
-// @grant          unsafeWindow
-// @run-at         document-start
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
 // @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1203649
 // ==/UserScript==
-import { hookListPage } from "./hitomi/list.ts";
-import { hookReaderPage } from "./hitomi/reader.ts";
 
-const initialize = async () => {
-  const { pathname } = location;
-  if (pathname.startsWith("/reader")) {
-    await hookReaderPage();
-  } else if (!/^\/(manga|doujinshi|cg)\//.test(pathname)) {
-    await hookListPage();
-  }
-};
+import { initialize } from "./sites/hitomi.ts";
 
 initialize();
