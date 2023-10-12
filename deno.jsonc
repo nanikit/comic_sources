@@ -9,12 +9,11 @@
       "deno.unstable"
     ]
   },
-  "include": [
-    "./src"
-  ],
+  "include": ["src"],
+  "exclude": ["dist"],
   "tasks": {
-    "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/8becb5e0f6450b7c11df3567ba560f5e111d1955/mod.ts --watch 'src/*.user.ts' -o dist",
-    "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/8becb5e0f6450b7c11df3567ba560f5e111d1955/mod.ts --watch 'src/*.user.ts' -o dist",
+    "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/1b44163c0fd1d99e00a9ddc51b09038c5f117f57/mod.ts --watch 'src/*.user.ts' -o dist",
+    "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/1b44163c0fd1d99e00a9ddc51b09038c5f117f57/mod.ts --watch 'src/*.user.ts' -o dist",
     "update-deps": "deno run --allow-all --import-map import_map.json -- tool/update_deps.ts"
   },
   "imports": {
@@ -22,9 +21,9 @@
     "fflate": "npm:fflate@0.8.1",
     "jotai": "npm:jotai@2.4.2",
     "jotai/utils": "npm:jotai@2.4.2/utils",
-    "react-dom": "npm:@types/react-dom",
-    "react": "npm:@types/react",
-    "react/jsx-runtime": "npm:@types/react/jsx-runtime",
+    "react-dom": "npm:react-dom",
+    "react": "npm:react",
+    "react/jsx-runtime": "npm:react/jsx-runtime",
     "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/6926f8338842b464939aeef57588c12d500f6ae5/src/mod.tsx",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts"
   }

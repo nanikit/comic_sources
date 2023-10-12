@@ -1,2 +1,5 @@
 # local files
 *.local.user.[jt]s
+
+# env file for deno_userscript_linker OUTPUT_SYNC
+.env
