@@ -14,4 +14,4 @@
 // ==/UserScript==
 import { main } from "./sites/toon11.ts";
 
-main;
+main();

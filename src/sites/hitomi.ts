@@ -3,9 +3,9 @@ import { hookReaderPage } from "../hitomi/reader.ts";
 
 export async function initialize() {
   const { pathname } = location;
-  if(pathname.startsWith("/reader")) {
+  if (pathname.startsWith("/reader")) {
     await hookReaderPage();
-  } else if(!/^\/(manga|doujinshi|cg)\//.test(pathname)) {
+  } else if (!/^\/(manga|doujinshi|cg)\//.test(pathname)) {
     await hookListPage();
   }
 }

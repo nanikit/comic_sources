@@ -1,5 +1,5 @@
 // @deno-types="tampermonkey"
-import type { } from "tampermonkey";
+import type {} from "tampermonkey";
 import { initialize, utils } from "vim_comic_viewer";
 
 export async function main() {
@@ -12,7 +12,7 @@ export async function main() {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 function comicSource() {
   registerEpisodeNavigator();
@@ -22,10 +22,10 @@ function comicSource() {
 function registerEpisodeNavigator() {
   addEventListener("keydown", (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
-    if(ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
+    if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
       return;
     }
-    switch(event.key) {
+    switch (event.key) {
       case "h":
       case "ArrowLeft":
         (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
@@ -46,14 +46,14 @@ function registerEpisodeNavigator() {
 
 function getUrls(): string[] {
   const imgs = (document.querySelectorAll(
-    "div.view-padding img"
+    "div.view-padding img",
   ) as unknown) as Iterable<HTMLImageElement>;
   const urls = [...imgs].flatMap(getUrl);
   return urls as string[];
 }
 
 function getUrl(image: HTMLImageElement): string[] {
-  if(image.offsetParent === null) {
+  if (image.offsetParent === null) {
     return [];
   }
   const data = Object.values(image.dataset) as string[];
