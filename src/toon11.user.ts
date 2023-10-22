@@ -5,7 +5,7 @@
 // @description:en press i to open
 // @version        {date_version}
 // @include        /^https?:\/\/(www\.)?11toon\d+\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
-// @include        /^https?:\/\/(www\.)?spotv24\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
+// @include        /^https?:\/\/(www\.)?spotv\d+\.com\/bbs\/board\.php\?bo_table=toons&wr_id=\d+/
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        *
