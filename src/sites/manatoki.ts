@@ -7,11 +7,27 @@ export async function main() {
     return;
   }
 
+  const button = duplicateViewerButton();
   try {
-    await initialize({ source: comicSource });
+    const controller = await initialize({ source: comicSource });
+    button.addEventListener("click", async () => {
+      await controller.toggleFullscreen();
+    });
   } catch (error) {
     console.log(error);
   }
+}
+
+function duplicateViewerButton() {
+  const bottomViewerButton = document.querySelector(
+    ".main-footer .show_viewer",
+  )!;
+  const myButton = bottomViewerButton.cloneNode(true) as HTMLAnchorElement;
+  myButton.href = "#";
+  myButton.style.color = "blue";
+
+  bottomViewerButton!.parentElement!.insertBefore(myButton, bottomViewerButton);
+  return myButton;
 }
 
 function comicSource() {
