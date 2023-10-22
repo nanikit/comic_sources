@@ -5,45 +5,66 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        2306111406
+// @version        231022190837
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        *
-// @grant          GM_xmlhttpRequest
 // @grant          GM_getResourceText
 // @grant          GM_getValue
 // @grant          GM_setValue
-// @grant          window.close
-// @run-at         document-start
+// @grant          GM_xmlhttpRequest
+// @grant          unsafeWindow
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       @stitches/react  https://cdn.jsdelivr.net/npm/@stitches/react@1.2.8/dist/index.cjs
-// @resource       fflate           https://cdn.jsdelivr.net/npm/fflate@0.7.4/lib/browser.cjs
-// @resource       object-assign    https://cdn.jsdelivr.net/npm/object-assign@4.1.1/index.js
-// @resource       react            https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
-// @resource       react-dom        https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
-// @resource       scheduler        https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
-// @resource       vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1203649
+// @resource       @stitches/react     https://cdn.jsdelivr.net/npm/@stitches/react@1.3.1-1/dist/index.cjs
+// @resource       fflate              https://cdn.jsdelivr.net/npm/fflate@0.8.1/lib/browser.cjs
+// @resource       jotai               https://cdn.jsdelivr.net/npm/jotai@2.4.2/index.js
+// @resource       jotai/react         https://cdn.jsdelivr.net/npm/jotai@2.4.2/react.js
+// @resource       jotai/react/utils   https://cdn.jsdelivr.net/npm/jotai@2.4.2/react/utils.js
+// @resource       jotai/utils         https://cdn.jsdelivr.net/npm/jotai@2.4.2/utils.js
+// @resource       jotai/vanilla       https://cdn.jsdelivr.net/npm/jotai@2.4.2/vanilla.js
+// @resource       jotai/vanilla/utils https://cdn.jsdelivr.net/npm/jotai@2.4.2/vanilla/utils.js
+// @resource       react               https://cdn.jsdelivr.net/npm/react@18.2.0/cjs/react.production.min.js
+// @resource       react-dom           https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
+// @resource       scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
+// @resource       vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
+// @resource       vim_comic_viewer    https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1268706
 // ==/UserScript==
-// @deno-types="tampermonkey"
-// deno-fmt-ignore-file
-// deno-lint-ignore-file
-'use strict';
+"use strict";
 
-if (typeof define !== 'function') {
-  throw new Error('requirejs not found.');
-}
-
-requirejs.config({
-  enforceDefine: true,
-});
-
-define('main', (require, exports, module) => {
+define("main", (require, exports, module) => {
 var import_vim_comic_viewer = require("vim_comic_viewer");
-var registerEpisodeNavigator = () => {
+async function main() {
+  if (!location.origin.match(/manatoki|newtoki/)) {
+    return;
+  }
+  const button = duplicateViewerButton();
+  try {
+    const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
+    button.addEventListener("click", async () => {
+      await controller.toggleFullscreen();
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+function duplicateViewerButton() {
+  const bottomViewerButton = document.querySelector(
+    ".main-footer .show_viewer"
+  );
+  const myButton = bottomViewerButton.cloneNode(true);
+  myButton.href = "#";
+  myButton.style.color = "blue";
+  bottomViewerButton.parentElement.insertBefore(myButton, bottomViewerButton);
+  return myButton;
+}
+function comicSource() {
+  registerEpisodeNavigator();
+  return getUrls();
+}
+function registerEpisodeNavigator() {
   addEventListener("keydown", (event) => {
-    var _a, _b, _c, _d, _e;
     const { ctrlKey, shiftKey, altKey } = event;
     if (ctrlKey || shiftKey || altKey || import_vim_comic_viewer.utils.isTyping(event)) {
       return;
@@ -51,60 +72,43 @@ var registerEpisodeNavigator = () => {
     switch (event.key) {
       case "h":
       case "ArrowLeft":
-        (_b = (_a = document.getElementById("goPrevBtn")) == null ? void 0 : _a.click) == null ? void 0 : _b.call(_a);
+        document.getElementById("goPrevBtn")?.click?.();
         break;
       case "l":
       case "ArrowRight":
-        (_d = (_c = document.getElementById("goNextBtn")) == null ? void 0 : _c.click) == null ? void 0 : _d.call(_c);
+        document.getElementById("goNextBtn")?.click?.();
         break;
       case "m":
-        (_e = document.querySelector(".view-good")) == null ? void 0 : _e.scrollIntoView({
+        document.querySelector(".view-good")?.scrollIntoView({
           block: "center"
         });
         break;
     }
   });
-};
-var getUrl = (image) => {
-  if (image.offsetParent === null) {
-    return [];
-  }
-  const data = Object.values(image.dataset);
-  return data.length ? data : [image.src];
-};
-var getUrls = () => {
+}
+function getUrls() {
   const imgs = document.querySelectorAll(
     "div.view-padding img"
   );
   const urls = [...imgs].flatMap(getUrl);
   return urls;
-};
-var comicSource = () => {
-  registerEpisodeNavigator();
-  const urls = getUrls();
-  return urls;
-};
-var main = async () => {
-  if (!location.origin.match(/manatoki|newtoki/)) {
-    return;
+}
+function getUrl(image) {
+  if (image.offsetParent === null) {
+    return [];
   }
-  (0, import_vim_comic_viewer.setTampermonkeyApi)({ GM_xmlhttpRequest, GM_getValue, GM_setValue });
-  await import_vim_comic_viewer.utils.waitDomContent(document);
-  try {
-    await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
-  } catch (error) {
-    console.log(error);
-  }
-};
+  const data = Object.values(image.dataset);
+  return data.length ? data : [image.src];
+}
 main();
 
 });
 
-for (const name of ["@stitches/react","fflate","object-assign","react","react-dom","scheduler","vim_comic_viewer"]) {
+define("tampermonkey_grants", function() { Object.assign(this.window, { GM, GM_getResourceText, GM_getValue, GM_setValue, GM_xmlhttpRequest, unsafeWindow }); });
+requirejs.config({ deps: ["tampermonkey_grants"] });
+for (const name of ["@stitches/react", "fflate", "jotai", "jotai/react", "jotai/react/utils", "jotai/utils", "jotai/vanilla", "jotai/vanilla/utils", "react", "react-dom", "scheduler", "vcv-inject-node-env", "vim_comic_viewer"]) {
   const body = GM_getResourceText(name);
-  define(name, Function('require', 'exports', 'module', body));
+  define(name, Function("require", "exports", "module", body));
 }
 
-unsafeWindow.process = { env: { NODE_ENV: 'production' } };
-require(['main'], () => {}, console.error);
-
+require(["main"], () => {}, console.error);
