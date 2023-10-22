@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231022213742
+// @version        231022215734
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
@@ -50,14 +50,16 @@ async function main() {
   }
 }
 function duplicateViewerButton() {
-  const bottomViewerButton = document.querySelector(
-    ".main-footer .show_viewer"
+  const template = document.createElement("template");
+  template.innerHTML = `<a class="show_viewer" alt="뷰어로 보기">
+    <i class="ion-ios-book at-tip" aria-hidden="true" style="color: blue;"></i>
+  </a>`;
+  const div = document.querySelector(
+    ".bottom-navbar .toon-nav"
   );
-  const myButton = bottomViewerButton.cloneNode(true);
-  myButton.href = "#";
-  myButton.style.color = "blue";
-  bottomViewerButton.parentElement.insertBefore(myButton, bottomViewerButton);
-  return myButton;
+  const button = template.content.firstElementChild;
+  div?.prepend(button);
+  return button;
 }
 function comicSource() {
   registerEpisodeNavigator();

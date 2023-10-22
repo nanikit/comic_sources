@@ -19,15 +19,17 @@ export async function main() {
 }
 
 function duplicateViewerButton() {
-  const bottomViewerButton = document.querySelector(
-    ".main-footer .show_viewer",
-  )!;
-  const myButton = bottomViewerButton.cloneNode(true) as HTMLAnchorElement;
-  myButton.href = "#";
-  myButton.style.color = "blue";
+  const template = document.createElement("template");
+  template.innerHTML = `<a class="show_viewer" alt="뷰어로 보기">
+    <i class="ion-ios-book at-tip" aria-hidden="true" style="color: blue;"></i>
+  </a>`;
+  const div = document.querySelector<HTMLDivElement>(
+    ".bottom-navbar .toon-nav",
+  );
+  const button = template.content.firstElementChild!;
 
-  bottomViewerButton!.parentElement!.insertBefore(myButton, bottomViewerButton);
-  return myButton;
+  div?.prepend(button);
+  return button;
 }
 
 function comicSource() {
