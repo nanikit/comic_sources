@@ -6,6 +6,7 @@
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
 // @version        {date_version}
+// @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
