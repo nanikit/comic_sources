@@ -19,6 +19,13 @@
         "isDefault": true
       },
       "problemMatcher": "$deno"
+    },
+    {
+      "label": "Update viewer",
+      "type": "deno",
+      "command": "task",
+      "args": ["update-deps"],
+      "problemMatcher": "$deno"
     }
   ]
 }
