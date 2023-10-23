@@ -5,7 +5,8 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231022215734
+// @version        231023123927
+// @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
@@ -39,12 +40,14 @@ async function main() {
   if (!location.origin.match(/manatoki|newtoki/)) {
     return;
   }
-  const button = duplicateViewerButton();
+  const buttons = duplicateViewerButton();
   try {
     const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
-    button.addEventListener("click", async () => {
-      await controller.toggleFullscreen();
-    });
+    for (const button of buttons) {
+      button.addEventListener("click", async () => {
+        await controller.toggleFullscreen();
+      });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -54,12 +57,15 @@ function duplicateViewerButton() {
   template.innerHTML = `<a class="show_viewer" alt="뷰어로 보기">
     <i class="ion-ios-book at-tip" aria-hidden="true" style="color: blue;"></i>
   </a>`;
-  const div = document.querySelector(
-    ".bottom-navbar .toon-nav"
-  );
-  const button = template.content.firstElementChild;
-  div?.prepend(button);
-  return button;
+  const templateButton = template.content.firstElementChild;
+  const buttons = [];
+  const divs = document.querySelectorAll(".toon-nav");
+  for (const div of divs) {
+    const button = templateButton.cloneNode(true);
+    div.prepend(button);
+    buttons.push(button);
+  }
+  return buttons;
 }
 function comicSource() {
   registerEpisodeNavigator();

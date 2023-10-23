@@ -7,12 +7,14 @@ export async function main() {
     return;
   }
 
-  const button = duplicateViewerButton();
+  const buttons = duplicateViewerButton();
   try {
     const controller = await initialize({ source: comicSource });
-    button.addEventListener("click", async () => {
-      await controller.toggleFullscreen();
-    });
+    for (const button of buttons) {
+      button.addEventListener("click", async () => {
+        await controller.toggleFullscreen();
+      });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -23,13 +25,16 @@ function duplicateViewerButton() {
   template.innerHTML = `<a class="show_viewer" alt="뷰어로 보기">
     <i class="ion-ios-book at-tip" aria-hidden="true" style="color: blue;"></i>
   </a>`;
-  const div = document.querySelector<HTMLDivElement>(
-    ".bottom-navbar .toon-nav",
-  );
-  const button = template.content.firstElementChild!;
+  const templateButton = template.content.firstElementChild!;
 
-  div?.prepend(button);
-  return button;
+  const buttons = [];
+  const divs = document.querySelectorAll<HTMLDivElement>(".toon-nav");
+  for (const div of divs) {
+    const button = templateButton.cloneNode(true) as HTMLAnchorElement;
+    div.prepend(button);
+    buttons.push(button);
+  }
+  return buttons;
 }
 
 function comicSource() {
