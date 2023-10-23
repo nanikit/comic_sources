@@ -10,12 +10,12 @@ name: Deno
 
 on:
   push:
-    branches: [main, dev]
+    branches: [dev]
   pull_request:
-    branches: [main, dev]
+    branches: [dev]
 
 jobs:
-  check:
+  check-and-push:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -34,3 +34,9 @@ jobs:
 
     - name: Check
       run: deno check --unstable src/*.ts
+    
+    - name: Push to main
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        git fetch origin dev --depth=50
+        git push origin dev:main
