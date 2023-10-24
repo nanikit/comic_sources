@@ -1,15 +1,10 @@
 export * from "./util.ts";
-import { utils } from "vim_comic_viewer";
-
-export const waitDomContent = utils.waitDomContent;
 
 export const insertCss = (css: string) => {
   const style = document.createElement("style");
   style.innerHTML = css;
   document.head.append(style);
 };
-
-export const domContentLoaded = waitDomContent(window.document);
 
 export const observeOnce = (
   element: Node,

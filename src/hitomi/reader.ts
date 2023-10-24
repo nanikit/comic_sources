@@ -1,4 +1,4 @@
-import { initialize, types, utils } from "vim_comic_viewer";
+import { initialize, types } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { timeout } from "../utils/util.ts";
 
@@ -99,7 +99,7 @@ const prependIdToTitle = async (info: GalleryInfo) => {
 };
 
 const overrideCss = `
-.vim_comic_viewer ::-webkit-scrollbar {
+.vim_comic_viewer > :first-child ::-webkit-scrollbar {
   width: 12px !important;
 }
 ::-webkit-scrollbar-thumb {
@@ -108,8 +108,11 @@ const overrideCss = `
 `;
 
 export const hookReaderPage = async () => {
-  await utils.waitDomContent(document);
-  await initialize({ source: comicSource, imageProps: { loading: "lazy" } });
+  const controller = await initialize({
+    source: comicSource,
+    imageProps: { loading: "lazy" },
+  });
+  controller.container!.parentElement!.className = "vim_comic_viewer";
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
 };

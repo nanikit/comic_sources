@@ -1,4 +1,4 @@
-import { domContentLoaded, insertCss } from "./dom_util.ts";
+import { insertCss } from "./dom_util.ts";
 
 const defaultFocusCss = `
 && {
@@ -19,13 +19,13 @@ const selectItem = (div: HTMLElement): void => {
 const getFocusedItem = () =>
   (document.querySelector(".key-nav-focus") as HTMLElement) || undefined;
 
-export const hookListPage = async (configuration: {
+export function hookListPage(configuration: {
   getItems: () => HTMLElement[];
   enter: (element: HTMLElement) => void;
   focusCss?: string;
   navigatePage?: (offset: number) => void;
   onKeyDown?: (event: KeyboardEvent, selected?: HTMLElement) => void;
-}): Promise<void> => {
+}) {
   const { navigatePage, getItems, enter, onKeyDown } = configuration;
 
   const navigateItem = (forward: boolean) => {
@@ -104,6 +104,5 @@ export const hookListPage = async (configuration: {
   };
 
   addEventListener("keypress", handleKeyPress);
-  await domContentLoaded;
   insertFocusCss();
-};
+}
