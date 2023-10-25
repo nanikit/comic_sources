@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231023140935
+// @version        231025112538
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -29,20 +29,17 @@
 // @resource       react-dom           https://cdn.jsdelivr.net/npm/react-dom@18.2.0/cjs/react-dom.production.min.js
 // @resource       scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       vim_comic_viewer    https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1269024
+// @resource       vim_comic_viewer    https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1270042
 // ==/UserScript==
 "use strict";
 
 define("main", (require, exports, module) => {
 var timeout = (millisecond) => new Promise((resolve) => setTimeout(resolve, millisecond));
-var import_vim_comic_viewer = require("vim_comic_viewer");
-var waitDomContent = import_vim_comic_viewer.utils.waitDomContent;
 var insertCss = (css) => {
   const style = document.createElement("style");
   style.innerHTML = css;
   document.head.append(style);
 };
-var domContentLoaded = waitDomContent(window.document);
 var observeOnce = (element, options) => {
   return new Promise((resolve) => {
     const observer = new MutationObserver((...args) => {
@@ -66,7 +63,7 @@ var selectItem = (div) => {
   window.scrollBy(x, y);
 };
 var getFocusedItem = () => document.querySelector(".key-nav-focus") || void 0;
-var hookListPage = async (configuration) => {
+function hookListPage(configuration) {
   const { navigatePage: navigatePage2, getItems: getItems2, enter: enter2, onKeyDown } = configuration;
   const navigateItem = (forward2) => {
     const items = getItems2();
@@ -138,9 +135,8 @@ var hookListPage = async (configuration) => {
     insertCss(content.replace(/&/g, ".key-nav-focus"));
   };
   addEventListener("keypress", handleKeyPress);
-  await domContentLoaded;
   insertFocusCss();
-};
+}
 async function hookListPage2() {
   await hookListPage({ enter, getItems, navigatePage });
 }
@@ -191,7 +187,7 @@ function getPageList(href) {
   }
   return { links, index: currentPage - 1 };
 }
-var import_vim_comic_viewer2 = require("vim_comic_viewer");
+var import_vim_comic_viewer = require("vim_comic_viewer");
 var onReaderKey = (event) => {
   switch (event.key) {
     case "o":
@@ -250,7 +246,7 @@ var prependIdToTitle = async (info) => {
   }
 };
 var overrideCss = `
-.vim_comic_viewer ::-webkit-scrollbar {
+.vim_comic_viewer > :first-child ::-webkit-scrollbar {
   width: 12px !important;
 }
 ::-webkit-scrollbar-thumb {
@@ -258,8 +254,11 @@ var overrideCss = `
 }
 `;
 var hookReaderPage = async () => {
-  await import_vim_comic_viewer2.utils.waitDomContent(document);
-  await (0, import_vim_comic_viewer2.initialize)({ source: comicSource, imageProps: { loading: "lazy" } });
+  const controller = await (0, import_vim_comic_viewer.initialize)({
+    source: comicSource,
+    imageProps: { loading: "lazy" }
+  });
+  controller.container.parentElement.className = "vim_comic_viewer";
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
 };
