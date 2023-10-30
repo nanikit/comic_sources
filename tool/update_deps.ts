@@ -13,13 +13,18 @@ async function main() {
   const files = expandGlob("./src/*.user.ts", {
     exclude: ["./src/*.local.user.ts"],
   });
+
   for await (const entry of files) {
     promises.push(rewrite(entry.path, url));
   }
-  return Promise.all(promises);
+  const results = await Promise.all(promises);
+
+  if (!results.every((x) => x)) {
+    Deno.exit(1);
+  }
 }
 
-async function rewrite(path: string, url: string): Promise<void> {
+async function rewrite(path: string, url: string) {
   const source = await Deno.readTextFile(path);
   const pattern = escape(
     "https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=",
@@ -28,10 +33,11 @@ async function rewrite(path: string, url: string): Promise<void> {
   const rewritten = source.replace(regex, url);
   if (rewritten === source) {
     console.error(`Nothing changed: ${path}`);
-    return;
+    return false;
   }
 
   await Deno.writeTextFile(path, rewritten);
+  return true;
 }
 
 async function getLatestUrl() {
