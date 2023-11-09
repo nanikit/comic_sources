@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231030230803
+// @version        231109150603
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -18,6 +18,7 @@
 // @grant          GM_xmlhttpRequest
 // @grant          unsafeWindow
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
+// @resource       link:@headlessui/react   https://cdn.jsdelivr.net/npm/@headlessui/react@1.7.17/dist/headlessui.prod.cjs
 // @resource       link:@stitches/react     https://cdn.jsdelivr.net/npm/@stitches/react@1.3.1-1/dist/index.cjs
 // @resource       link:clsx                https://cdn.jsdelivr.net/npm/clsx@2.0.0/dist/clsx.js
 // @resource       link:fflate              https://cdn.jsdelivr.net/npm/fflate@0.8.1/lib/browser.cjs
@@ -32,7 +33,7 @@
 // @resource       link:react-toastify      https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/react-toastify.js
 // @resource       link:scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer    https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1272894
+// @resource       link:vim_comic_viewer    https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1277482
 // @resource       react-toastify-css       https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
@@ -57,7 +58,7 @@ async function main() {
 }
 function duplicateViewerButton() {
   const template = document.createElement("template");
-  template.innerHTML = `<a class="show_viewer" alt="\uBDF0\uC5B4\uB85C \uBCF4\uAE30">
+  template.innerHTML = `<a class="show_viewer" alt="뷰어로 보기">
     <i class="ion-ios-book at-tip" aria-hidden="true" style="color: blue;"></i>
   </a>`;
   const templateButton = template.content.firstElementChild;
@@ -117,8 +118,8 @@ main();
 
 define("tampermonkey_grants", function() { Object.assign(this.window, { GM, GM_getResourceText, GM_getValue, GM_setValue, GM_xmlhttpRequest, unsafeWindow }); });
 requirejs.config({ deps: ["tampermonkey_grants"] });
-for (const { name, content } of GM.info.script.resources.filter(x => x.name.startsWith("link:"))) {
-  define(name.replace("link:", ""), Function("require", "exports", "module", content));
+for (const { name } of GM.info.script.resources.filter(x => x.name.startsWith("link:"))) {
+  define(name.replace("link:", ""), Function("require", "exports", "module", GM_getResourceText(name)));
 }
 
 require(["main"], () => {}, console.error);
