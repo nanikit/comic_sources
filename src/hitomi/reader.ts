@@ -109,6 +109,7 @@ const overrideCss = `
 
 export const hookReaderPage = async () => {
   const controller = await initialize({
+    noSyncScroll: true,
     source: comicSource,
     imageProps: { loading: "lazy" },
   });

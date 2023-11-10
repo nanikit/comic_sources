@@ -17,14 +17,16 @@
     "update-deps": "deno run --allow-all -- tool/update_deps.ts && deno task build"
   },
   "imports": {
+    "@headlessui/react": "npm:@headlessui/react@1.7.17",
     "@stitches/react": "npm:@stitches/react@1.3.1-1",
     "fflate": "npm:fflate@0.8.1",
     "jotai": "npm:jotai@2.4.2",
     "jotai/utils": "npm:jotai@2.4.2/utils",
     "react-dom": "npm:react-dom",
+    "react-toastify": "npm:react-toastify",
     "react": "npm:react",
     "react/jsx-runtime": "npm:react/jsx-runtime",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/6926f8338842b464939aeef57588c12d500f6ae5/src/mod.tsx",
-    "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts"
+    "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/29a856af8352750084743388058c32bf625dd6a3/src/mod.tsx"
   }
 }
