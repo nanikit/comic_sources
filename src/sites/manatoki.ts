@@ -12,7 +12,7 @@ export async function main() {
     const controller = await initialize({ source: comicSource });
     for (const button of buttons) {
       button.addEventListener("click", async () => {
-        await controller.toggleFullscreen();
+        await controller.setImmersive(true);
       });
     }
   } catch (error) {

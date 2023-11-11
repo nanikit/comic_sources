@@ -33,7 +33,8 @@ function registerGlobalKeyHandler() {
         }
 
         viewer = await initialize({ source: comicSource });
-        viewer.toggleFullscreen();
+        viewer.setImmersive(true);
+        event.stopPropagation();
         break;
       }
     }

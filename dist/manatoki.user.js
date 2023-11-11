@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231110104709
+// @version        231111142756
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -49,7 +49,7 @@ async function main() {
     const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
     for (const button of buttons) {
       button.addEventListener("click", async () => {
-        await controller.toggleFullscreen();
+        await controller.setImmersive(true);
       });
     }
   } catch (error) {
