@@ -9,9 +9,13 @@ function registerGlobalKeyHandler() {
 
   addEventListener("keydown", async (event: KeyboardEvent) => {
     const { ctrlKey, shiftKey, altKey } = event;
-    if (ctrlKey || shiftKey || altKey || utils.isTyping(event)) {
+    if (ctrlKey || altKey || utils.isTyping(event)) {
       return;
     }
+    if (shiftKey && !["I", "Insert", "Enter"].includes(event.key)) {
+      return;
+    }
+
     switch (event.key) {
       case "m":
         document.querySelector("#comment > *")!.scrollIntoView({
@@ -27,13 +31,18 @@ function registerGlobalKeyHandler() {
       }
       case "Insert":
       case "Enter":
+      case "I":
       case "i": {
         if (viewer) {
           break;
         }
 
         viewer = await initialize({ source: comicSource });
-        viewer.setImmersive(true);
+        if (event.shiftKey) {
+          viewer.setIsFullscreenPreferred(!viewer.isFullscreenPreferred);
+        } else {
+          viewer.setImmersive(true);
+        }
         event.stopPropagation();
         break;
       }

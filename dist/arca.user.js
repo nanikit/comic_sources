@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231111144009
+// @version        231111150626
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -46,7 +46,10 @@ function registerGlobalKeyHandler() {
   let viewer = null;
   addEventListener("keydown", async (event) => {
     const { ctrlKey, shiftKey, altKey } = event;
-    if (ctrlKey || shiftKey || altKey || import_vim_comic_viewer.utils.isTyping(event)) {
+    if (ctrlKey || altKey || import_vim_comic_viewer.utils.isTyping(event)) {
+      return;
+    }
+    if (shiftKey && !["I", "Insert", "Enter"].includes(event.key)) {
       return;
     }
     switch (event.key) {
@@ -64,12 +67,17 @@ function registerGlobalKeyHandler() {
       }
       case "Insert":
       case "Enter":
+      case "I":
       case "i": {
         if (viewer) {
           break;
         }
         viewer = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
-        viewer.setImmersive(true);
+        if (event.shiftKey) {
+          viewer.setIsFullscreenPreferred(!viewer.isFullscreenPreferred);
+        } else {
+          viewer.setImmersive(true);
+        }
         event.stopPropagation();
         break;
       }
