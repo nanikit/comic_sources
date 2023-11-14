@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231111150626
+// @version        231114173652
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -32,7 +32,7 @@
 // @resource       link:react-toastify      https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/react-toastify.js
 // @resource       link:scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer    https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1278557
+// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1280465/vim%20comic%20viewer.js
 // @resource       react-toastify-css       https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
@@ -45,44 +45,85 @@ function main() {
 function registerGlobalKeyHandler() {
   let viewer = null;
   addEventListener("keydown", async (event) => {
-    const { ctrlKey, shiftKey, altKey } = event;
-    if (ctrlKey || altKey || import_vim_comic_viewer.utils.isTyping(event)) {
-      return;
-    }
-    if (shiftKey && !["I", "Insert", "Enter"].includes(event.key)) {
-      return;
-    }
     switch (event.key) {
       case "m":
-        document.querySelector("#comment > *").scrollIntoView({
-          block: "center"
-        });
+        goToCommentIfEligible(event);
         break;
-      case ";": {
-        event.stopImmediatePropagation();
-        await viewer?.downloader.downloadAndSave({
-          images: searchImages().map(getOriginalLink)
-        });
+      case ";":
+        await downloadOriginalImages(event, viewer?.downloader);
         break;
-      }
-      case "Insert":
-      case "Enter":
-      case "I":
-      case "i": {
+      default:
         if (viewer) {
-          break;
+          forwardEvent(event, viewer);
+          return;
         }
-        viewer = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
-        if (event.shiftKey) {
-          viewer.setIsFullscreenPreferred(!viewer.isFullscreenPreferred);
-        } else {
-          viewer.setImmersive(true);
+        if (!isEntranceShortcut(event)) {
+          return;
         }
+        viewer = await initializeViewer(event);
         event.stopPropagation();
         break;
-      }
     }
   }, { capture: true });
+}
+async function initializeViewer(event) {
+  const viewer = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
+  if (event.shiftKey) {
+    viewer.setIsFullscreenPreferred(!viewer.isFullscreenPreferred);
+  } else {
+    viewer.setImmersive(true);
+  }
+  return viewer;
+}
+function isEntranceShortcut(event) {
+  const { ctrlKey, altKey } = event;
+  if (ctrlKey || altKey || import_vim_comic_viewer.utils.isTyping(event)) {
+    return false;
+  }
+  if (!["Insert", "Enter", "i", "I"].includes(event.key)) {
+    return false;
+  }
+  return true;
+}
+function forwardEvent(event, viewer) {
+  if (viewer.globalKeyHandler(event)) {
+    event.stopPropagation();
+    return;
+  }
+  const ancestors = getAncestors(event.target);
+  if (ancestors.includes(viewer.container)) {
+    if (viewer.elementKeyHandler(event)) {
+      event.stopPropagation();
+    }
+  }
+}
+async function downloadOriginalImages(event, downloader) {
+  if (isCaptureTargetEvent(event)) {
+    event.stopImmediatePropagation();
+    await downloader?.downloadAndSave({
+      images: searchImages().map(getOriginalLink)
+    });
+  }
+}
+function goToCommentIfEligible(event) {
+  if (isCaptureTargetEvent(event)) {
+    document.querySelector("#comment > *").scrollIntoView({
+      block: "center"
+    });
+  }
+}
+function getAncestors(element) {
+  const ancestors = [];
+  let cursor = element;
+  while (cursor) {
+    ancestors.push(cursor);
+    cursor = cursor.parentElement;
+  }
+  return ancestors;
+}
+function isCaptureTargetEvent(event) {
+  const { ctrlKey, altKey, shiftKey } = event;
+  return !(ctrlKey || altKey || shiftKey || import_vim_comic_viewer.utils.isTyping(event));
 }
 function comicSource() {
   return searchImages().map(getOriginalIfGif);

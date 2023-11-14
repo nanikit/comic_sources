@@ -12,7 +12,7 @@
 // @connect        self
 // @grant          GM_openInTab
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       link:vim_comic_viewer https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=1278557
+// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1280465/vim%20comic%20viewer.js
 // ==/UserScript==
 
 import { initialize } from "./sites/hitomi.ts";
