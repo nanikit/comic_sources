@@ -1,23 +1,20 @@
 // @deno-types="tampermonkey"
-import type { } from "tampermonkey";
+import type {} from "tampermonkey";
 import { initialize, utils } from "vim_comic_viewer";
 
 export async function main() {
-  if (!location.origin.match(/manatoki|newtoki/)) {
-    markVisitedLinks();
+  const isToki = location.origin.match(/manatoki|newtoki/);
+  if (!isToki) {
     return;
   }
 
+  markVisitedLinks();
   const buttons = duplicateViewerButton();
-  try {
-    const controller = await initialize({ source: comicSource });
-    for (const button of buttons) {
-      button.addEventListener("click", async () => {
-        await controller.setImmersive(true);
-      });
-    }
-  } catch (error) {
-    console.log(error);
+  const controller = await initialize({ source: comicSource });
+  for (const button of buttons) {
+    button.addEventListener("click", async () => {
+      await controller.setImmersive(true);
+    });
   }
 }
 
@@ -61,8 +58,8 @@ function registerEpisodeNavigator() {
       case "t":
         (document.getElementById("sticky-wrapper") as HTMLSpanElement)
           ?.scrollIntoView({
-            block: "center"
-        });
+            block: "center",
+          });
         break;
       case "m":
         (document.querySelector(".view-good") as HTMLSpanElement)
@@ -91,16 +88,18 @@ function getUrl(image: HTMLImageElement): string[] {
 }
 
 function markVisitedLinks() {
-  const links = document.querySelectorAll(".post-row a");
+  const links = document.querySelectorAll<HTMLAnchorElement>(".post-row a");
 
   for (const link of links) {
-    const url = link.getAttribute('href');
-    const path = new URL(url).pathname
+    const url = link.getAttribute("href");
+    if (!url) return;
+
+    const path = new URL(url).pathname;
     if (localStorage.getItem(path)) {
       link.style.color = "#e2e2e2";
     }
-    link.addEventListener("click", function() {
-      localStorage.setItem(path, true);
+    link.addEventListener("click", () => {
+      localStorage.setItem(path, "true");
     });
   }
 }
