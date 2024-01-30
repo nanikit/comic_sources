@@ -11,9 +11,9 @@ const selectItem = (div: HTMLElement): void => {
   const { left, top, width, height } = div.getBoundingClientRect();
   const centerX = left + width / 2;
   const centerY = top + height / 2;
-  const x = centerX - window.innerWidth / 2;
-  const y = centerY - window.innerHeight / 2;
-  window.scrollBy(x, y);
+  const x = centerX - innerWidth / 2;
+  const y = centerY - innerHeight / 2;
+  scrollBy(x, y);
 };
 
 const getFocusedItem = () =>

@@ -30,10 +30,10 @@ jobs:
       run: deno fmt --check
 
     - name: Run linter
-      run: deno lint --unstable
+      run: deno lint
 
     - name: Check
-      run: deno check --unstable src/*.ts
+      run: deno check src/*.ts
     
     - name: Push to main
       if: ${{ github.event_name == 'push' }}
