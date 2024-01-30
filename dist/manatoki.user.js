@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        231114173652
+// @version        240130121920
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -41,19 +41,17 @@
 define("main", (require, exports, module) => {
 var import_vim_comic_viewer = require("vim_comic_viewer");
 async function main() {
-  if (!location.origin.match(/manatoki|newtoki/)) {
+  const isToki = location.origin.match(/manatoki|newtoki/);
+  if (!isToki) {
     return;
   }
+  markVisitedLinks();
   const buttons = duplicateViewerButton();
-  try {
-    const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
-    for (const button of buttons) {
-      button.addEventListener("click", async () => {
-        await controller.setImmersive(true);
-      });
-    }
-  } catch (error) {
-    console.log(error);
+  const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
+  for (const button of buttons) {
+    button.addEventListener("click", async () => {
+      await controller.setImmersive(true);
+    });
   }
 }
 function duplicateViewerButton() {
@@ -90,6 +88,11 @@ function registerEpisodeNavigator() {
       case "ArrowRight":
         document.getElementById("goNextBtn")?.click?.();
         break;
+      case "t":
+        document.getElementById("sticky-wrapper")?.scrollIntoView({
+          block: "center"
+        });
+        break;
       case "m":
         document.querySelector(".view-good")?.scrollIntoView({
           block: "center"
@@ -111,6 +114,23 @@ function getUrl(image) {
   }
   const data = Object.values(image.dataset);
   return data.length ? data : [image.src];
+}
+function markVisitedLinks() {
+  const links = document.querySelectorAll(".post-row a");
+  const visitedLinks = new Set(GM_getValue("visitedPaths", []));
+  for (const link of links) {
+    const url = link.getAttribute("href");
+    if (!url)
+      return;
+    const path = new URL(url).pathname;
+    if (visitedLinks.has(path)) {
+      link.style.color = "#e2e2e2";
+    }
+    link.addEventListener("click", () => {
+      visitedLinks.add(path);
+      GM_setValue("visitedPaths", [...visitedLinks]);
+    });
+  }
 }
 main();
 
