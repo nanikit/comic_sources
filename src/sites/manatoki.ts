@@ -1,9 +1,10 @@
 // @deno-types="tampermonkey"
-import type {} from "tampermonkey";
+import type { } from "tampermonkey";
 import { initialize, utils } from "vim_comic_viewer";
 
 export async function main() {
   if (!location.origin.match(/manatoki|newtoki/)) {
+    markVisitedLinks();
     return;
   }
 
@@ -50,6 +51,7 @@ function registerEpisodeNavigator() {
     }
     switch (event.key) {
       case "h":
+      break;
       case "ArrowLeft":
         (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
         break;
@@ -57,6 +59,11 @@ function registerEpisodeNavigator() {
       case "ArrowRight":
         (document.getElementById("goNextBtn") as HTMLAnchorElement)?.click?.();
         break;
+      case "t":
+        (document.getElementById("sticky-wrapper") as HTMLSpanElement)
+          ?.scrollIntoView({
+            block: "center"
+        });
       case "m":
         (document.querySelector(".view-good") as HTMLSpanElement)
           ?.scrollIntoView({
@@ -81,4 +88,19 @@ function getUrl(image: HTMLImageElement): string[] {
   }
   const data = Object.values(image.dataset) as string[];
   return data.length ? data : [image.src];
+}
+
+function markVisitedLinks() {
+  const links = document.querySelectorAll(".post-row a");
+
+  for (const link of links) {
+    const url = link.getAttribute('href');
+    const path = new URL(url).pathname
+    if (localStorage.getItem(path)) {
+      link.style.color = "#e2e2e2";
+    }
+    link.addEventListener("click", function() {
+      localStorage.setItem(path, true);
+    });
+  }
 }
