@@ -51,7 +51,6 @@ function registerEpisodeNavigator() {
     }
     switch (event.key) {
       case "h":
-      break;
       case "ArrowLeft":
         (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
         break;
@@ -64,6 +63,7 @@ function registerEpisodeNavigator() {
           ?.scrollIntoView({
             block: "center"
         });
+        break;
       case "m":
         (document.querySelector(".view-good") as HTMLSpanElement)
           ?.scrollIntoView({
