@@ -6,8 +6,8 @@
   "javascript.validate.enable": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true,
-    "source.fixAll": true
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
   },
   "editor.defaultFormatter": "denoland.vscode-deno",
   "[typescript]": {
