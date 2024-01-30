@@ -90,16 +90,18 @@ function getUrl(image: HTMLImageElement): string[] {
 function markVisitedLinks() {
   const links = document.querySelectorAll<HTMLAnchorElement>(".post-row a");
 
+  const visitedLinks = new Set(GM_getValue("visitedPaths", [] as string[]));
   for (const link of links) {
     const url = link.getAttribute("href");
     if (!url) return;
 
     const path = new URL(url).pathname;
-    if (localStorage.getItem(path)) {
+    if (visitedLinks.has(path)) {
       link.style.color = "#e2e2e2";
     }
     link.addEventListener("click", () => {
-      localStorage.setItem(path, "true");
+      visitedLinks.add(path);
+      GM_setValue("visitedPaths", [...visitedLinks]);
     });
   }
 }
