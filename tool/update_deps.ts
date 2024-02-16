@@ -1,5 +1,4 @@
-import { expandGlob } from "https://deno.land/std@0.204.0/fs/expand_glob.ts";
-import { escape } from "https://deno.land/std@0.204.0/regexp/escape.ts";
+import { expandGlob } from "https://deno.land/std@0.216.0/fs/expand_glob.ts";
 
 if (import.meta.main) {
   await main();
@@ -26,11 +25,7 @@ async function main() {
 
 async function rewrite(path: string, url: string) {
   const source = await Deno.readTextFile(path);
-  const pattern = escape(
-    "https://greasyfork.org/scripts/417893-vim-comic-viewer/code/vim%20comic%20viewer.js?version=",
-  );
-  const regex = new RegExp(pattern + "\\d+", "g");
-  const rewritten = source.replace(regex, url);
+  const rewritten = source.replace(/(?<=link:vim_comic_viewer\s+)\S+/, url);
   if (rewritten === source) {
     console.error(`Nothing changed: ${path}`);
     return false;

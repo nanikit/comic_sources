@@ -10,7 +10,7 @@
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        *
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1280465/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1328507/vim%20comic%20viewer.js
 // ==/UserScript==
 import { main } from "./sites/toon11.ts";
 
