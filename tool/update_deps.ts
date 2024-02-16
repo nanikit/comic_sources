@@ -36,9 +36,7 @@ async function rewrite(path: string, url: string) {
 }
 
 async function getLatestUrl() {
-  const html = await getText(
-    "https://greasyfork.org/ko/scripts/417893-vim-comic-viewer",
-  );
+  const html = await getText("https://greasyfork.org/ko/scripts/417893-vim-comic-viewer");
   const url = html.match(/<code>\/\/ @require (.*?)<\/code>/);
   return url?.[1]!;
 }

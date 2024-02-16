@@ -16,8 +16,7 @@ const selectItem = (div: HTMLElement): void => {
   scrollBy(x, y);
 };
 
-const getFocusedItem = () =>
-  (document.querySelector(".key-nav-focus") as HTMLElement) || undefined;
+const getFocusedItem = () => (document.querySelector(".key-nav-focus") as HTMLElement) || undefined;
 
 export function hookListPage(configuration: {
   getItems: () => HTMLElement[];

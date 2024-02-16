@@ -5,15 +5,17 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240130121920
+// @version        240216223045
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @connect        *
+// @grant          GM_addValueChangeListener
 // @grant          GM_getResourceText
 // @grant          GM_getValue
+// @grant          GM_removeValueChangeListener
 // @grant          GM_setValue
 // @grant          GM_xmlhttpRequest
 // @grant          unsafeWindow
@@ -33,7 +35,7 @@
 // @resource       link:react-toastify      https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/react-toastify.js
 // @resource       link:scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1280465/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1328507/vim%20comic%20viewer.js
 // @resource       react-toastify-css       https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
@@ -136,7 +138,7 @@ main();
 
 });
 
-define("tampermonkey_grants", function() { Object.assign(this.window, { GM, GM_getResourceText, GM_getValue, GM_setValue, GM_xmlhttpRequest, unsafeWindow }); });
+define("tampermonkey_grants", function() { Object.assign(this.window, { GM, GM_addValueChangeListener, GM_getResourceText, GM_getValue, GM_removeValueChangeListener, GM_setValue, GM_xmlhttpRequest, unsafeWindow }); });
 requirejs.config({ deps: ["tampermonkey_grants"] });
 for (const { name } of GM.info.script.resources.filter(x => x.name.startsWith("link:"))) {
   define(name.replace("link:", ""), Function("require", "exports", "module", GM_getResourceText(name)));
