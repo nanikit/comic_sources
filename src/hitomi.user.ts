@@ -9,6 +9,7 @@
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @license        MIT
 // @connect        self
 // @grant          GM_openInTab
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js

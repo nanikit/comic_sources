@@ -11,6 +11,7 @@
 // @match          https://*.com/webtoon/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @license        MIT
 // @connect        *
 // @grant          GM_getValue
 // @grant          GM_setValue

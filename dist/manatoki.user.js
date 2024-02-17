@@ -5,12 +5,13 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240216223045
+// @version        240217102149
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @license        MIT
 // @connect        *
 // @grant          GM_addValueChangeListener
 // @grant          GM_getResourceText

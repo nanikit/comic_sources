@@ -9,6 +9,7 @@
 // @match          https://arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @license        MIT
 // @connect        namu.la
 // @connect        *
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
