@@ -3,19 +3,35 @@ import type {} from "tampermonkey";
 import { initialize, utils } from "vim_comic_viewer";
 
 export async function main() {
-  const isToki = location.origin.match(/manatoki|newtoki/);
-  if (!isToki) {
+  const origin = getOrigin();
+  if (origin === "unknown") {
     return;
   }
 
   markVisitedLinks();
   const buttons = duplicateViewerButton();
   const controller = await initialize({ source: comicSource });
+  controller.setScriptPreferences({
+    manualPreset: origin,
+    preferences: { pageDirection: origin === "newtoki" ? "leftToRight" : "rightToLeft" },
+  });
   for (const button of buttons) {
     button.addEventListener("click", async () => {
       await controller.setImmersive(true);
     });
   }
+}
+
+function getOrigin() {
+  return originIncludes("manatoki")
+    ? "manatoki"
+    : originIncludes("newtoki")
+    ? "newtoki"
+    : "unknown";
+}
+
+function originIncludes(str: string) {
+  return location.origin.includes(str);
 }
 
 function duplicateViewerButton() {

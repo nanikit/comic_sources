@@ -37,7 +37,7 @@ function registerGlobalKeyHandler() {
 async function initializeViewer(event: KeyboardEvent) {
   const viewer = await initialize({ source: comicSource });
   if (event.shiftKey) {
-    viewer.setIsFullscreenPreferred(!viewer.isFullscreenPreferred);
+    viewer.setIsFullscreenPreferred(!viewer.effectivePreferences.isFullscreenPreferred);
   } else {
     viewer.setImmersive(true);
   }

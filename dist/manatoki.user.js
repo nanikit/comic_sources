@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240217102149
+// @version        240301155608
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -36,7 +36,7 @@
 // @resource       link:react-toastify      https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/react-toastify.js
 // @resource       link:scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.0/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1328507/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1336006/vim%20comic%20viewer.js
 // @resource       react-toastify-css       https://cdn.jsdelivr.net/npm/react-toastify@9.1.3/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
@@ -44,18 +44,28 @@
 define("main", (require, exports, module) => {
 var import_vim_comic_viewer = require("vim_comic_viewer");
 async function main() {
-  const isToki = location.origin.match(/manatoki|newtoki/);
-  if (!isToki) {
+  const origin = getOrigin();
+  if (origin === "unknown") {
     return;
   }
   markVisitedLinks();
   const buttons = duplicateViewerButton();
   const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
+  controller.setScriptPreferences({
+    manualPreset: origin,
+    preferences: { pageDirection: origin === "newtoki" ? "leftToRight" : "rightToLeft" }
+  });
   for (const button of buttons) {
     button.addEventListener("click", async () => {
       await controller.setImmersive(true);
     });
   }
+}
+function getOrigin() {
+  return originIncludes("manatoki") ? "manatoki" : originIncludes("newtoki") ? "newtoki" : "unknown";
+}
+function originIncludes(str) {
+  return location.origin.includes(str);
 }
 function duplicateViewerButton() {
   const template = document.createElement("template");
