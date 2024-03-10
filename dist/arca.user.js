@@ -5,8 +5,9 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240301155608
+// @version        240310071513
 // @match          https://arca.live/b/*/*
+// @match          https://*.arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT

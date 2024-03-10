@@ -7,6 +7,7 @@
 // @description:en press i to open
 // @version        {date_version}
 // @match          https://arca.live/b/*/*
+// @match          https://*.arca.live/b/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
