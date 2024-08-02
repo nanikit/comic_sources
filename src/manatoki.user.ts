@@ -9,6 +9,7 @@
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
+// @match          https://*.com/novel/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT

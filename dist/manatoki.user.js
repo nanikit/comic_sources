@@ -5,10 +5,11 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240301155608
+// @version        240802065604
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
+// @match          https://*.com/novel/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
@@ -53,7 +54,7 @@ async function main() {
   const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
   controller.setScriptPreferences({
     manualPreset: origin,
-    preferences: { pageDirection: origin === "newtoki" ? "leftToRight" : "rightToLeft" }
+    preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" }
   });
   for (const button of buttons) {
     button.addEventListener("click", async () => {
@@ -62,7 +63,8 @@ async function main() {
   }
 }
 function getOrigin() {
-  return originIncludes("manatoki") ? "manatoki" : originIncludes("newtoki") ? "newtoki" : "unknown";
+  const allowedOrigins = ["manatoki", "newtoki", "booktoki"];
+  return allowedOrigins.find(originIncludes) ?? "unknown";
 }
 function originIncludes(str) {
   return location.origin.includes(str);

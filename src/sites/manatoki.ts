@@ -13,7 +13,7 @@ export async function main() {
   const controller = await initialize({ source: comicSource });
   controller.setScriptPreferences({
     manualPreset: origin,
-    preferences: { pageDirection: origin === "newtoki" ? "leftToRight" : "rightToLeft" },
+    preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" },
   });
   for (const button of buttons) {
     button.addEventListener("click", async () => {
@@ -23,11 +23,8 @@ export async function main() {
 }
 
 function getOrigin() {
-  return originIncludes("manatoki")
-    ? "manatoki"
-    : originIncludes("newtoki")
-    ? "newtoki"
-    : "unknown";
+  const allowedOrigins = ["manatoki", "newtoki", "booktoki"];
+  return allowedOrigins.find(originIncludes) ?? "unknown";
 }
 
 function originIncludes(str: string) {
