@@ -1,4 +1,4 @@
-import { expandGlob } from "https://deno.land/std@0.216.0/fs/expand_glob.ts";
+import { expandGlob } from "jsr:@std/fs/expand-glob";
 
 if (import.meta.main) {
   await main();
