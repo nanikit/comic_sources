@@ -1,4 +1,4 @@
-import { initialize, utils } from "vim_comic_viewer";
+import { type ComicSourceParams, initialize, utils } from "vim_comic_viewer";
 
 export function main() {
   registerGlobalKeyHandler();
@@ -76,7 +76,7 @@ async function downloadOriginalImages(
   if (isCaptureTargetEvent(event)) {
     event.stopImmediatePropagation();
     await downloader?.downloadAndSave({
-      images: searchImages().map(getOriginalLink),
+      source: () => searchImages().map(getOriginalLink),
     });
   }
 }
@@ -106,8 +106,34 @@ function isCaptureTargetEvent(event: KeyboardEvent) {
   return !(ctrlKey || altKey || shiftKey || utils.isTyping(event));
 }
 
-function comicSource() {
-  return searchImages().map(getOriginalIfGif);
+function comicSource({ cause, maxSize }: ComicSourceParams) {
+  const isDownload = cause === "download";
+  if (isDownload) {
+    return searchImages().map(getOriginalLink);
+  }
+
+  return searchImages().map(getAdaptiveLink);
+
+  function getAdaptiveLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
+    const originalUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
+    const { width, height } = imgOrVideo;
+    const adaptive = { src: imgOrVideo.src, width, height };
+    if (!originalUrl) {
+      return adaptive;
+    }
+
+    const isGif = new URL(originalUrl).pathname.endsWith(".gif");
+    const original = { src: originalUrl, width, height };
+    if (isGif) {
+      return original;
+    }
+
+    const resizedWidth = 1000;
+    const resizedHeight = height * resizedWidth / width;
+    const zoomRatio = Math.min(maxSize.width / resizedWidth, maxSize.height / resizedHeight);
+    const canBePoorVisual = zoomRatio >= 2;
+    return canBePoorVisual ? original : adaptive;
+  }
 }
 
 function searchImages() {
@@ -121,13 +147,4 @@ function searchImages() {
 function getOriginalLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
   return (imgOrVideo.parentElement as HTMLAnchorElement)?.href ??
     imgOrVideo.src;
-}
-
-function getOriginalIfGif(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
-  const link = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
-  if (!link || !new URL(link).pathname.endsWith(".gif")) {
-    return imgOrVideo.src;
-  }
-
-  return link;
 }

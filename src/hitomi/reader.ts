@@ -1,4 +1,4 @@
-import { initialize, types } from "vim_comic_viewer";
+import { type ComicSource, initialize } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { timeout } from "../utils/util.ts";
 
@@ -49,7 +49,7 @@ const waitUnsafeObject = async (name: string) => {
   }
 };
 
-const comicSource: types.ComicSource = async () => {
+const comicSource: ComicSource = async () => {
   const info = await waitUnsafeObject("galleryinfo") as GalleryInfo;
   prependIdToTitle(info);
 
