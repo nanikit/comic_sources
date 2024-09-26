@@ -4,7 +4,6 @@ about: 기능 제안
 title: ''
 labels: enhancement
 assignees: nanikit
-
 ---
 
 ### 바꾸고 싶은 상황을 설명해주세요

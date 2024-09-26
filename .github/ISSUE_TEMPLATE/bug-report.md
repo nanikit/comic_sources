@@ -4,7 +4,6 @@ about: 버그 리포트
 title: ''
 labels: bug
 assignees: nanikit
-
 ---
 
 ### Steps to reproduce (재현 방법)
