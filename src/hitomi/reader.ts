@@ -84,8 +84,7 @@ function throttleComicSource(urls: string[]): ComicSource {
     queue.shift()?.resolve();
   }, 1000);
 
-  return async ({ cause, page }) => {
-    console.log("invoked", { cause, page });
+  return async ({ cause }) => {
     if (cause !== "error") {
       return urls;
     }
@@ -93,7 +92,6 @@ function throttleComicSource(urls: string[]): ComicSource {
     const resolver = Promise.withResolvers<void>();
     queue.push(resolver);
     await resolver.promise;
-    console.log("pop", page);
 
     return urls;
   };

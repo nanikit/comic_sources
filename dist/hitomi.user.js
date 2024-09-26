@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240926183326
+// @version        240926183736
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -238,15 +238,13 @@ function throttleComicSource(urls) {
   setInterval(() => {
     queue.shift()?.resolve();
   }, 1e3);
-  return async ({ cause, page }) => {
-    console.log("invoked", { cause, page });
+  return async ({ cause }) => {
     if (cause !== "error") {
       return urls;
     }
     const resolver = Promise.withResolvers();
     queue.push(resolver);
     await resolver.promise;
-    console.log("pop", page);
     return urls;
   };
 }
