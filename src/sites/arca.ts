@@ -115,15 +115,20 @@ function comicSource({ cause, maxSize }: ComicSourceParams) {
   return searchImages().map(getAdaptiveLink);
 
   function getAdaptiveLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
-    const originalUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
+    const originalImageUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
     const { width, height } = imgOrVideo;
-    const adaptive = { src: imgOrVideo.src, width, height };
-    if (!originalUrl) {
+    const adaptive = {
+      src: imgOrVideo.src,
+      width,
+      height,
+      type: imgOrVideo.tagName === "IMG" ? "image" : "video",
+    };
+    if (!originalImageUrl) {
       return adaptive;
     }
 
-    const isGif = new URL(originalUrl).pathname.endsWith(".gif");
-    const original = { src: originalUrl, width, height };
+    const isGif = new URL(originalImageUrl).pathname.endsWith(".gif");
+    const original = { src: originalImageUrl, width, height };
     if (isGif) {
       return original;
     }
@@ -145,6 +150,10 @@ function searchImages() {
 }
 
 function getOriginalLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
-  return (imgOrVideo.parentElement as HTMLAnchorElement)?.href ??
-    imgOrVideo.src;
+  const originalImageUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
+  if (originalImageUrl) {
+    return { src: originalImageUrl, type: "image" as const };
+  }
+
+  return { src: imgOrVideo.src, type: "video" as const };
 }
