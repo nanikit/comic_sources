@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240926171249
+// @version        240926183326
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -35,7 +35,7 @@
 // @resource       link:react-toastify      https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/react-toastify.js
 // @resource       link:scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1454682/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1454718/vim%20comic%20viewer.js
 // @resource       react-toastify-css       https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
@@ -195,14 +195,33 @@ function getPageList(href) {
   return { links, index: currentPage - 1 };
 }
 var import_vim_comic_viewer = require("vim_comic_viewer");
-var onReaderKey = (event) => {
+var overrideCss = `
+.vim_comic_viewer > :first-child ::-webkit-scrollbar {
+  width: 12px !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+`;
+async function hookReaderPage() {
+  const urls = await getUrls();
+  const controller = await (0, import_vim_comic_viewer.initialize)({
+    noSyncScroll: true,
+    source: throttleComicSource(urls),
+    imageProps: { loading: "lazy" }
+  });
+  controller.container.parentElement.className = "vim_comic_viewer";
+  insertCss(overrideCss);
+  addEventListener("keypress", onReaderKey);
+}
+function onReaderKey(event) {
   switch (event.key) {
     case "o":
       close();
       break;
   }
-};
-var waitUnsafeObject = async (name) => {
+}
+async function waitUnsafeObject(name) {
   while (true) {
     const target = unsafeWindow[name];
     if (target) {
@@ -213,8 +232,25 @@ var waitUnsafeObject = async (name) => {
     }
     await timeout(100);
   }
-};
-var comicSource = async () => {
+}
+function throttleComicSource(urls) {
+  const queue = [];
+  setInterval(() => {
+    queue.shift()?.resolve();
+  }, 1e3);
+  return async ({ cause, page }) => {
+    console.log("invoked", { cause, page });
+    if (cause !== "error") {
+      return urls;
+    }
+    const resolver = Promise.withResolvers();
+    queue.push(resolver);
+    await resolver.promise;
+    console.log("pop", page);
+    return urls;
+  };
+}
+async function getUrls() {
   const info = await waitUnsafeObject("galleryinfo");
   prependIdToTitle(info);
   const gg = await waitUnsafeObject("gg");
@@ -231,9 +267,7 @@ var comicSource = async () => {
     Object.assign(window, { base: base2 });
   });
   const base = unsafeWindow.base;
-  const urlFromUrlFromHash = await waitUnsafeObject(
-    "url_from_url_from_hash"
-  );
+  const urlFromUrlFromHash = await waitUnsafeObject("url_from_url_from_hash");
   const urls = info.files.map(
     (file) => urlFromUrlFromHash(
       info.id,
@@ -244,32 +278,14 @@ var comicSource = async () => {
     )
   );
   return urls;
-};
-var prependIdToTitle = async (info) => {
+}
+async function prependIdToTitle(info) {
   const title = document.querySelector("title");
   for (let i = 0; i < 2; i++) {
     document.title = `${info.id} ${info.title}`;
     await observeOnce(title, { childList: true });
   }
-};
-var overrideCss = `
-.vim_comic_viewer > :first-child ::-webkit-scrollbar {
-  width: 12px !important;
 }
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-`;
-var hookReaderPage = async () => {
-  const controller = await (0, import_vim_comic_viewer.initialize)({
-    noSyncScroll: true,
-    source: comicSource,
-    imageProps: { loading: "lazy" }
-  });
-  controller.container.parentElement.className = "vim_comic_viewer";
-  insertCss(overrideCss);
-  addEventListener("keypress", onReaderKey);
-};
 function exec(fn) {
   const script = document.createElement("script");
   script.setAttribute("type", "application/javascript");

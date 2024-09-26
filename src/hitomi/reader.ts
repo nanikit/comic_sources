@@ -2,13 +2,14 @@ import { type ComicSource, initialize } from "vim_comic_viewer";
 import { insertCss, observeOnce } from "../utils/dom_util.ts";
 import { timeout } from "../utils/util.ts";
 
-const onReaderKey = (event: KeyboardEvent) => {
-  switch (event.key) {
-    case "o":
-      close();
-      break;
-  }
-};
+const overrideCss = `
+.vim_comic_viewer > :first-child ::-webkit-scrollbar {
+  width: 12px !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+`;
 
 type ImageInfo = {
   hasavif: 0 | 1;
@@ -36,7 +37,35 @@ type GalleryInfo = {
   type: string;
 };
 
-const waitUnsafeObject = async (name: string) => {
+type UrlFromUrlHash = (
+  galleryId: string,
+  file: ImageInfo,
+  type: string,
+  extension?: string,
+  base?: string,
+) => string;
+
+export async function hookReaderPage() {
+  const urls = await getUrls();
+  const controller = await initialize({
+    noSyncScroll: true,
+    source: throttleComicSource(urls),
+    imageProps: { loading: "lazy" },
+  });
+  controller.container!.parentElement!.className = "vim_comic_viewer";
+  insertCss(overrideCss);
+  addEventListener("keypress", onReaderKey);
+}
+
+function onReaderKey(event: KeyboardEvent) {
+  switch (event.key) {
+    case "o":
+      close();
+      break;
+  }
+}
+
+async function waitUnsafeObject(name: string) {
   while (true) {
     const target = (unsafeWindow as unknown as Record<string, unknown>)[name];
     if (target) {
@@ -47,9 +76,30 @@ const waitUnsafeObject = async (name: string) => {
     }
     await timeout(100);
   }
-};
+}
 
-const comicSource: ComicSource = async () => {
+function throttleComicSource(urls: string[]): ComicSource {
+  const queue: PromiseWithResolvers<void>[] = [];
+  setInterval(() => {
+    queue.shift()?.resolve();
+  }, 1000);
+
+  return async ({ cause, page }) => {
+    console.log("invoked", { cause, page });
+    if (cause !== "error") {
+      return urls;
+    }
+
+    const resolver = Promise.withResolvers<void>();
+    queue.push(resolver);
+    await resolver.promise;
+    console.log("pop", page);
+
+    return urls;
+  };
+}
+
+async function getUrls() {
   const info = await waitUnsafeObject("galleryinfo") as GalleryInfo;
   prependIdToTitle(info);
 
@@ -69,15 +119,7 @@ const comicSource: ComicSource = async () => {
   });
   const base = (unsafeWindow as unknown as { base: string }).base;
 
-  const urlFromUrlFromHash = await waitUnsafeObject(
-    "url_from_url_from_hash",
-  ) as (
-    galleryId: string,
-    file: ImageInfo,
-    type: string,
-    extension?: string,
-    base?: string,
-  ) => string;
+  const urlFromUrlFromHash = await waitUnsafeObject("url_from_url_from_hash") as UrlFromUrlHash;
   const urls = info.files.map((file: ImageInfo) =>
     urlFromUrlFromHash(
       info.id,
@@ -87,36 +129,17 @@ const comicSource: ComicSource = async () => {
       base,
     )
   );
-  return urls as string[];
-};
 
-const prependIdToTitle = async (info: GalleryInfo) => {
+  return urls as string[];
+}
+
+async function prependIdToTitle(info: GalleryInfo) {
   const title = document.querySelector("title")!;
   for (let i = 0; i < 2; i++) {
     document.title = `${info.id} ${info.title}`;
     await observeOnce(title, { childList: true });
   }
-};
-
-const overrideCss = `
-.vim_comic_viewer > :first-child ::-webkit-scrollbar {
-  width: 12px !important;
 }
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-`;
-
-export const hookReaderPage = async () => {
-  const controller = await initialize({
-    noSyncScroll: true,
-    source: comicSource,
-    imageProps: { loading: "lazy" },
-  });
-  controller.container!.parentElement!.className = "vim_comic_viewer";
-  insertCss(overrideCss);
-  addEventListener("keypress", onReaderKey);
-};
 
 function exec(fn: () => void) {
   const script = document.createElement("script");
