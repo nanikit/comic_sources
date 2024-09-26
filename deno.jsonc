@@ -32,6 +32,6 @@
     "react": "npm:react@18.3.1",
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/b4d2bb7047710814b42f370b2bbded8665dd1659/src/mod.tsx"
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/a724ebad534071014d8b5fc1c80bf0d7af6254ff/src/mod.tsx"
   }
 }
