@@ -100,10 +100,10 @@ function getUrl(image: HTMLImageElement): string[] {
   return data.length ? data : [image.src];
 }
 
-function markVisitedLinks() {
+async function markVisitedLinks() {
   const links = document.querySelectorAll<HTMLAnchorElement>(".post-row a");
 
-  const visitedLinks = new Set(GM_getValue("visitedPaths", [] as string[]));
+  const visitedLinks = new Set(await GM.getValue("visitedPaths", [] as string[]));
   for (const link of links) {
     const url = link.getAttribute("href");
     if (!url) return;
@@ -112,9 +112,9 @@ function markVisitedLinks() {
     if (visitedLinks.has(path)) {
       link.style.color = "#e2e2e2";
     }
-    link.addEventListener("click", () => {
+    link.addEventListener("click", async () => {
       visitedLinks.add(path);
-      GM_setValue("visitedPaths", [...visitedLinks]);
+      await GM.setValue("visitedPaths", [...visitedLinks]);
     });
   }
 }

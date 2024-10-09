@@ -14,8 +14,8 @@
   "include": ["src"],
   "exclude": ["dist"],
   "tasks": {
-    "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/eabb9e5d7ed4e6c6c32cd49efeb89f220cc714ec/mod.ts 'src/*.user.ts' -o dist",
-    "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/eabb9e5d7ed4e6c6c32cd49efeb89f220cc714ec/mod.ts 'src/*.user.ts' -o dist --watch",
+    "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/02a9e434652e3dcd934cd7a54b59756ff1070432/mod.ts 'src/*.user.ts' -o dist",
+    "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/02a9e434652e3dcd934cd7a54b59756ff1070432/mod.ts 'src/*.user.ts' -o dist --watch",
     "update-deps": "deno run --allow-all -- tool/update_deps.ts && deno task build"
   },
   "fmt": {
