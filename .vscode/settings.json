@@ -1,7 +1,6 @@
 {
   "deno.enable": true,
   "deno.lint": true,
-  "deno.unstable": true,
   "typescript.validate.enable": false,
   "javascript.validate.enable": false,
   "editor.formatOnSave": true,
@@ -9,8 +8,5 @@
     "source.organizeImports": "explicit",
     "source.fixAll": "explicit"
   },
-  "editor.defaultFormatter": "denoland.vscode-deno",
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  "editor.defaultFormatter": "denoland.vscode-deno"
 }
