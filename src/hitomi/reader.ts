@@ -50,7 +50,6 @@ export async function hookReaderPage() {
   const controller = await initialize({
     noSyncScroll: true,
     source: throttleComicSource(urls),
-    imageProps: { loading: "lazy" },
   });
   controller.container!.parentElement!.className = "vim_comic_viewer";
   insertCss(overrideCss);
@@ -79,22 +78,66 @@ async function waitUnsafeObject(name: string) {
 }
 
 function throttleComicSource(urls: string[]): ComicSource {
-  const queue: PromiseWithResolvers<void>[] = [];
-  setInterval(() => {
-    queue.shift()?.resolve();
-  }, 1000);
+  const urlCacheKey = "viewer_cached_urls";
+  const cachedUrls = JSON.parse(sessionStorage.getItem(urlCacheKey) ?? "[]");
 
-  return async ({ cause }) => {
-    if (cause !== "error") {
+  const currentSource: (string | undefined)[] = [
+    ...urls.slice(0, 4),
+    ...Array(Math.max(0, urls.length - 4)).fill(undefined),
+  ];
+
+  for (const [i, url] of urls.entries()) {
+    if (cachedUrls.includes(url)) {
+      currentSource[i] = url;
+    }
+  }
+
+  const remainingIndices = [...Array(urls.length).keys()].slice(4);
+  const resolvers = new Map<number, PromiseWithResolvers<void>>();
+
+  setInterval(() => {
+    const index = remainingIndices.shift();
+    if (index === undefined) {
+      return;
+    }
+
+    currentSource[index] = urls[index];
+    resolvers.get(index)?.resolve();
+    resolvers.delete(index);
+
+    cachedUrls.push(urls[index]);
+    sessionStorage.setItem(urlCacheKey, JSON.stringify(cachedUrls));
+  }, 500);
+
+  return async ({ cause, page }) => {
+    if (cause === "download") {
       return urls;
     }
 
-    const resolver = Promise.withResolvers<void>();
-    queue.push(resolver);
-    await resolver.promise;
+    if (cause === "error" && page !== undefined) {
+      currentSource[page] = undefined;
+      remainingIndices.push(page);
+    }
 
-    return urls;
+    if (!page || currentSource[page] !== undefined) {
+      return currentSource;
+    }
+
+    await getResolver(page).promise;
+
+    return currentSource;
   };
+
+  function getResolver(page: number) {
+    let resolver = resolvers.get(page);
+    if (resolver) {
+      return resolver;
+    }
+
+    resolver = Promise.withResolvers<void>();
+    resolvers.set(page, resolver);
+    return resolver;
+  }
 }
 
 async function getUrls() {
