@@ -9,8 +9,10 @@ export async function main() {
   }
 
   markVisitedLinks();
+  registerEpisodeNavigator();
+
   const buttons = duplicateViewerButton();
-  const controller = await initialize({ source: comicSource });
+  const controller = await initialize({ source: getComicSource() });
   controller.setScriptPreferences({
     manualPreset: origin,
     preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" },
@@ -48,9 +50,9 @@ function duplicateViewerButton() {
   return buttons;
 }
 
-function comicSource() {
-  registerEpisodeNavigator();
-  return getUrls();
+function getComicSource() {
+  const urls = getUrls();
+  return () => urls;
 }
 
 function registerEpisodeNavigator() {
@@ -84,12 +86,11 @@ function registerEpisodeNavigator() {
   });
 }
 
-function getUrls(): string[] {
+function getUrls() {
   const imgs = (document.querySelectorAll(
     "div.view-padding img",
   ) as unknown) as Iterable<HTMLImageElement>;
-  const urls = [...imgs].flatMap(getUrl);
-  return urls as string[];
+  return [...imgs].flatMap(getUrl);
 }
 
 function getUrl(image: HTMLImageElement): string[] {
