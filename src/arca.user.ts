@@ -14,7 +14,7 @@
 // @connect        namu.la
 // @connect        *
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1454718/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1461620/vim%20comic%20viewer.js
 // ==/UserScript==
 
 import { main } from "./sites/arca.ts";

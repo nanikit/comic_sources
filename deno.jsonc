@@ -11,8 +11,12 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
-  "include": ["src"],
-  "exclude": ["dist"],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "dist"
+  ],
   "tasks": {
     "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/02a9e434652e3dcd934cd7a54b59756ff1070432/mod.ts 'src/*.user.ts' -o dist",
     "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/02a9e434652e3dcd934cd7a54b59756ff1070432/mod.ts 'src/*.user.ts' -o dist --watch",
@@ -27,11 +31,12 @@
     "fflate": "npm:fflate@0.8.2",
     "jotai": "npm:jotai@2.10.0",
     "jotai/utils": "npm:jotai@2.10.0/utils",
+    "overlayscrollbars-react": "npm:overlayscrollbars-react",
     "react-dom": "npm:react-dom@18.3.1",
     "react-toastify": "npm:react-toastify@10.0.5",
     "react": "npm:react@18.3.1",
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/a724ebad534071014d8b5fc1c80bf0d7af6254ff/src/mod.tsx"
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/036314aaafcf7f1951f221657babd784139cc276/src/mod.tsx"
   }
 }
