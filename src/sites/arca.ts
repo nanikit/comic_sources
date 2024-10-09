@@ -1,13 +1,7 @@
-import { type ComicSourceParams, initialize, utils } from "vim_comic_viewer";
+import { type ComicSourceParams, initialize, utils, type ViewerController } from "vim_comic_viewer";
 
-export function main() {
-  registerGlobalKeyHandler();
-}
-
-type Viewer = Awaited<ReturnType<typeof initialize>>;
-
-function registerGlobalKeyHandler() {
-  let viewer: Viewer | null = null;
+export async function main() {
+  const viewer = await initialize({ source: comicSource, mediaProps: { loading: "lazy" } });
 
   addEventListener("keydown", async (event: KeyboardEvent) => {
     switch (event.key) {
@@ -18,52 +12,22 @@ function registerGlobalKeyHandler() {
         await downloadOriginalImages(event, viewer?.downloader);
         break;
       default:
-        if (viewer) {
-          forwardEvent(event, viewer);
-          return;
-        }
-
-        if (!isEntranceShortcut(event)) {
-          return;
-        }
-
-        viewer = await initializeViewer(event);
-        event.stopPropagation();
+        // Suppress arca refresher.
+        forwardEvent(event, viewer);
         break;
     }
   }, { capture: true });
 }
 
-async function initializeViewer(event: KeyboardEvent) {
-  const viewer = await initialize({ source: comicSource });
-  if (event.shiftKey) {
-    viewer.setIsFullscreenPreferred(!viewer.effectivePreferences.isFullscreenPreferred);
-  } else {
-    viewer.setImmersive(true);
-  }
-  return viewer;
-}
-
-function isEntranceShortcut(event: KeyboardEvent) {
-  const { ctrlKey, altKey } = event;
-  if (ctrlKey || altKey || utils.isTyping(event)) {
-    return false;
-  }
-  if (!["Insert", "Enter", "i", "I"].includes(event.key)) {
-    return false;
-  }
-  return true;
-}
-
-function forwardEvent(event: KeyboardEvent, viewer: Viewer) {
-  if (viewer.globalKeyHandler(event)) {
+function forwardEvent(event: KeyboardEvent, viewer: ViewerController) {
+  if (viewer.defaultGlobalKeyHandler(event)) {
     event.stopPropagation();
     return;
   }
 
   const ancestors = getAncestors(event.target as HTMLElement);
   if (ancestors.includes(viewer.container!)) {
-    if (viewer.elementKeyHandler(event)) {
+    if (viewer.defaultElementKeyHandler(event)) {
       event.stopPropagation();
     }
   }
@@ -71,7 +35,7 @@ function forwardEvent(event: KeyboardEvent, viewer: Viewer) {
 
 async function downloadOriginalImages(
   event: KeyboardEvent,
-  downloader?: Viewer["downloader"],
+  downloader?: ViewerController["downloader"],
 ) {
   if (isCaptureTargetEvent(event)) {
     event.stopImmediatePropagation();
@@ -137,6 +101,10 @@ function comicSource({ cause, maxSize }: ComicSourceParams) {
     const resizedHeight = height * resizedWidth / width;
     const zoomRatio = Math.min(maxSize.width / resizedWidth, maxSize.height / resizedHeight);
     const canBePoorVisual = zoomRatio >= 2;
+    if (canBePoorVisual && cause === "error") {
+      return adaptive;
+    }
+
     return canBePoorVisual ? original : adaptive;
   }
 }
