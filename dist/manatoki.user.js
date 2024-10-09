@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        240926183326
+// @version        241009101533
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -14,31 +14,34 @@
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
 // @connect        *
-// @grant          GM_addValueChangeListener
-// @grant          GM_getResourceText
-// @grant          GM_getValue
-// @grant          GM_removeValueChangeListener
-// @grant          GM_setValue
-// @grant          GM_xmlhttpRequest
+// @grant          GM.addValueChangeListener
+// @grant          GM.getResourceText
+// @grant          GM.getValue
+// @grant          GM.removeValueChangeListener
+// @grant          GM.setValue
+// @grant          GM.xmlHttpRequest
 // @grant          unsafeWindow
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       link:@headlessui/react   https://cdn.jsdelivr.net/npm/@headlessui/react@2.1.8/dist/headlessui.prod.cjs
-// @resource       link:@stitches/react     https://cdn.jsdelivr.net/npm/@stitches/react@1.3.1-1/dist/index.cjs
-// @resource       link:clsx                https://cdn.jsdelivr.net/npm/clsx@2.1.1/dist/clsx.js
-// @resource       link:fflate              https://cdn.jsdelivr.net/npm/fflate@0.8.2/lib/browser.cjs
-// @resource       link:jotai               https://cdn.jsdelivr.net/npm/jotai@2.10.0/index.js
-// @resource       link:jotai/react         https://cdn.jsdelivr.net/npm/jotai@2.10.0/react.js
-// @resource       link:jotai/react/utils   https://cdn.jsdelivr.net/npm/jotai@2.10.0/react/utils.js
-// @resource       link:jotai/utils         https://cdn.jsdelivr.net/npm/jotai@2.10.0/utils.js
-// @resource       link:jotai/vanilla       https://cdn.jsdelivr.net/npm/jotai@2.10.0/vanilla.js
-// @resource       link:jotai/vanilla/utils https://cdn.jsdelivr.net/npm/jotai@2.10.0/vanilla/utils.js
-// @resource       link:react               https://cdn.jsdelivr.net/npm/react@18.3.1/cjs/react.production.min.js
-// @resource       link:react-dom           https://cdn.jsdelivr.net/npm/react-dom@18.3.1/cjs/react-dom.production.min.js
-// @resource       link:react-toastify      https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/react-toastify.js
-// @resource       link:scheduler           https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
-// @resource       link:vcv-inject-node-env data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer    https://update.greasyfork.org/scripts/417893/1454718/vim%20comic%20viewer.js
-// @resource       react-toastify-css       https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
+// @resource       link:@headlessui/react       https://cdn.jsdelivr.net/npm/@headlessui/react@2.1.8/dist/headlessui.prod.cjs
+// @resource       link:@stitches/react         https://cdn.jsdelivr.net/npm/@stitches/react@1.3.1-1/dist/index.cjs
+// @resource       link:clsx                    https://cdn.jsdelivr.net/npm/clsx@2.1.1/dist/clsx.js
+// @resource       link:fflate                  https://cdn.jsdelivr.net/npm/fflate@0.8.2/lib/browser.cjs
+// @resource       link:jotai                   https://cdn.jsdelivr.net/npm/jotai@2.10.0/index.js
+// @resource       link:jotai/react             https://cdn.jsdelivr.net/npm/jotai@2.10.0/react.js
+// @resource       link:jotai/react/utils       https://cdn.jsdelivr.net/npm/jotai@2.10.0/react/utils.js
+// @resource       link:jotai/utils             https://cdn.jsdelivr.net/npm/jotai@2.10.0/utils.js
+// @resource       link:jotai/vanilla           https://cdn.jsdelivr.net/npm/jotai@2.10.0/vanilla.js
+// @resource       link:jotai/vanilla/utils     https://cdn.jsdelivr.net/npm/jotai@2.10.0/vanilla/utils.js
+// @resource       link:overlayscrollbars       https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/overlayscrollbars.cjs
+// @resource       link:overlayscrollbars-react https://cdn.jsdelivr.net/npm/overlayscrollbars-react@0.5.6/overlayscrollbars-react.cjs.js
+// @resource       link:react                   https://cdn.jsdelivr.net/npm/react@18.3.1/cjs/react.production.min.js
+// @resource       link:react-dom               https://cdn.jsdelivr.net/npm/react-dom@18.3.1/cjs/react-dom.production.min.js
+// @resource       link:react-toastify          https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/react-toastify.js
+// @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
+// @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1461620/vim%20comic%20viewer.js
+// @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
+// @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
 
@@ -50,8 +53,9 @@ async function main() {
     return;
   }
   markVisitedLinks();
+  registerEpisodeNavigator();
   const buttons = duplicateViewerButton();
-  const controller = await (0, import_vim_comic_viewer.initialize)({ source: comicSource });
+  const controller = await (0, import_vim_comic_viewer.initialize)({ source: getComicSource() });
   controller.setScriptPreferences({
     manualPreset: origin,
     preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" }
@@ -84,9 +88,9 @@ function duplicateViewerButton() {
   }
   return buttons;
 }
-function comicSource() {
-  registerEpisodeNavigator();
-  return getUrls();
+function getComicSource() {
+  const urls = getUrls();
+  return () => urls;
 }
 function registerEpisodeNavigator() {
   addEventListener("keydown", (event) => {
@@ -120,8 +124,7 @@ function getUrls() {
   const imgs = document.querySelectorAll(
     "div.view-padding img"
   );
-  const urls = [...imgs].flatMap(getUrl);
-  return urls;
+  return [...imgs].flatMap(getUrl);
 }
 function getUrl(image) {
   if (image.offsetParent === null) {
@@ -130,20 +133,19 @@ function getUrl(image) {
   const data = Object.values(image.dataset);
   return data.length ? data : [image.src];
 }
-function markVisitedLinks() {
+async function markVisitedLinks() {
   const links = document.querySelectorAll(".post-row a");
-  const visitedLinks = new Set(GM_getValue("visitedPaths", []));
+  const visitedLinks = new Set(await GM.getValue("visitedPaths", []));
   for (const link of links) {
     const url = link.getAttribute("href");
-    if (!url)
-      return;
+    if (!url) return;
     const path = new URL(url).pathname;
     if (visitedLinks.has(path)) {
       link.style.color = "#e2e2e2";
     }
-    link.addEventListener("click", () => {
+    link.addEventListener("click", async () => {
       visitedLinks.add(path);
-      GM_setValue("visitedPaths", [...visitedLinks]);
+      await GM.setValue("visitedPaths", [...visitedLinks]);
     });
   }
 }
@@ -151,10 +153,15 @@ main();
 
 });
 
-define("tampermonkey_grants", function() { Object.assign(this.window, { GM, GM_addValueChangeListener, GM_getResourceText, GM_getValue, GM_removeValueChangeListener, GM_setValue, GM_xmlhttpRequest, unsafeWindow }); });
+define("tampermonkey_grants", function() { Object.assign(this.window, { GM, unsafeWindow }); });
 requirejs.config({ deps: ["tampermonkey_grants"] });
-for (const { name } of GM.info.script.resources.filter(x => x.name.startsWith("link:"))) {
-  define(name.replace("link:", ""), Function("require", "exports", "module", GM_getResourceText(name)));
-}
+load()
 
-require(["main"], () => {}, console.error);
+async function load() {
+  const links = GM.info.script.resources.filter(x => x.name.startsWith("link:"));
+  await Promise.all(links.map(async ({ name }) => {
+    const script = await GM.getResourceText(name)
+    define(name.replace("link:", ""), Function("require", "exports", "module", script))
+  }));
+  require(["main"], () => {}, console.error);
+}
