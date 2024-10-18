@@ -112,7 +112,7 @@ function comicSource({ cause, maxSize }: ComicSourceParams) {
 function searchImages() {
   return [
     ...document.querySelectorAll(
-      ".article-content img, .article-content video",
+      ".article-content img[src]:not([src='']), .article-content video[src]:not([src=''])",
     ),
   ] as (HTMLImageElement | HTMLVideoElement)[];
 }
