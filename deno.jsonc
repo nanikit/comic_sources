@@ -31,12 +31,13 @@
     "fflate": "npm:fflate@0.8.2",
     "jotai": "npm:jotai@2.10.0",
     "jotai/utils": "npm:jotai@2.10.0/utils",
+    "jotai-cache": "npm:jotai-cache@0.5.0",
     "overlayscrollbars-react": "npm:overlayscrollbars-react",
     "react-dom": "npm:react-dom@18.3.1",
     "react-toastify": "npm:react-toastify@10.0.5",
     "react": "npm:react@18.3.1",
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/a4809b49ec67a4dcb17082922fa735284b97c5ba/src/mod.tsx"
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/35a25a57e2ba0f433c04f301033e0eb094b97c45/src/mod.tsx"
   }
 }
