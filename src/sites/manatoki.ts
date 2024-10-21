@@ -67,6 +67,7 @@ function registerEpisodeNavigator() {
         (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
         break;
       case "l":
+      case "w":
       case "ArrowRight":
         (document.getElementById("goNextBtn") as HTMLAnchorElement)?.click?.();
         break;
