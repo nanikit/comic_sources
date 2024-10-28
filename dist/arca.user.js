@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        241027172031
+// @version        241028130320
 // @match          https://arca.live/b/*/*
 // @match          https://*.arca.live/b/*/*
 // @author         nanikit
@@ -49,13 +49,10 @@ define("main", (require, exports, module) => {
 var import_vim_comic_viewer = require("vim_comic_viewer");
 async function main() {
   const viewer = await (0, import_vim_comic_viewer.initialize)({ source: comicSource, mediaProps: { loading: "lazy" } });
-  addEventListener("keydown", async (event) => {
+  addEventListener("keydown", (event) => {
     switch (event.key) {
       case "m":
         goToCommentIfEligible(event);
-        break;
-      case ";":
-        await downloadOriginalImages(event, viewer?.downloader);
         break;
       default:
         forwardEvent(event, viewer);
@@ -73,14 +70,6 @@ function forwardEvent(event, viewer) {
     if (viewer.defaultElementKeyHandler(event)) {
       event.stopPropagation();
     }
-  }
-}
-async function downloadOriginalImages(event, downloader) {
-  if (isCaptureTargetEvent(event)) {
-    event.stopImmediatePropagation();
-    await downloader?.downloadAndSave({
-      source: () => searchImages().map(getOriginalLink)
-    });
   }
 }
 function goToCommentIfEligible(event) {
@@ -103,12 +92,10 @@ function isCaptureTargetEvent(event) {
   const { ctrlKey, altKey, shiftKey } = event;
   return !(ctrlKey || altKey || shiftKey || import_vim_comic_viewer.utils.isTyping(event));
 }
-function comicSource({ cause, maxSize }) {
+async function comicSource({ cause, maxSize }) {
   const isDownload = cause === "download";
-  if (isDownload) {
-    return searchImages().map(getOriginalLink);
-  }
-  return searchImages().map(getAdaptiveLink);
+  const media = await searchMedia();
+  return media.map(isDownload ? getOriginalLink : getAdaptiveLink);
   function getAdaptiveLink(imgOrVideo) {
     const originalImageUrl = imgOrVideo.parentElement?.href;
     const { width, height } = imgOrVideo;
@@ -122,7 +109,7 @@ function comicSource({ cause, maxSize }) {
       return adaptive;
     }
     const isGif = new URL(originalImageUrl).pathname.endsWith(".gif");
-    const original = { src: originalImageUrl, width, height };
+    const original = { type: "image", src: originalImageUrl, width, height };
     if (isGif) {
       return original;
     }
@@ -136,12 +123,22 @@ function comicSource({ cause, maxSize }) {
     return canBePoorVisual ? original : adaptive;
   }
 }
-function searchImages() {
-  return [
-    ...document.querySelectorAll(
-      ".article-content img[src]:not([src='']), .article-content video[src]:not([src=''])"
-    )
-  ];
+async function searchMedia() {
+  while (true) {
+    const media = [
+      ...document.querySelectorAll(
+        ".article-content img[src]:not([src='']), .article-content video[src]:not([src=''])"
+      )
+    ];
+    const isDehydrated = media.some(
+      (x) => x.tagName === "IMG" && !x.parentElement?.href
+    );
+    if (isDehydrated) {
+      await import_vim_comic_viewer.utils.timeout(100);
+      continue;
+    }
+    return media;
+  }
 }
 function getOriginalLink(imgOrVideo) {
   const originalImageUrl = imgOrVideo.parentElement?.href;

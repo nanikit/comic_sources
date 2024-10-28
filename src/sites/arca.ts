@@ -3,13 +3,10 @@ import { type ComicSourceParams, initialize, utils, type ViewerController } from
 export async function main() {
   const viewer = await initialize({ source: comicSource, mediaProps: { loading: "lazy" } });
 
-  addEventListener("keydown", async (event: KeyboardEvent) => {
+  addEventListener("keydown", (event: KeyboardEvent) => {
     switch (event.key) {
       case "m":
         goToCommentIfEligible(event);
-        break;
-      case ";":
-        await downloadOriginalImages(event, viewer?.downloader);
         break;
       default:
         // Suppress arca refresher.
@@ -30,18 +27,6 @@ function forwardEvent(event: KeyboardEvent, viewer: ViewerController) {
     if (viewer.defaultElementKeyHandler(event)) {
       event.stopPropagation();
     }
-  }
-}
-
-async function downloadOriginalImages(
-  event: KeyboardEvent,
-  downloader?: ViewerController["downloader"],
-) {
-  if (isCaptureTargetEvent(event)) {
-    event.stopImmediatePropagation();
-    await downloader?.downloadAndSave({
-      source: () => searchImages().map(getOriginalLink),
-    });
   }
 }
 
@@ -70,13 +55,10 @@ function isCaptureTargetEvent(event: KeyboardEvent) {
   return !(ctrlKey || altKey || shiftKey || utils.isTyping(event));
 }
 
-function comicSource({ cause, maxSize }: ComicSourceParams) {
+async function comicSource({ cause, maxSize }: ComicSourceParams) {
   const isDownload = cause === "download";
-  if (isDownload) {
-    return searchImages().map(getOriginalLink);
-  }
-
-  return searchImages().map(getAdaptiveLink);
+  const media = await searchMedia();
+  return media.map(isDownload ? getOriginalLink : getAdaptiveLink);
 
   function getAdaptiveLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
     const originalImageUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
@@ -85,14 +67,14 @@ function comicSource({ cause, maxSize }: ComicSourceParams) {
       src: imgOrVideo.src,
       width,
       height,
-      type: imgOrVideo.tagName === "IMG" ? "image" : "video",
+      type: imgOrVideo.tagName === "IMG" ? "image" as const : "video" as const,
     };
     if (!originalImageUrl) {
       return adaptive;
     }
 
     const isGif = new URL(originalImageUrl).pathname.endsWith(".gif");
-    const original = { src: originalImageUrl, width, height };
+    const original = { type: "image" as const, src: originalImageUrl, width, height };
     if (isGif) {
       return original;
     }
@@ -109,12 +91,24 @@ function comicSource({ cause, maxSize }: ComicSourceParams) {
   }
 }
 
-function searchImages() {
-  return [
-    ...document.querySelectorAll(
-      ".article-content img[src]:not([src='']), .article-content video[src]:not([src=''])",
-    ),
-  ] as (HTMLImageElement | HTMLVideoElement)[];
+async function searchMedia() {
+  while (true) {
+    const media = [
+      ...document.querySelectorAll(
+        ".article-content img[src]:not([src='']), .article-content video[src]:not([src=''])",
+      ),
+    ] as (HTMLImageElement | HTMLVideoElement)[];
+
+    const isDehydrated = media.some((x) =>
+      x.tagName === "IMG" && !(x.parentElement as HTMLAnchorElement | null)?.href
+    );
+    if (isDehydrated) {
+      await utils.timeout(100);
+      continue;
+    }
+
+    return media;
+  }
 }
 
 function getOriginalLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
