@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        241027172031
+// @version        241029172535
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -14,11 +14,12 @@
 // @grant          GM.addValueChangeListener
 // @grant          GM.getResourceText
 // @grant          GM.getValue
+// @grant          GM.openInTab
 // @grant          GM.removeValueChangeListener
 // @grant          GM.setValue
 // @grant          GM.xmlHttpRequest
-// @grant          GM_openInTab
 // @grant          unsafeWindow
+// @grant          window.close
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
 // @resource       link:@headlessui/react       https://cdn.jsdelivr.net/npm/@headlessui/react@2.1.8/dist/headlessui.prod.cjs
 // @resource       link:@stitches/react         https://cdn.jsdelivr.net/npm/@stitches/react@1.3.1-1/dist/index.cjs
@@ -38,7 +39,7 @@
 // @resource       link:react-toastify          https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/react-toastify.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1472589/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1473869/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
@@ -148,14 +149,14 @@ function hookListPage(configuration) {
   addEventListener("keypress", handleKeyPress);
   insertFocusCss();
 }
-async function hookListPage2() {
-  await hookListPage({ enter, getItems, navigatePage });
+function hookListPage2() {
+  hookListPage({ enter, getItems, navigatePage });
 }
-function enter(element) {
+async function enter(element) {
   const anchor = element.querySelector?.("a");
   const fileName = anchor?.href?.match?.(/\d+\.html/)?.[0];
   if (fileName) {
-    GM_openInTab(`${location.origin}/reader/${fileName}`);
+    await GM.openInTab(`${location.origin}/reader/${fileName}`);
   }
 }
 function getItems() {
@@ -209,10 +210,7 @@ var overrideCss = `
 `;
 async function hookReaderPage() {
   const urls = await getUrls();
-  const controller = await (0, import_vim_comic_viewer.initialize)({
-    noSyncScroll: true,
-    source: throttleComicSource(urls)
-  });
+  const controller = await (0, import_vim_comic_viewer.initialize)({ source: throttleComicSource(urls) });
   controller.container.parentElement.className = "vim_comic_viewer";
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);
@@ -340,7 +338,7 @@ initialize2();
 
 });
 
-define("tampermonkey_grants", function() { Object.assign(this.window, { GM, GM_openInTab, unsafeWindow }); });
+define("tampermonkey_grants", function() { Object.assign(this.window, { GM, unsafeWindow }); });
 requirejs.config({ deps: ["tampermonkey_grants"] });
 load()
 

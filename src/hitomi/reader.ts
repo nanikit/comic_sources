@@ -47,10 +47,7 @@ type UrlFromUrlHash = (
 
 export async function hookReaderPage() {
   const urls = await getUrls();
-  const controller = await initialize({
-    noSyncScroll: true,
-    source: throttleComicSource(urls),
-  });
+  const controller = await initialize({ source: throttleComicSource(urls) });
   controller.container!.parentElement!.className = "vim_comic_viewer";
   insertCss(overrideCss);
   addEventListener("keypress", onReaderKey);

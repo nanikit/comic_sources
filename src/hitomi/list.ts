@@ -1,13 +1,13 @@
 import { hookListPage as hookPage } from "../utils/vimium.ts";
 
-export async function hookListPage() {
-  await hookPage({ enter, getItems, navigatePage });
+export function hookListPage() {
+  hookPage({ enter, getItems, navigatePage });
 }
-function enter(element: HTMLElement) {
+async function enter(element: HTMLElement) {
   const anchor = element.querySelector?.("a");
   const fileName = anchor?.href?.match?.(/\d+\.html/)?.[0];
   if (fileName) {
-    GM_openInTab(`${location.origin}/reader/${fileName}`);
+    await GM.openInTab(`${location.origin}/reader/${fileName}`);
   }
 }
 

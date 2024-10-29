@@ -11,9 +11,10 @@
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
 // @connect        self
-// @grant          GM_openInTab
+// @grant          GM.openInTab
+// @grant          window.close
 // @require        https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js
-// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1472589/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer https://update.greasyfork.org/scripts/417893/1473869/vim%20comic%20viewer.js
 // ==/UserScript==
 
 import { initialize } from "./sites/hitomi.ts";
