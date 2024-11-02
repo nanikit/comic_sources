@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        241029172535
+// @version        241102165412
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -40,7 +40,7 @@
 // @resource       link:react-toastify          https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/react-toastify.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1473869/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1476400/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
@@ -56,7 +56,12 @@ async function main() {
   markVisitedLinks();
   registerEpisodeNavigator();
   const buttons = duplicateViewerButton();
-  const controller = await (0, import_vim_comic_viewer.initialize)({ source: getComicSource() });
+  const source = await comicSource();
+  const controller = await (0, import_vim_comic_viewer.initialize)({
+    source: () => source,
+    onPreviousSeries: goPreviousEpisode,
+    onNextSeries: goNextEpisode
+  });
   controller.setScriptPreferences({
     manualPreset: origin,
     preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" }
@@ -89,9 +94,20 @@ function duplicateViewerButton() {
   }
   return buttons;
 }
-function getComicSource() {
-  const urls = getUrls();
-  return () => urls;
+async function comicSource() {
+  while (true) {
+    const urls = getUrls();
+    if (urls.length) {
+      return urls;
+    }
+    await import_vim_comic_viewer.utils.timeout(200);
+  }
+}
+function goPreviousEpisode() {
+  document.getElementById("goPrevBtn")?.click?.();
+}
+function goNextEpisode() {
+  document.getElementById("goNextBtn")?.click?.();
 }
 function registerEpisodeNavigator() {
   addEventListener("keydown", (event) => {
@@ -100,15 +116,6 @@ function registerEpisodeNavigator() {
       return;
     }
     switch (event.key) {
-      case "h":
-      case "ArrowLeft":
-        document.getElementById("goPrevBtn")?.click?.();
-        break;
-      case "l":
-      case "w":
-      case "ArrowRight":
-        document.getElementById("goNextBtn")?.click?.();
-        break;
       case "t":
         document.getElementById("sticky-wrapper")?.scrollIntoView({
           block: "center"

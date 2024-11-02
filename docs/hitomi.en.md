@@ -35,4 +35,6 @@ Shortcut-based Hitomi viewer. Works on PC Chrome and Firefox.
 - <kbd>o</kbd>: Close tab
 - <kbd>;</kbd>: Download
 - <kbd>'</kbd>: Refresh image
-- <kbd>/</kbd>, <kbd>?</kbd>: Adjust page alignment (each +, -)
+- <kbd>,</kbd>: Decrease single page count
+- <kbd>.</kbd>: Increase single page count
+- <kbd>/</kbd>: Set single page view until before current page

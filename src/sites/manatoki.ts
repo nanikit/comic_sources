@@ -12,7 +12,14 @@ export async function main() {
   registerEpisodeNavigator();
 
   const buttons = duplicateViewerButton();
-  const controller = await initialize({ source: getComicSource() });
+  // Prepare images first so user can see if something blocked.
+  const source = await comicSource();
+
+  const controller = await initialize({
+    source: () => source,
+    onPreviousSeries: goPreviousEpisode,
+    onNextSeries: goNextEpisode,
+  });
   controller.setScriptPreferences({
     manualPreset: origin,
     preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" },
@@ -50,9 +57,22 @@ function duplicateViewerButton() {
   return buttons;
 }
 
-function getComicSource() {
-  const urls = getUrls();
-  return () => urls;
+async function comicSource() {
+  while (true) {
+    const urls = getUrls();
+    if (urls.length) {
+      return urls;
+    }
+    await utils.timeout(200);
+  }
+}
+
+function goPreviousEpisode() {
+  (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
+}
+
+function goNextEpisode() {
+  (document.getElementById("goNextBtn") as HTMLAnchorElement)?.click?.();
 }
 
 function registerEpisodeNavigator() {
@@ -62,15 +82,6 @@ function registerEpisodeNavigator() {
       return;
     }
     switch (event.key) {
-      case "h":
-      case "ArrowLeft":
-        (document.getElementById("goPrevBtn") as HTMLAnchorElement)?.click?.();
-        break;
-      case "l":
-      case "w":
-      case "ArrowRight":
-        (document.getElementById("goNextBtn") as HTMLAnchorElement)?.click?.();
-        break;
       case "t":
         (document.getElementById("sticky-wrapper") as HTMLSpanElement)
           ?.scrollIntoView({
