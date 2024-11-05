@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        241202184204
+// @version        241214200533
 // @match          https://arca.live/b/*/*
 // @match          https://*.arca.live/b/*/*
 // @author         nanikit
