@@ -18,26 +18,16 @@ jobs:
   check-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 50
 
-      - name: Setup deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: vx.x.x
+      - uses: denoland/setup-deno@v2
+      - run: deno fmt --check
+      - run: deno lint
+      - run: deno check src/*.ts
 
-      - name: Verify formatting
-        run: deno fmt --check
-
-      - name: Run linter
-        run: deno lint
-
-      - name: Check
-        run: deno check src/*.ts
-
-      - name: Push to main
+      - name: Force push to main
         if: ${{ github.event_name == 'push' }}
         run: |
           git fetch origin main --depth=50
