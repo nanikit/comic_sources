@@ -7,9 +7,8 @@
 
 만약의 경우, 이 프로젝트를 본격적으로 개발하려는 분이 있다면 제가 쓰는 개발 과정은 아래와 같습니다.
 
-- 빈 폴더를 만들어서
-  `deno run -A https://raw.githubusercontent.com/nanikit/deno_tamperdav/main/mod.ts --path=dav --meta-touch`를
-  실행합니다. 이하 tamperdav라고 부릅니다.
+- 빈 폴더를 만들어서 [tamperdav](https://github.com/Tampermonkey/tamperdav)나
+  [deno_tamperdav](https://github.com/jeiea/deno_tamperdav)를 실행합니다.
 - [이 링크](https://github.com/Tampermonkey/tamperdav?tab=readme-ov-file#clients)의 방법으로
   tampermonkey에 동기화를 설정합니다.
   ![](https://user-images.githubusercontent.com/767504/42598819-a1fb04a0-855d-11e8-8b42-a86abf577d82.png)
