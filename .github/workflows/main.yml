@@ -19,16 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 50
-
       - uses: denoland/setup-deno@v2
-      - run: deno fmt --check
-      - run: deno lint
-      - run: deno check src/*.ts
 
-      - name: Force push to main
-        if: ${{ github.event_name == 'push' }}
+      - run: deno task check:all
+
+      - name: Push to main
+        if: ${{ github.event_name == 'push' && success() }}
         run: |
-          git fetch origin main --depth=50
-          git push -f origin HEAD:main
+          git fetch origin $(git branch --show-current) --depth=50
+          git push origin HEAD:main
