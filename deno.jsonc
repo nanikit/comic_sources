@@ -18,6 +18,12 @@
     "dist"
   ],
   "tasks": {
+    "hooks:install": "deno run --allow-read=deno.json,deno.jsonc,.git/hooks/ --allow-write=.git/hooks/ jsr:@hongminhee/deno-task-hooks",
+    "hooks:pre-commit": "deno task check:all",
+    "check:all": { "dependencies": ["fmt", "lint", "check"] },
+    "fmt": "deno fmt --check",
+    "lint": "deno lint",
+    "check": "deno check src/*.user.ts",
     "build": "deno run --allow-all --env-file=.env npm:rolldown --config rolldown.config.mts",
     "watch": "deno run --allow-all --env-file=.env npm:rolldown --config rolldown.config.mts --watch",
     "update-deps": "deno run --allow-all -- tool/update_deps.ts && deno task build"
@@ -26,18 +32,19 @@
     "lineWidth": 100
   },
   "imports": {
-    "@headlessui/react": "npm:@headlessui/react@2.1.8",
+    "@headlessui/react": "npm:@headlessui/react@2.2.1",
     "@stitches/react": "npm:@stitches/react@1.3.1-1",
     "fflate": "npm:fflate@0.8.2",
     "jotai": "npm:jotai@2.10.0",
     "jotai/utils": "npm:jotai@2.10.0/utils",
     "jotai-cache": "npm:jotai-cache@0.5.0",
     "overlayscrollbars-react": "npm:overlayscrollbars-react",
-    "react-dom": "npm:react-dom@18.3.1",
+    "react-dom": "npm:react-dom@19.0.0",
     "react-toastify": "npm:react-toastify@10.0.5",
-    "react": "npm:react@18.3.1",
+    "react": "npm:react@19.0.0",
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
+    "vcv-inject-node-env": "data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D",
     "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/37f07213bfde15da421e146260926ce1252c51a1/src/mod.tsx"
   }
 }
