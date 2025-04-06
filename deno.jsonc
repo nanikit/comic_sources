@@ -18,8 +18,8 @@
     "dist"
   ],
   "tasks": {
-    "build": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/02a9e434652e3dcd934cd7a54b59756ff1070432/mod.ts 'src/*.user.ts' -o dist",
-    "watch": "deno run --allow-all https://raw.githubusercontent.com/nanikit/deno_userscript_linker/02a9e434652e3dcd934cd7a54b59756ff1070432/mod.ts 'src/*.user.ts' -o dist --watch",
+    "build": "deno run --allow-all --env-file=.env npm:rolldown --config rolldown.config.mts",
+    "watch": "deno run --allow-all --env-file=.env npm:rolldown --config rolldown.config.mts --watch",
     "update-deps": "deno run --allow-all -- tool/update_deps.ts && deno task build"
   },
   "fmt": {
@@ -38,6 +38,6 @@
     "react": "npm:react@18.3.1",
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/7891b7729ac734b1acc3818ead98e9ad3a877fbd/src/mod.tsx"
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/37f07213bfde15da421e146260926ce1252c51a1/src/mod.tsx"
   }
 }
