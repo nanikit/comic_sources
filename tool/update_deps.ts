@@ -30,7 +30,8 @@ async function updateTypes() {
   }
 
   denoConfig.imports["vim_comic_viewer"] = url;
-  await Deno.writeTextFile("deno.jsonc", JSON.stringify(denoConfig, null, 2) + "\n");
+  await Deno.writeTextFile("deno.jsonc", JSON.stringify(denoConfig));
+  await new Deno.Command(Deno.execPath(), { args: ["fmt", "deno.jsonc"] }).output();
   return true;
 }
 
