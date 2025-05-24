@@ -21,7 +21,7 @@ Shortcut-based Hitomi viewer. Works on PC Chrome and Firefox.
 
 - <kbd>i</kbd>: Open in a new background tab
 - <kbd>j</kbd>, <kbd>↓</kbd>: Select the item below
-- <kbd>k</kbd>, <kbd>↑</kbd>: Select the item above
+- <kbd>k</kbd>, <kbd>↑</kbd>, <kbd>PgUp</kbd>: Select the item above
 - <kbd>l</kbd>, <kbd>→</kbd>: Next page
 - <kbd>h</kbd>, <kbd>←</kbd>: Previous page
 
@@ -30,8 +30,8 @@ Shortcut-based Hitomi viewer. Works on PC Chrome and Firefox.
 - <kbd>i</kbd>, <kbd>Enter</kbd>, <kbd>NumPad0</kbd>: Open/close viewer
 - <kbd>Shift</kbd> + (<kbd>i</kbd>, <kbd>Enter</kbd>, <kbd>NumPad0</kbd>): Toggle full screen while
   opening/closing viewer
-- <kbd>j</kbd>, <kbd>↓</kbd>, <kbd>q</kbd>: Next page
-- <kbd>k</kbd>, <kbd>↑</kbd>: Previous page
+- <kbd>j</kbd>, <kbd>↓</kbd>, <kbd>q</kbd>, <kbd>PgDn</kbd>: Next page
+- <kbd>k</kbd>, <kbd>↑</kbd>, <kbd>PgUp</kbd>: Previous page
 - <kbd>o</kbd>: Close tab
 - <kbd>;</kbd>: Download
 - <kbd>'</kbd>: Refresh image

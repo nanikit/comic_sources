@@ -21,7 +21,7 @@
 
 - <kbd>i</kbd>: 새 배경 탭으로 열기
 - <kbd>j</kbd>, <kbd>↓</kbd>: 아래 항목 선택
-- <kbd>k</kbd>, <kbd>↑</kbd>: 위 항목 선택
+- <kbd>k</kbd>, <kbd>↑</kbd>, <kbd>PgUp</kbd>: 위 항목 선택
 - <kbd>l</kbd>, <kbd>→</kbd>: 다음 페이지
 - <kbd>h</kbd>, <kbd>←</kbd>: 이전 페이지
 
@@ -30,8 +30,8 @@
 - <kbd>i</kbd>, <kbd>Enter</kbd>, <kbd>NumPad0</kbd>: 뷰어 열기/닫기
 - <kbd>Shift</kbd> + (<kbd>i</kbd>, <kbd>Enter</kbd>, <kbd>NumPad0</kbd>): 전체 화면 설정을
   전환하면서 뷰어 열기/닫기
-- <kbd>j</kbd>, <kbd>↓</kbd>, <kbd>q</kbd>: 다음 페이지
-- <kbd>k</kbd>, <kbd>↑</kbd>: 이전 페이지
+- <kbd>j</kbd>, <kbd>↓</kbd>, <kbd>q</kbd>, <kbd>PgDn</kbd>: 다음 페이지
+- <kbd>k</kbd>, <kbd>↑</kbd>, <kbd>PgUp</kbd>: 이전 페이지
 - <kbd>o</kbd>: 탭 닫기
 - <kbd>;</kbd>: 다운로드
 - <kbd>'</kbd>: 이미지 새로고침
