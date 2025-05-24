@@ -9,7 +9,10 @@ const [input] = await Promise.all([
   clearBuild(),
 ]);
 
-const plugins = [userscriptLinkPlugin(), denoPlugin() as RolldownPluginOption];
+const plugins = [
+  userscriptLinkPlugin({ syncDirectory: Deno.env.get("OUTPUT_SYNC") }),
+  denoPlugin() as RolldownPluginOption,
+];
 
 export default defineConfig(input.map(createInput));
 
