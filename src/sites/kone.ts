@@ -1,7 +1,7 @@
 import { type ComicSourceParams, initialize, utils } from "vim_comic_viewer";
 
-export async function main() {
-  await initialize({ source: comicSource, mediaProps: { loading: "lazy" } });
+export function main() {
+  listenPageChange();
 
   addEventListener("keydown", (event: KeyboardEvent) => {
     switch (event.key) {
@@ -10,6 +10,44 @@ export async function main() {
         break;
     }
   });
+}
+
+async function listenPageChange() {
+  const originalPushState = history.pushState;
+  history.pushState = function (...args) {
+    originalPushState.apply(history, args);
+    initializeViewer();
+  };
+
+  const originalReplaceState = history.replaceState;
+  history.replaceState = function (...args) {
+    originalReplaceState.apply(history, args);
+    initializeViewer();
+  };
+
+  addEventListener("popstate", initializeViewer);
+
+  const viewer = await initialize({
+    source: comicSource,
+    mediaProps: { loading: "lazy", crossorigin: "anonymous" },
+  });
+
+  async function initializeViewer() {
+    const firstMedia = await searchMedia();
+    for (let i = 0; i < 5; i++) {
+      await utils.timeout(100);
+
+      const latestMedia = await searchMedia();
+      if (JSON.stringify(firstMedia) !== JSON.stringify(latestMedia)) {
+        break;
+      }
+    }
+
+    viewer.setOptions({
+      source: (...args) => comicSource(...args),
+      mediaProps: { loading: "lazy", crossorigin: "anonymous" },
+    });
+  }
 }
 
 function goToCommentIfEligible(event: KeyboardEvent) {
