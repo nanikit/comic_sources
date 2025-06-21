@@ -23,9 +23,26 @@ function isCaptureTargetEvent(event: KeyboardEvent) {
   return !(ctrlKey || altKey || shiftKey || utils.isTyping(event));
 }
 
-async function comicSource(_: ComicSourceParams) {
+async function comicSource({ cause }: ComicSourceParams) {
   const media = await searchMedia();
-  return media.map((x) => x.src);
+  const urls = media.map((x) => x.src);
+  return cause === "download" ? await getOriginalUrls(urls) : urls;
+}
+
+async function getOriginalUrls(urls: string[]) {
+  const articleId = location.pathname.split("/").at(-1);
+  if (!articleId) {
+    return urls;
+  }
+
+  const originalUrl = `https://api.kone.gg/v0/article/${articleId}/media/original`;
+  const response = await fetch(originalUrl, {
+    method: "POST",
+    body: JSON.stringify({ media_url: urls }),
+    headers: { "Content-Type": "application/json" },
+  });
+  const data: { media: { url: string }[] } = await response.json();
+  return data.media.map((x) => x.url);
 }
 
 async function searchMedia() {
