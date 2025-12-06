@@ -1,7 +1,7 @@
 ---
 name: "Bug report \U0001F41E"
 about: 버그 리포트
-title: ''
+title: ""
 labels: bug
 assignees: nanikit
 ---

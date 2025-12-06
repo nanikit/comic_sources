@@ -1,4 +1,4 @@
-import { expandGlob } from "jsr:@std/fs/expand-glob";
+import { expandGlob } from "@std/fs/expand-glob";
 
 if (import.meta.main) {
   await main();

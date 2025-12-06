@@ -1,7 +1,7 @@
 ---
 name: "Feature request ✨"
 about: 기능 제안
-title: ''
+title: ""
 labels: enhancement
 assignees: nanikit
 ---

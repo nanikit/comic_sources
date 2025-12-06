@@ -1,8 +1,8 @@
-import userscriptLinkPlugin from "jsr:@jeiea/unplugin-userscript-link/rolldown";
-import { pooledMap } from "jsr:@std/async/pool";
-import { expandGlob, WalkEntry } from "jsr:@std/fs/expand-glob";
-import denoPlugin from "npm:@deno/vite-plugin";
-import { defineConfig, type RolldownOptions, type RolldownPluginOption } from "npm:rolldown";
+import denoPlugin from "@deno/vite-plugin";
+import userscriptLinkPlugin from "@jeiea/unplugin-userscript-link/rolldown";
+import { pooledMap } from "@std/async/pool";
+import { expandGlob, WalkEntry } from "@std/fs/expand-glob";
+import { defineConfig, type RolldownOptions, type RolldownPluginOption } from "rolldown";
 
 const [input] = await Promise.all([
   Array.fromAsync(expandGlob("src/*.user.ts")),
