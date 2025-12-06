@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        250524154359
+// @version        251206190049
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -41,34 +41,14 @@
 // @resource       link:react/jsx-runtime       https://cdn.jsdelivr.net/npm/react@19.0.0/cjs/react-jsx-runtime.production.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1595153/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1708669/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
 "use strict";
 
 define("main", (require, exports, module) => {
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __copyProps = (to, from, except, desc) => {
-	if (from && typeof from === "object" || typeof from === "function") for (var keys = __getOwnPropNames(from), i = 0, n = keys.length, key; i < n; i++) {
-		key = keys[i];
-		if (!__hasOwnProp.call(to, key) && key !== except) __defProp(to, key, {
-			get: ((k) => from[k]).bind(null, key),
-			enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
-		});
-	}
-	return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", {
-	value: mod,
-	enumerable: true
-}) : target, mod));
-const vim_comic_viewer = __toESM(require("vim_comic_viewer"));
+let vim_comic_viewer = require("vim_comic_viewer");
 const timeout = (millisecond) => new Promise((resolve) => setTimeout(resolve, millisecond));
 const insertCss = (css) => {
 	const style = document.createElement("style");
@@ -115,10 +95,7 @@ function hookListPage$1(configuration) {
 		selectItem(items[next]);
 	};
 	const forward = (event) => {
-		if (onKeyDown) {
-			const focus = getFocusedItem();
-			onKeyDown(event, focus);
-		}
+		if (onKeyDown) onKeyDown(event, getFocusedItem());
 	};
 	const handlePageKeypress = (event) => {
 		switch (event.key) {
@@ -128,10 +105,9 @@ function hookListPage$1(configuration) {
 			case "l":
 				navigatePage$1(1);
 				break;
-			default: {
+			default:
 				forward(event);
 				break;
-			}
 		}
 	};
 	const handleKeyPress = (event) => {
@@ -155,8 +131,7 @@ function hookListPage$1(configuration) {
 		}
 	};
 	const insertFocusCss = () => {
-		const content = configuration.focusCss || defaultFocusCss;
-		insertCss(content.replace(/&/g, ".key-nav-focus"));
+		insertCss((configuration.focusCss || defaultFocusCss).replace(/&/g, ".key-nav-focus"));
 	};
 	addEventListener("keypress", handleKeyPress);
 	insertFocusCss();
@@ -169,8 +144,7 @@ function hookListPage() {
 	});
 }
 async function enter(element) {
-	const anchor = element.querySelector?.("a");
-	const fileName = anchor?.href?.match?.(/\d+\.html/)?.[0];
+	const fileName = (element.querySelector?.("a"))?.href?.match?.(/\d+\.html/)?.[0];
 	if (fileName) await GM.openInTab(`${location.origin}/reader/${fileName}`);
 }
 function getItems() {
@@ -214,8 +188,7 @@ const overrideCss = `
 }
 `;
 async function hookReaderPage() {
-	const urls = await getUrls();
-	const controller = await (0, vim_comic_viewer.initialize)({ source: throttleComicSource(urls) });
+	const controller = await (0, vim_comic_viewer.initialize)({ source: throttleComicSource(await getUrls()) });
 	controller.container.parentElement.className = "vim_comic_viewer";
 	insertCss(overrideCss);
 	addEventListener("keypress", onReaderKey);
@@ -243,7 +216,7 @@ function throttleComicSource(urls) {
 	const currentSource = [...urls.slice(0, 4), ...Array(Math.max(0, urls.length - 4)).fill(void 0)];
 	for (const [i, url] of urls.entries()) if (cachedUrls.includes(url)) currentSource[i] = url;
 	const remainingIndices = [...Array(urls.length).keys()].slice(4);
-	const resolvers = new Map();
+	const resolvers =  new Map();
 	setInterval(() => {
 		const index = remainingIndices.shift();
 		if (index === void 0) return;
@@ -274,8 +247,7 @@ function throttleComicSource(urls) {
 async function getUrls() {
 	const info = await waitUnsafeObject("galleryinfo");
 	prependIdToTitle(info);
-	const gg = await waitUnsafeObject("gg");
-	const guardless = `${gg.m}`.slice(14, -2).replace(/return 4;/g, "");
+	const guardless = `${(await waitUnsafeObject("gg")).m}`.slice(14, -2).replace(/return 4;/g, "");
 	unsafeWindow.gg.m = Function("g", guardless);
 	const make_source_element = await waitUnsafeObject("make_source_element");
 	exec(() => {
@@ -284,8 +256,7 @@ async function getUrls() {
 	});
 	const base = unsafeWindow.base;
 	const urlFromUrlFromHash = await waitUnsafeObject("url_from_url_from_hash");
-	const urls = info.files.map((file) => urlFromUrlFromHash(info.id, file, file.hasavif ? "avif" : file.haswebp ? "webp" : "jpg", void 0, base));
-	return urls;
+	return info.files.map((file) => urlFromUrlFromHash(info.id, file, file.hasavif ? "avif" : file.haswebp ? "webp" : "jpg", void 0, base));
 }
 async function prependIdToTitle(info) {
 	const title = document.querySelector("title");

@@ -1,18 +1,16 @@
 // ==UserScript==
-// @name           토끼 뷰어
-// @name:ko        토끼 뷰어
-// @name:en        toki viewer
+// @name           픽시브 뷰어
+// @name:ko        픽시브 뷰어
+// @name:en        pixiv viewer
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        251206190049
-// @match          https://*.net/bbs/*
-// @match          https://*.net/comic/*
-// @match          https://*.com/webtoon/*
-// @match          https://*.com/novel/*
+// @version        251206190050
+// @match          https://www.pixiv.net/**
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
+// @connect        mittere.io
 // @connect        *
 // @grant          GM.addValueChangeListener
 // @grant          GM.getResourceText
@@ -50,98 +48,80 @@
 
 define("main", (require, exports, module) => {
 let vim_comic_viewer = require("vim_comic_viewer");
-async function main() {
-	const origin = getOrigin();
-	if (origin === "unknown") return;
-	markVisitedLinks();
-	registerEpisodeNavigator();
-	const buttons = duplicateViewerButton();
-	const source = await comicSource();
-	const controller = await (0, vim_comic_viewer.initialize)({
-		source: () => source,
-		onPreviousSeries: goPreviousEpisode,
-		onNextSeries: goNextEpisode
-	});
-	controller.setScriptPreferences({
-		manualPreset: origin,
-		preferences: { pageDirection: origin === "manatoki" ? "rightToLeft" : "leftToRight" }
-	});
-	for (const button of buttons) button.addEventListener("click", async () => {
-		await controller.setImmersive(true);
-	});
-}
-function getOrigin() {
-	return [
-		"manatoki",
-		"newtoki",
-		"booktoki"
-	].find(originIncludes) ?? "unknown";
-}
-function originIncludes(str) {
-	return location.origin.includes(str);
-}
-function duplicateViewerButton() {
-	const template = document.createElement("template");
-	template.innerHTML = `<a class="show_viewer" alt="뷰어로 보기">
-    <i class="ion-ios-book at-tip" aria-hidden="true" style="color: blue;"></i>
-  </a>`;
-	const templateButton = template.content.firstElementChild;
-	const buttons = [];
-	const divs = document.querySelectorAll(".toon-nav");
-	for (const div of divs) {
-		const button = templateButton.cloneNode(true);
-		div.prepend(button);
-		buttons.push(button);
-	}
-	return buttons;
-}
-async function comicSource() {
-	while (true) {
-		const urls = getUrls();
-		if (urls.length) return urls;
-		await vim_comic_viewer.utils.timeout(200);
-	}
-}
-function goPreviousEpisode() {
-	document.getElementById("goPrevBtn")?.click?.();
-}
-function goNextEpisode() {
-	document.getElementById("goNextBtn")?.click?.();
-}
-function registerEpisodeNavigator() {
+let count = 0;
+function main() {
+	listenPageChange();
 	addEventListener("keydown", (event) => {
-		const { ctrlKey, shiftKey, altKey } = event;
-		if (ctrlKey || shiftKey || altKey || vim_comic_viewer.utils.isTyping(event)) return;
 		switch (event.key) {
-			case "t":
-				document.getElementById("sticky-wrapper")?.scrollIntoView({ block: "center" });
-				break;
 			case "m":
-				document.querySelector(".view-good")?.scrollIntoView({ block: "center" });
+				goToCommentIfEligible(event);
 				break;
 		}
 	});
 }
-function getUrls() {
-	return [...document.querySelectorAll("div.view-padding img")].flatMap(getUrl);
+async function listenPageChange() {
+	const originalPushState = history.pushState;
+	history.pushState = function(...args) {
+		originalPushState.apply(history, args);
+		resetViewer();
+	};
+	const originalReplaceState = history.replaceState;
+	history.replaceState = function(...args) {
+		originalReplaceState.apply(history, args);
+		resetViewer();
+	};
+	addEventListener("popstate", resetViewer);
+	const viewer = await (0, vim_comic_viewer.initialize)(getOptions());
+	viewer.setScriptPreferences({ preferences: { pageDirection: "leftToRight" } });
+	function resetViewer() {
+		viewer.setOptions(getOptions());
+	}
 }
-function getUrl(image) {
-	if (image.offsetParent === null) return [];
-	const data = Object.values(image.dataset);
-	return data.length ? data : [image.src];
+function getOptions() {
+	return {
+		source: (...args) => comicSource(...args),
+		mediaProps: { loading: "lazy" },
+		onNextSeries: goNextSeries,
+		onPreviousSeries: goPreviousSeries
+	};
 }
-async function markVisitedLinks() {
-	const links = document.querySelectorAll(".post-row a");
-	const visitedLinks = new Set(await GM.getValue("visitedPaths", []));
-	for (const link of links) {
-		const url = link.getAttribute("href");
-		if (!url) return;
-		const path = new URL(url).pathname;
-		if (visitedLinks.has(path)) link.style.color = "#e2e2e2";
-		link.addEventListener("click", async () => {
-			visitedLinks.add(path);
-			await GM.setValue("visitedPaths", [...visitedLinks]);
-		});
+function goNextSeries() {
+	navigateSeries(1);
+}
+function goPreviousSeries() {
+	navigateSeries(-1);
+}
+function navigateSeries(offset) {
+	const anchors = [...document.querySelectorAll("a[href^=\"/artworks\"")];
+	const currentIndex = anchors.findIndex((anchor) => new URL(anchor.href).pathname === location.pathname);
+	if (currentIndex === -1) return;
+	anchors[currentIndex + offset]?.click();
+}
+function goToCommentIfEligible(event) {
+	if (isCaptureTargetEvent(event)) document.querySelector("figcaption")?.scrollIntoView({ behavior: "instant" });
+}
+function isCaptureTargetEvent(event) {
+	const { ctrlKey, altKey, shiftKey } = event;
+	return !(ctrlKey || altKey || shiftKey || vim_comic_viewer.utils.isTyping(event));
+}
+async function comicSource({ cause }) {
+	const media = await searchMedia();
+	if (!media) return [];
+	return media.body.map((x) => {
+		if (cause === "download" || x.height / x.width > 4) return x.urls.original;
+		return x.urls.regular;
+	});
+}
+async function searchMedia() {
+	const selfCount = ++count;
+	await vim_comic_viewer.utils.timeout(100);
+	while (count === selfCount) {
+		const postId = location.pathname.match(/\/artworks\/(\d+)/)?.[1];
+		if (!postId) {
+			await vim_comic_viewer.utils.timeout(100);
+			continue;
+		}
+		return await (await fetch(`/ajax/illust/${postId}/pages?lang=ko`)).json();
 	}
 }
 main();

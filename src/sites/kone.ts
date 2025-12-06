@@ -29,7 +29,7 @@ async function listenPageChange() {
 
   const viewer = await initialize({
     source: comicSource,
-    mediaProps: { loading: "lazy", crossorigin: "anonymous" },
+    mediaProps: { loading: "lazy" },
   });
 
   async function initializeViewer() {
@@ -44,8 +44,8 @@ async function listenPageChange() {
     }
 
     viewer.setOptions({
-      source: (...args) => comicSource(...args),
-      mediaProps: { loading: "lazy", crossorigin: "anonymous" },
+      source: comicSource,
+      mediaProps: { loading: "lazy" },
     });
   }
 }
