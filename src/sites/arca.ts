@@ -67,7 +67,7 @@ async function comicSource({ cause, maxSize }: ComicSourceParams) {
       if (imgOrVideo.tagName === "IMG") {
         return new Image();
       }
-      return new HTMLVideoElement();
+      return document.createElement("video");
     })();
     adaptive.src = imgOrVideo.src;
     adaptive.width = width;

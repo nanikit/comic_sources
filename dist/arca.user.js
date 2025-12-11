@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        251206190048
+// @version        251211131243
 // @match          https://arca.live/b/*/*
 // @match          https://*.arca.live/b/*/*
 // @author         nanikit
@@ -98,7 +98,7 @@ async function comicSource({ cause, maxSize }) {
 		const { width, height } = imgOrVideo;
 		const adaptive = (() => {
 			if (imgOrVideo.tagName === "IMG") return new Image();
-			return new HTMLVideoElement();
+			return document.createElement("video");
 		})();
 		adaptive.src = imgOrVideo.src;
 		adaptive.width = width;
