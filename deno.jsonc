@@ -38,6 +38,6 @@
     "rolldown": "npm:rolldown@^1.0.0-beta.53",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
     "vcv-inject-node-env": "data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D",
-    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/bceb06e1f14446bea92efe4c31b2b0807d6f5655/src/mod.tsx"
+    "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/5039120088451ab566908480db9d21a6d3aad460/src/mod.tsx"
   }
 }
