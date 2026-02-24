@@ -14,8 +14,8 @@
     "fmt": "deno fmt --check",
     "lint": "deno lint",
     "check": "deno check src/*.user.ts",
-    "build": "deno run --allow-all --env-file=.env npm:rolldown --config rolldown.config.mts",
-    "watch": "deno run --allow-all --env-file=.env npm:rolldown --config rolldown.config.mts --watch",
+    "build": "deno run --allow-all --env-file=.env npm:rolldown@1.0.0-rc.2 --config rolldown.config.mts",
+    "watch": "deno run --allow-all --env-file=.env npm:rolldown@1.0.0-rc.2 --config rolldown.config.mts --watch",
     "update-deps": "deno run --allow-all -- tool/update_deps.ts && deno task build"
   },
   "fmt": { "lineWidth": 100 },
