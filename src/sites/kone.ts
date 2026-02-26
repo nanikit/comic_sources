@@ -1,4 +1,4 @@
-import { type ComicSourceParams, initialize, utils } from "vim_comic_viewer";
+import { initialize, utils } from "vim_comic_viewer";
 
 export function main() {
   listenPageChange();
@@ -27,10 +27,7 @@ async function listenPageChange() {
 
   addEventListener("popstate", initializeViewer);
 
-  const viewer = await initialize({
-    source: comicSource,
-    mediaProps: { loading: "lazy" },
-  });
+  const viewer = await initialize({ source: () => comicSource() });
 
   async function initializeViewer() {
     const firstMedia = await searchMedia();
@@ -43,10 +40,7 @@ async function listenPageChange() {
       }
     }
 
-    viewer.setOptions({
-      source: comicSource,
-      mediaProps: { loading: "lazy" },
-    });
+    viewer.setOptions({ source: () => comicSource() });
   }
 }
 
@@ -61,10 +55,33 @@ function isCaptureTargetEvent(event: KeyboardEvent) {
   return !(ctrlKey || altKey || shiftKey || utils.isTyping(event));
 }
 
-async function comicSource({ cause }: ComicSourceParams) {
+async function comicSource() {
   const media = await searchMedia();
   const urls = media.map((x) => x.src);
-  return cause === "download" ? await getOriginalUrls(urls) : urls;
+  let originalUrlsPromise: Promise<string[]> | undefined;
+
+  return media.map((mediaElement, page) => async ({ cause }: { cause: string }) => {
+    if (cause !== "download") {
+      return mediaElement;
+    }
+
+    originalUrlsPromise ??= getOriginalUrls(urls);
+    const originalUrl = (await originalUrlsPromise)[page];
+    if (!originalUrl) {
+      return mediaElement;
+    }
+
+    return cloneMediaElement(mediaElement, originalUrl);
+  });
+}
+
+function cloneMediaElement(media: HTMLImageElement | HTMLVideoElement, url: string) {
+  const imgOrVideo = media.tagName === "VIDEO" ? document.createElement("video") : new Image();
+  if (imgOrVideo instanceof Image) {
+    imgOrVideo.loading = "lazy";
+  }
+  imgOrVideo.src = url;
+  return imgOrVideo;
 }
 
 async function getOriginalUrls(urls: string[]) {

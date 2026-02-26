@@ -13,10 +13,16 @@ async function comicSource() {
   while (true) {
     const urls = (unsafeWindow as unknown as { img_list: string[] }).img_list;
     if (urls) {
-      return urls;
+      return urls.map((url) => () => createImage(url));
     }
     await utils.timeout(10);
   }
+}
+
+function createImage(src: string) {
+  const image = new Image();
+  image.src = src;
+  return image;
 }
 
 function registerEpisodeNavigator() {

@@ -5,12 +5,14 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260103223456
+// @version        260226160106
 // @match          https://hitomi.la/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
 // @connect        self
+// @connect        gold-usergeneratedcontent.net
+// @connect        *
 // @grant          GM.addValueChangeListener
 // @grant          GM.getResourceText
 // @grant          GM.getValue
@@ -41,7 +43,7 @@
 // @resource       link:react/jsx-runtime       https://cdn.jsdelivr.net/npm/react@19.0.0/cjs/react-jsx-runtime.production.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1726982/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1762153/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
@@ -79,18 +81,18 @@ const selectItem = (div) => {
 };
 const getFocusedItem = () => document.querySelector(".key-nav-focus") || void 0;
 function hookListPage$1(configuration) {
-	const { navigatePage: navigatePage$1, getItems: getItems$1, enter: enter$1, onKeyDown } = configuration;
-	const navigateItem = (forward$1) => {
-		const items = getItems$1();
+	const { navigatePage, getItems, enter, onKeyDown } = configuration;
+	const navigateItem = (forward) => {
+		const items = getItems();
 		const focus = getFocusedItem();
 		if (!focus) {
-			if (items[0]) selectItem(forward$1 ? items[0] : items[items.length - 1]);
+			if (items[0]) selectItem(forward ? items[0] : items[items.length - 1]);
 			return;
 		}
 		const index = items.indexOf(focus);
 		if (index === -1) return;
 		focus.classList.remove("key-nav-focus");
-		let next = index + (forward$1 ? 1 : -1);
+		let next = index + (forward ? 1 : -1);
 		next = Math.max(0, Math.min(next, items.length - 1));
 		selectItem(items[next]);
 	};
@@ -100,10 +102,10 @@ function hookListPage$1(configuration) {
 	const handlePageKeypress = (event) => {
 		switch (event.key) {
 			case "h":
-				navigatePage$1(-1);
+				navigatePage(-1);
 				break;
 			case "l":
-				navigatePage$1(1);
+				navigatePage(1);
 				break;
 			default:
 				forward(event);
@@ -121,11 +123,11 @@ function hookListPage$1(configuration) {
 				break;
 			case "i": {
 				const item = getFocusedItem();
-				if (item) enter$1(item);
+				if (item) enter(item);
 				break;
 			}
 			default:
-				if (navigatePage$1) handlePageKeypress(event);
+				if (navigatePage) handlePageKeypress(event);
 				else forward(event);
 				break;
 		}
@@ -226,16 +228,15 @@ function throttleComicSource(urls) {
 		cachedUrls.push(urls[index]);
 		sessionStorage.setItem(urlCacheKey, JSON.stringify(cachedUrls));
 	}, 500);
-	return async ({ cause, page }) => {
-		if (cause === "download") return urls;
-		if (cause === "error" && page !== void 0) {
+	return () => urls.map((url, page) => async ({ cause }) => {
+		if (cause === "download") return createImage(url);
+		if (cause === "error") {
 			currentSource[page] = void 0;
 			remainingIndices.push(page);
 		}
-		if (!page || currentSource[page] !== void 0) return currentSource;
-		await getResolver(page).promise;
-		return currentSource;
-	};
+		if (currentSource[page] === void 0) await getResolver(page).promise;
+		return createImage(currentSource[page] ?? url);
+	});
 	function getResolver(page) {
 		let resolver = resolvers.get(page);
 		if (resolver) return resolver;
@@ -244,6 +245,12 @@ function throttleComicSource(urls) {
 		return resolver;
 	}
 }
+function createImage(src) {
+	const image = new Image();
+	image.loading = "lazy";
+	image.src = src;
+	return image;
+}
 async function getUrls() {
 	const info = await waitUnsafeObject("galleryinfo");
 	prependIdToTitle(info);
@@ -251,8 +258,8 @@ async function getUrls() {
 	unsafeWindow.gg.m = Function("g", guardless);
 	const make_source_element = await waitUnsafeObject("make_source_element");
 	exec(() => {
-		const base$1 = `${make_source_element}`.match(/url_from_url_from_hash\(.*?'(.*?)'\)/)[1];
-		Object.assign(window, { base: base$1 });
+		const base = `${make_source_element}`.match(/url_from_url_from_hash\(.*?'(.*?)'\)/)?.[1];
+		Object.assign(window, { base });
 	});
 	const base = unsafeWindow.base;
 	const urlFromUrlFromHash = await waitUnsafeObject("url_from_url_from_hash");

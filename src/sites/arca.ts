@@ -1,7 +1,7 @@
-import { type ComicSourceParams, initialize, utils, type ViewerController } from "vim_comic_viewer";
+import { initialize, utils, type ViewerController } from "vim_comic_viewer";
 
 export async function main() {
-  const viewer = await initialize({ source: comicSource, mediaProps: { loading: "lazy" } });
+  const viewer = await initialize({ source: comicSource });
 
   addEventListener("keydown", (event: KeyboardEvent) => {
     switch (event.key) {
@@ -55,45 +55,44 @@ function isCaptureTargetEvent(event: KeyboardEvent) {
   return !(ctrlKey || altKey || shiftKey || utils.isTyping(event));
 }
 
-async function comicSource({ cause, maxSize }: ComicSourceParams) {
-  const isDownload = cause === "download";
+async function comicSource() {
   const media = await searchMedia();
-  return media.map(isDownload ? getOriginalLink : getAdaptiveLink);
 
-  function getAdaptiveLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
-    const originalImageUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
-    const { width, height } = imgOrVideo;
-    const adaptive = (() => {
-      if (imgOrVideo.tagName === "IMG") {
-        return new Image();
-      }
-      return document.createElement("video");
-    })();
-    adaptive.src = imgOrVideo.src;
-    adaptive.width = width;
-    adaptive.height = height;
-    if (!originalImageUrl) {
-      return adaptive;
+  return media.map(
+    (imgOrVideo) => (params: { cause: string }) => getAdaptiveLink(imgOrVideo, params),
+  );
+
+  function getAdaptiveLink(
+    imgOrVideo: HTMLImageElement | HTMLVideoElement,
+    { cause }: { cause: string },
+  ) {
+    if (imgOrVideo.tagName === "VIDEO" || cause === "download") {
+      return imgOrVideo;
     }
 
-    const isGif = new URL(originalImageUrl).pathname.endsWith(".gif");
-    const original = new Image();
-    original.src = originalImageUrl;
-    original.width = width;
-    original.height = height;
-    if (isGif) {
-      return original;
+    const img = imgOrVideo;
+    const linkUrl = (img.parentElement as HTMLAnchorElement)?.href;
+    const isGif = new URL(linkUrl).pathname.endsWith(".gif");
+    const originalImageUrl = !!linkUrl && linkUrl.includes("type=orig") ? linkUrl : null;
+    if (isGif || !originalImageUrl) {
+      return img;
     }
 
-    const resizedWidth = 1000;
-    const resizedHeight = height * resizedWidth / width;
-    const zoomRatio = Math.min(maxSize.width / resizedWidth, maxSize.height / resizedHeight);
-    const canBePoorVisual = zoomRatio >= 2;
-    if (canBePoorVisual && cause === "error") {
-      return adaptive;
-    }
+    const adaptive = new Image();
+    const width = Number(img.getAttribute("width") ?? img.width);
+    const height = Number(img.getAttribute("height") ?? img.height);
 
-    return canBePoorVisual ? original : adaptive;
+    const safeWidth = Math.round(width / devicePixelRatio);
+    adaptive.sizes = `(max-width: ${width * 2 - 1}px) ${safeWidth}px,
+(max-height: ${height * 2 - 1}px) ${safeWidth}px,
+${safeWidth * 2}px`;
+    adaptive.srcset = `${img.src} ${Math.round(width)}w,
+${linkUrl} ${Math.round(width * 2)}w`;
+    adaptive.src = img.src;
+    if (linkUrl) {
+      adaptive.loading = "lazy";
+    }
+    return adaptive;
   }
 }
 
@@ -115,17 +114,4 @@ async function searchMedia() {
 
     return media;
   }
-}
-
-function getOriginalLink(imgOrVideo: HTMLImageElement | HTMLVideoElement) {
-  const originalImageUrl = (imgOrVideo.parentElement as HTMLAnchorElement)?.href;
-  if (originalImageUrl) {
-    const img = new Image();
-    img.src = originalImageUrl;
-    return img;
-  }
-
-  const video = new HTMLVideoElement();
-  video.src = imgOrVideo.src;
-  return video;
 }

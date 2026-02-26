@@ -16,7 +16,7 @@ export async function main() {
   const source = await comicSource();
 
   const controller = await initialize({
-    source: () => source,
+    source: () => source.map((url) => () => createImage(url)),
     onPreviousSeries: goPreviousEpisode,
     onNextSeries: goNextEpisode,
   });
@@ -111,6 +111,12 @@ function getUrl(image: HTMLImageElement): string[] {
   }
   const data = Object.values(image.dataset) as string[];
   return data.length ? data : [image.src];
+}
+
+function createImage(src: string) {
+  const image = new Image();
+  image.src = src;
+  return image;
 }
 
 async function markVisitedLinks() {

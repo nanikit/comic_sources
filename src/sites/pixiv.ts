@@ -1,4 +1,4 @@
-import { type ComicSourceParams, initialize, utils, ViewerOptions } from "vim_comic_viewer";
+import { initialize, utils, ViewerOptions } from "vim_comic_viewer";
 
 type PageResponse = {
   body: {
@@ -10,8 +10,6 @@ type PageResponse = {
     };
   }[];
 };
-
-let count = 0;
 
 export function main() {
   listenPageChange();
@@ -52,8 +50,7 @@ async function listenPageChange() {
 
 function getOptions(): ViewerOptions {
   return {
-    source: (...args) => comicSource(...args),
-    mediaProps: { loading: "lazy" },
+    source: () => comicSource(),
     onNextSeries: goNextSeries,
     onPreviousSeries: goPreviousSeries,
   };
@@ -89,25 +86,28 @@ function isCaptureTargetEvent(event: KeyboardEvent) {
   return !(ctrlKey || altKey || shiftKey || utils.isTyping(event));
 }
 
-async function comicSource({ cause }: ComicSourceParams) {
+async function comicSource() {
   const media = await searchMedia();
   if (!media) {
     return [];
   }
 
-  return media.body.map((x) => {
-    if (cause === "download" || x.height / x.width > 4) {
-      return x.urls.original;
-    }
-    return x.urls.regular;
+  return media.body.map((page) => ({ cause }: { cause: string }) => {
+    const { width, height, urls } = page;
+    const { original, regular } = urls;
+    const url = cause === "download" || height / width > 4 ? original : regular;
+    return createImage(url, width, height);
   });
 }
 
-async function searchMedia() {
-  const selfCount = ++count;
-  await utils.timeout(100);
+function createImage(src: string, width: number, height: number) {
+  const image = new Image(width, height);
+  image.src = src;
+  return image;
+}
 
-  while (count === selfCount) {
+async function searchMedia() {
+  while (true) {
     const postId = location.pathname.match(/\/artworks\/(\d+)/)?.[1];
     if (!postId) {
       await utils.timeout(100);

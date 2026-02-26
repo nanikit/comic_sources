@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260103223456
+// @version        260226160106
 // @match          https://kone.gg/s/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -40,7 +40,7 @@
 // @resource       link:react/jsx-runtime       https://cdn.jsdelivr.net/npm/react@19.0.0/cjs/react-jsx-runtime.production.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1726982/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1762153/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
@@ -70,10 +70,7 @@ async function listenPageChange() {
 		initializeViewer();
 	};
 	addEventListener("popstate", initializeViewer);
-	const viewer = await (0, vim_comic_viewer.initialize)({
-		source: comicSource,
-		mediaProps: { loading: "lazy" }
-	});
+	const viewer = await (0, vim_comic_viewer.initialize)({ source: () => comicSource() });
 	async function initializeViewer() {
 		const firstMedia = await searchMedia();
 		for (let i = 0; i < 5; i++) {
@@ -81,10 +78,7 @@ async function listenPageChange() {
 			const latestMedia = await searchMedia();
 			if (JSON.stringify(firstMedia) !== JSON.stringify(latestMedia)) break;
 		}
-		viewer.setOptions({
-			source: comicSource,
-			mediaProps: { loading: "lazy" }
-		});
+		viewer.setOptions({ source: () => comicSource() });
 	}
 }
 function goToCommentIfEligible(event) {
@@ -94,9 +88,23 @@ function isCaptureTargetEvent(event) {
 	const { ctrlKey, altKey, shiftKey } = event;
 	return !(ctrlKey || altKey || shiftKey || vim_comic_viewer.utils.isTyping(event));
 }
-async function comicSource({ cause }) {
-	const urls = (await searchMedia()).map((x) => x.src);
-	return cause === "download" ? await getOriginalUrls(urls) : urls;
+async function comicSource() {
+	const media = await searchMedia();
+	const urls = media.map((x) => x.src);
+	let originalUrlsPromise;
+	return media.map((mediaElement, page) => async ({ cause }) => {
+		if (cause !== "download") return mediaElement;
+		originalUrlsPromise ??= getOriginalUrls(urls);
+		const originalUrl = (await originalUrlsPromise)[page];
+		if (!originalUrl) return mediaElement;
+		return cloneMediaElement(mediaElement, originalUrl);
+	});
+}
+function cloneMediaElement(media, url) {
+	const imgOrVideo = media.tagName === "VIDEO" ? document.createElement("video") : new Image();
+	if (imgOrVideo instanceof Image) imgOrVideo.loading = "lazy";
+	imgOrVideo.src = url;
+	return imgOrVideo;
 }
 async function getOriginalUrls(urls) {
 	const articleId = location.pathname.split("/").at(-1);

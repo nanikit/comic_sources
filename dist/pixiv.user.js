@@ -5,12 +5,12 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260103223457
+// @version        260226160107
 // @match          https://www.pixiv.net/**
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
-// @connect        mittere.io
+// @connect        i.pximg.net
 // @connect        *
 // @grant          GM.addValueChangeListener
 // @grant          GM.getResourceText
@@ -40,7 +40,7 @@
 // @resource       link:react/jsx-runtime       https://cdn.jsdelivr.net/npm/react@19.0.0/cjs/react-jsx-runtime.production.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1726982/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1762153/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
@@ -48,7 +48,6 @@
 
 define("main", (require, exports, module) => {
 let vim_comic_viewer = require("vim_comic_viewer");
-let count = 0;
 function main() {
 	listenPageChange();
 	addEventListener("keydown", (event) => {
@@ -79,8 +78,7 @@ async function listenPageChange() {
 }
 function getOptions() {
 	return {
-		source: (...args) => comicSource(...args),
-		mediaProps: { loading: "lazy" },
+		source: () => comicSource(),
 		onNextSeries: goNextSeries,
 		onPreviousSeries: goPreviousSeries
 	};
@@ -104,18 +102,22 @@ function isCaptureTargetEvent(event) {
 	const { ctrlKey, altKey, shiftKey } = event;
 	return !(ctrlKey || altKey || shiftKey || vim_comic_viewer.utils.isTyping(event));
 }
-async function comicSource({ cause }) {
+async function comicSource() {
 	const media = await searchMedia();
 	if (!media) return [];
-	return media.body.map((x) => {
-		if (cause === "download" || x.height / x.width > 4) return x.urls.original;
-		return x.urls.regular;
+	return media.body.map((page) => ({ cause }) => {
+		const { width, height, urls } = page;
+		const { original, regular } = urls;
+		return createImage(cause === "download" || height / width > 4 ? original : regular, width, height);
 	});
 }
+function createImage(src, width, height) {
+	const image = new Image(width, height);
+	image.src = src;
+	return image;
+}
 async function searchMedia() {
-	const selfCount = ++count;
-	await vim_comic_viewer.utils.timeout(100);
-	while (count === selfCount) {
+	while (true) {
 		const postId = location.pathname.match(/\/artworks\/(\d+)/)?.[1];
 		if (!postId) {
 			await vim_comic_viewer.utils.timeout(100);

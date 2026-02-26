@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260103223455
+// @version        260226160105
 // @match          https://arca.live/b/*/*
 // @match          https://*.arca.live/b/*/*
 // @author         nanikit
@@ -41,7 +41,7 @@
 // @resource       link:react/jsx-runtime       https://cdn.jsdelivr.net/npm/react@19.0.0/cjs/react-jsx-runtime.production.js
 // @resource       link:scheduler               https://cdn.jsdelivr.net/npm/scheduler@0.23.2/cjs/scheduler.production.min.js
 // @resource       link:vcv-inject-node-env     data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D
-// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1726982/vim%20comic%20viewer.js
+// @resource       link:vim_comic_viewer        https://update.greasyfork.org/scripts/417893/1762153/vim%20comic%20viewer.js
 // @resource       overlayscrollbars-css        https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.0/styles/overlayscrollbars.min.css
 // @resource       react-toastify-css           https://cdn.jsdelivr.net/npm/react-toastify@10.0.5/dist/ReactToastify.css
 // ==/UserScript==
@@ -50,10 +50,7 @@
 define("main", (require, exports, module) => {
 let vim_comic_viewer = require("vim_comic_viewer");
 async function main() {
-	const viewer = await (0, vim_comic_viewer.initialize)({
-		source: comicSource,
-		mediaProps: { loading: "lazy" }
-	});
+	const viewer = await (0, vim_comic_viewer.initialize)({ source: comicSource });
 	addEventListener("keydown", (event) => {
 		switch (event.key) {
 			case "m":
@@ -90,31 +87,27 @@ function isCaptureTargetEvent(event) {
 	const { ctrlKey, altKey, shiftKey } = event;
 	return !(ctrlKey || altKey || shiftKey || vim_comic_viewer.utils.isTyping(event));
 }
-async function comicSource({ cause, maxSize }) {
-	const isDownload = cause === "download";
-	return (await searchMedia()).map(isDownload ? getOriginalLink : getAdaptiveLink);
-	function getAdaptiveLink(imgOrVideo) {
-		const originalImageUrl = imgOrVideo.parentElement?.href;
-		const { width, height } = imgOrVideo;
-		const adaptive = (() => {
-			if (imgOrVideo.tagName === "IMG") return new Image();
-			return document.createElement("video");
-		})();
-		adaptive.src = imgOrVideo.src;
-		adaptive.width = width;
-		adaptive.height = height;
-		if (!originalImageUrl) return adaptive;
-		const isGif = new URL(originalImageUrl).pathname.endsWith(".gif");
-		const original = new Image();
-		original.src = originalImageUrl;
-		original.width = width;
-		original.height = height;
-		if (isGif) return original;
-		const resizedWidth = 1e3;
-		const resizedHeight = height * resizedWidth / width;
-		const canBePoorVisual = Math.min(maxSize.width / resizedWidth, maxSize.height / resizedHeight) >= 2;
-		if (canBePoorVisual && cause === "error") return adaptive;
-		return canBePoorVisual ? original : adaptive;
+async function comicSource() {
+	return (await searchMedia()).map((imgOrVideo) => (params) => getAdaptiveLink(imgOrVideo, params));
+	function getAdaptiveLink(imgOrVideo, { cause }) {
+		if (imgOrVideo.tagName === "VIDEO" || cause === "download") return imgOrVideo;
+		const img = imgOrVideo;
+		const linkUrl = img.parentElement?.href;
+		const isGif = new URL(linkUrl).pathname.endsWith(".gif");
+		const originalImageUrl = !!linkUrl && linkUrl.includes("type=orig") ? linkUrl : null;
+		if (isGif || !originalImageUrl) return img;
+		const adaptive = new Image();
+		const width = Number(img.getAttribute("width") ?? img.width);
+		const height = Number(img.getAttribute("height") ?? img.height);
+		const safeWidth = Math.round(width / devicePixelRatio);
+		adaptive.sizes = `(max-width: ${width * 2 - 1}px) ${safeWidth}px,
+(max-height: ${height * 2 - 1}px) ${safeWidth}px,
+${safeWidth * 2}px`;
+		adaptive.srcset = `${img.src} ${Math.round(width)}w,
+${linkUrl} ${Math.round(width * 2)}w`;
+		adaptive.src = img.src;
+		if (linkUrl) adaptive.loading = "lazy";
+		return adaptive;
 	}
 }
 async function searchMedia() {
@@ -126,17 +119,6 @@ async function searchMedia() {
 		}
 		return media;
 	}
-}
-function getOriginalLink(imgOrVideo) {
-	const originalImageUrl = imgOrVideo.parentElement?.href;
-	if (originalImageUrl) {
-		const img = new Image();
-		img.src = originalImageUrl;
-		return img;
-	}
-	const video = new HTMLVideoElement();
-	video.src = imgOrVideo.src;
-	return video;
 }
 main();
 

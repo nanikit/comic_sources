@@ -106,24 +106,23 @@ function throttleComicSource(urls: string[]): ComicSource {
     sessionStorage.setItem(urlCacheKey, JSON.stringify(cachedUrls));
   }, 500);
 
-  return async ({ cause, page }) => {
-    if (cause === "download") {
-      return urls;
-    }
+  return () =>
+    urls.map((url, page) => async ({ cause }: { cause: string }) => {
+      if (cause === "download") {
+        return createImage(url);
+      }
 
-    if (cause === "error" && page !== undefined) {
-      currentSource[page] = undefined;
-      remainingIndices.push(page);
-    }
+      if (cause === "error") {
+        currentSource[page] = undefined;
+        remainingIndices.push(page);
+      }
 
-    if (!page || currentSource[page] !== undefined) {
-      return currentSource;
-    }
+      if (currentSource[page] === undefined) {
+        await getResolver(page).promise;
+      }
 
-    await getResolver(page).promise;
-
-    return currentSource;
-  };
+      return createImage(currentSource[page] ?? url);
+    });
 
   function getResolver(page: number) {
     let resolver = resolvers.get(page);
@@ -135,6 +134,13 @@ function throttleComicSource(urls: string[]): ComicSource {
     resolvers.set(page, resolver);
     return resolver;
   }
+}
+
+function createImage(src: string) {
+  const image = new Image();
+  image.loading = "lazy";
+  image.src = src;
+  return image;
 }
 
 async function getUrls() {
@@ -152,7 +158,7 @@ async function getUrls() {
   exec(() => {
     const base = `${make_source_element}`.match(
       /url_from_url_from_hash\(.*?'(.*?)'\)/,
-    )![1];
+    )?.[1];
     Object.assign(window, { base });
   });
   const base = (unsafeWindow as unknown as { base: string }).base;
