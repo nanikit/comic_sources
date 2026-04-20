@@ -35,7 +35,7 @@
     "react-toastify": "npm:react-toastify@10.0.5",
     "react": "npm:react@19.0.0",
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
-    "rolldown": "npm:rolldown@^1.0.0-beta.53",
+    "rolldown": "npm:rolldown@1.0.0-rc.2",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
     "vcv-inject-node-env": "data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D",
     "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/dba684e1496cc0564b57b0f5d10472ca231002dc/src/mod.tsx"
