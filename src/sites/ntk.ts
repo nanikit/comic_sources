@@ -10,6 +10,10 @@ export async function hookNtk() {
   let viewer = await createViewer();
 
   onNavigate(async () => {
+    if (!/^\/(manhwa|webtoon)\/[\w-]+\/[\w-]+/.test(location.pathname)) {
+      return;
+    }
+
     viewer?.unmount();
     viewer = await createViewer();
   });

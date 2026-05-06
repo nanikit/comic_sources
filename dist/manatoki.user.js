@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260226160106
+// @version        260506161608
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -93,6 +93,7 @@ const commonOptions = {
 async function hookNtk() {
 	let viewer = await createViewer();
 	onNavigate(async () => {
+		if (!/^\/(manhwa|webtoon)\/[\w-]+\/[\w-]+/.test(location.pathname)) return;
 		viewer?.unmount();
 		viewer = await createViewer();
 	});
