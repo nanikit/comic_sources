@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260226160106
+// @version        260506153828
 // @match          https://kone.gg/s/*/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
@@ -48,6 +48,32 @@
 
 define("main", (require, exports, module) => {
 let vim_comic_viewer = require("vim_comic_viewer");
+function onNavigate(callback) {
+	const { navigation } = window;
+	if (typeof navigation !== "undefined") {
+		navigation.addEventListener("navigatesuccess", callback);
+		return () => navigation.removeEventListener("navigatesuccess", callback);
+	}
+	return hookHistoryApi(callback);
+}
+function hookHistoryApi(callback) {
+	const originalPushState = history.pushState;
+	history.pushState = function(...args) {
+		originalPushState.apply(history, args);
+		callback();
+	};
+	const originalReplaceState = history.replaceState;
+	history.replaceState = function(...args) {
+		originalReplaceState.apply(history, args);
+		callback();
+	};
+	addEventListener("popstate", callback);
+	return () => {
+		history.pushState = originalPushState;
+		history.replaceState = originalReplaceState;
+		removeEventListener("popstate", callback);
+	};
+}
 function main() {
 	listenPageChange();
 	addEventListener("keydown", (event) => {
@@ -59,17 +85,7 @@ function main() {
 	});
 }
 async function listenPageChange() {
-	const originalPushState = history.pushState;
-	history.pushState = function(...args) {
-		originalPushState.apply(history, args);
-		initializeViewer();
-	};
-	const originalReplaceState = history.replaceState;
-	history.replaceState = function(...args) {
-		originalReplaceState.apply(history, args);
-		initializeViewer();
-	};
-	addEventListener("popstate", initializeViewer);
+	onNavigate(initializeViewer);
 	const viewer = await (0, vim_comic_viewer.initialize)({ source: () => comicSource() });
 	async function initializeViewer() {
 		const firstMedia = await searchMedia();

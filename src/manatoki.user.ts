@@ -11,6 +11,9 @@
 // @match          https://*.com/webtoon/*
 // @match          https://*.com/novel/*
 // @match          https://*.com/bbs/*
+// @match          https://*.com/end/*
+// @match          https://*.com/manhwa/*
+// @match          https://*.com/manhwa-end/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT

@@ -11,6 +11,9 @@
 // @match          https://*.com/webtoon/*
 // @match          https://*.com/novel/*
 // @match          https://*.com/bbs/*
+// @match          https://*.com/end/*
+// @match          https://*.com/manhwa/*
+// @match          https://*.com/manhwa-end/*
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
 // @license        MIT
@@ -51,9 +54,90 @@
 
 define("main", (require, exports, module) => {
 let vim_comic_viewer = require("vim_comic_viewer");
+function createImage(src, props) {
+	const image = new Image();
+	Object.assign(image, props);
+	image.src = src;
+	return image;
+}
+function onNavigate(callback) {
+	const { navigation } = window;
+	if (typeof navigation !== "undefined") {
+		navigation.addEventListener("navigatesuccess", callback);
+		return () => navigation.removeEventListener("navigatesuccess", callback);
+	}
+	return hookHistoryApi(callback);
+}
+function hookHistoryApi(callback) {
+	const originalPushState = history.pushState;
+	history.pushState = function(...args) {
+		originalPushState.apply(history, args);
+		callback();
+	};
+	const originalReplaceState = history.replaceState;
+	history.replaceState = function(...args) {
+		originalReplaceState.apply(history, args);
+		callback();
+	};
+	addEventListener("popstate", callback);
+	return () => {
+		history.pushState = originalPushState;
+		history.replaceState = originalReplaceState;
+		removeEventListener("popstate", callback);
+	};
+}
+const commonOptions = {
+	onPreviousSeries: goPreviousEpisode$1,
+	onNextSeries: goNextEpisode$1
+};
+async function hookNtk() {
+	let viewer = await createViewer();
+	onNavigate(async () => {
+		viewer?.unmount();
+		viewer = await createViewer();
+	});
+}
+async function createViewer() {
+	const viewer = await (0, vim_comic_viewer.initialize)({
+		source: comicSource$1,
+		...commonOptions
+	});
+	const isManga = location.pathname.includes("manhwa");
+	viewer.setScriptPreferences({
+		manualPreset: `ntk-${isManga ? "manga" : "webtoon"}`,
+		preferences: { pageDirection: isManga ? "rightToLeft" : "leftToRight" }
+	});
+	return viewer;
+}
+function goPreviousEpisode$1() {
+	document.querySelector(".vw-act[aria-label='이전화']")?.click?.();
+}
+function goNextEpisode$1() {
+	document.querySelector(".vw-act[aria-label='다음화']")?.click?.();
+}
+async function comicSource$1() {
+	while (true) {
+		const urls = getUrls$1();
+		if (urls.length) {
+			console.log(urls);
+			return urls.map((url) => () => createImage(url, { loading: "lazy" }));
+		}
+		await vim_comic_viewer.utils.timeout(200);
+	}
+}
+function getUrls$1() {
+	return [...document.querySelectorAll(".vw-imgs > img")].flatMap((x) => x.src);
+}
 async function main() {
 	const origin = getOrigin();
 	if (origin === "unknown") return;
+	if (origin === "ntk") {
+		hookNtk();
+		return;
+	}
+	await hookToki(origin);
+}
+async function hookToki(origin) {
 	markVisitedLinks();
 	registerEpisodeNavigator();
 	const buttons = duplicateViewerButton();
@@ -75,7 +159,8 @@ function getOrigin() {
 	return [
 		"manatoki",
 		"newtoki",
-		"booktoki"
+		"booktoki",
+		"ntk"
 	].find(originIncludes) ?? "unknown";
 }
 function originIncludes(str) {
@@ -130,11 +215,6 @@ function getUrl(image) {
 	if (image.offsetParent === null) return [];
 	const data = Object.values(image.dataset);
 	return data.length ? data : [image.src];
-}
-function createImage(src) {
-	const image = new Image();
-	image.src = src;
-	return image;
 }
 async function markVisitedLinks() {
 	const links = document.querySelectorAll(".post-row a");

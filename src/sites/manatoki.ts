@@ -1,6 +1,8 @@
 // @deno-types="tampermonkey"
 import type {} from "tampermonkey";
 import { initialize, utils } from "vim_comic_viewer";
+import { createImage } from "../utils/dom_util.ts";
+import { hookNtk } from "./ntk.ts";
 
 export async function main() {
   const origin = getOrigin();
@@ -8,6 +10,15 @@ export async function main() {
     return;
   }
 
+  if (origin === "ntk") {
+    hookNtk();
+    return;
+  }
+
+  await hookToki(origin);
+}
+
+async function hookToki(origin: string) {
   markVisitedLinks();
   registerEpisodeNavigator();
 
@@ -32,7 +43,7 @@ export async function main() {
 }
 
 function getOrigin() {
-  const allowedOrigins = ["manatoki", "newtoki", "booktoki"];
+  const allowedOrigins = ["manatoki", "newtoki", "booktoki", "ntk"];
   return allowedOrigins.find(originIncludes) ?? "unknown";
 }
 
@@ -99,9 +110,7 @@ function registerEpisodeNavigator() {
 }
 
 function getUrls() {
-  const imgs = (document.querySelectorAll(
-    "div.view-padding img",
-  ) as unknown) as Iterable<HTMLImageElement>;
+  const imgs = document.querySelectorAll("div.view-padding img") as Iterable<HTMLImageElement>;
   return [...imgs].flatMap(getUrl);
 }
 
@@ -111,12 +120,6 @@ function getUrl(image: HTMLImageElement): string[] {
   }
   const data = Object.values(image.dataset) as string[];
   return data.length ? data : [image.src];
-}
-
-function createImage(src: string) {
-  const image = new Image();
-  image.src = src;
-  return image;
 }
 
 async function markVisitedLinks() {

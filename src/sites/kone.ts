@@ -1,4 +1,5 @@
 import { initialize, utils } from "vim_comic_viewer";
+import { onNavigate } from "../utils/dom_util.ts";
 
 export function main() {
   listenPageChange();
@@ -13,19 +14,7 @@ export function main() {
 }
 
 async function listenPageChange() {
-  const originalPushState = history.pushState;
-  history.pushState = function (...args) {
-    originalPushState.apply(history, args);
-    initializeViewer();
-  };
-
-  const originalReplaceState = history.replaceState;
-  history.replaceState = function (...args) {
-    originalReplaceState.apply(history, args);
-    initializeViewer();
-  };
-
-  addEventListener("popstate", initializeViewer);
+  onNavigate(initializeViewer);
 
   const viewer = await initialize({ source: () => comicSource() });
 
