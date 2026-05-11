@@ -2,16 +2,12 @@
 import type {} from "tampermonkey";
 import { initialize, utils } from "vim_comic_viewer";
 import { createImage } from "../utils/dom_util.ts";
-import { hookNtk } from "./ntk.ts";
+import { tryHookNtk } from "./ntk.ts";
 
 export async function main() {
   const origin = getOrigin();
   if (origin === "unknown") {
-    return;
-  }
-
-  if (origin === "ntk") {
-    hookNtk();
+    await tryHookNtk();
     return;
   }
 
@@ -43,7 +39,7 @@ async function hookToki(origin: string) {
 }
 
 function getOrigin() {
-  const allowedOrigins = ["manatoki", "newtoki", "booktoki", "ntk"];
+  const allowedOrigins = ["manatoki", "newtoki", "booktoki"];
   return allowedOrigins.find(originIncludes) ?? "unknown";
 }
 

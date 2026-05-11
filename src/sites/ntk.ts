@@ -6,7 +6,20 @@ const commonOptions = {
   onNextSeries: goNextEpisode,
 };
 
-export async function hookNtk() {
+export async function tryHookNtk() {
+  while (true) {
+    const title = document.querySelector("title");
+    if (title) {
+      if (title.textContent.includes("뉴토끼")) {
+        await hookNtk();
+      }
+      return;
+    }
+    await utils.timeout(100);
+  }
+}
+
+async function hookNtk() {
   let viewer = await createViewer();
 
   onNavigate(async () => {

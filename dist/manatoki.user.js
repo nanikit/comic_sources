@@ -5,7 +5,7 @@
 // @description    i,j,k 키를 눌러보세요
 // @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260506161608
+// @version        260511133929
 // @match          https://*.net/bbs/*
 // @match          https://*.net/comic/*
 // @match          https://*.com/webtoon/*
@@ -90,6 +90,16 @@ const commonOptions = {
 	onPreviousSeries: goPreviousEpisode$1,
 	onNextSeries: goNextEpisode$1
 };
+async function tryHookNtk() {
+	while (true) {
+		const title = document.querySelector("title");
+		if (title) {
+			if (title.textContent.includes("뉴토끼")) await hookNtk();
+			return;
+		}
+		await vim_comic_viewer.utils.timeout(100);
+	}
+}
 async function hookNtk() {
 	let viewer = await createViewer();
 	onNavigate(async () => {
@@ -131,9 +141,8 @@ function getUrls$1() {
 }
 async function main() {
 	const origin = getOrigin();
-	if (origin === "unknown") return;
-	if (origin === "ntk") {
-		hookNtk();
+	if (origin === "unknown") {
+		await tryHookNtk();
 		return;
 	}
 	await hookToki(origin);
@@ -160,8 +169,7 @@ function getOrigin() {
 	return [
 		"manatoki",
 		"newtoki",
-		"booktoki",
-		"ntk"
+		"booktoki"
 	].find(originIncludes) ?? "unknown";
 }
 function originIncludes(str) {
