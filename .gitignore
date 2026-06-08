@@ -1,5 +1,6 @@
 # local files
 *.local.*
+node_modules/
 
 # env file for deno_userscript_linker OUTPUT_SYNC
 .env

@@ -1,5 +1,6 @@
 import { initialize, utils } from "vim_comic_viewer";
 import { onNavigate } from "../utils/dom_util.ts";
+import { findMainMediaGroup } from "../utils/main_media_group.ts";
 
 export function main() {
   listenPageChange();
@@ -91,21 +92,11 @@ async function getOriginalUrls(urls: string[]) {
 
 async function searchMedia() {
   while (true) {
-    const post = document.getElementById("post_content")?.shadowRoot;
-    if (!post) {
-      await utils.timeout(100);
-      continue;
+    const media = findMainMediaGroup(document.documentElement);
+    if (media.length) {
+      return media;
     }
 
-    const media = [
-      ...post.querySelectorAll('img[src]:not([src=""]), video[src]:not([src=""])'),
-    ] as (HTMLImageElement | HTMLVideoElement)[];
-
-    if (media.length === 0) {
-      await utils.timeout(100);
-      continue;
-    }
-
-    return media;
+    await utils.timeout(100);
   }
 }

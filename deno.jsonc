@@ -10,10 +10,11 @@
   "tasks": {
     "hooks:install": "deno run --allow-read=deno.json,deno.jsonc,.git/hooks/ --allow-write=.git/hooks/ jsr:@hongminhee/deno-task-hooks",
     "hooks:pre-commit": "deno task check:all",
-    "check:all": { "dependencies": ["fmt", "lint", "check"] },
+    "check:all": { "dependencies": ["fmt", "lint", "check", "test"] },
     "fmt": "deno fmt --check",
     "lint": "deno lint",
-    "check": "deno check src/*.user.ts",
+    "check": "deno check --node-modules-dir=none src/*.user.ts",
+    "test": "deno run --allow-all --node-modules-dir=auto npm:vitest@3.2.4 run --cache=false",
     "build": "deno run --allow-all --env-file=.env npm:rolldown@1.0.0-rc.2 --config rolldown.config.mts",
     "watch": "deno run --allow-all --env-file=.env npm:rolldown@1.0.0-rc.2 --config rolldown.config.mts --watch",
     "update-deps": "deno run --allow-all -- tool/update_deps.ts && deno task build"
@@ -38,6 +39,7 @@
     "react/jsx-runtime": "npm:@types/react/jsx-runtime",
     "rolldown": "npm:rolldown@1.0.0-rc.2",
     "tampermonkey": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/60ab8a805a1c5c4225027068e604ef4687cdf379/types/tampermonkey/index.d.ts",
+    "vitest": "npm:vitest@3.2.4",
     "vcv-inject-node-env": "data:,unsafeWindow.process=%7Benv:%7BNODE_ENV:%22production%22%7D%7D",
     "vim_comic_viewer": "https://raw.githubusercontent.com/nanikit/vim_comic_viewer/dba684e1496cc0564b57b0f5d10472ca231002dc/src/mod.tsx"
   }
