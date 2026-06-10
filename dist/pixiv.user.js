@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name           픽시브 뷰어
-// @name:ko        픽시브 뷰어
 // @name:en        pixiv viewer
+// @name:ko        픽시브 뷰어
 // @description    i,j,k 키를 눌러보세요
-// @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260226160107
-// @match          https://www.pixiv.net/**
+// @description:ko i,j,k 키를 눌러보세요
+// @version        260610160822
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @match          https://www.pixiv.net/**
 // @license        MIT
-// @connect        i.pximg.net
 // @connect        *
+// @connect        i.pximg.net
 // @grant          GM.addValueChangeListener
 // @grant          GM.getResourceText
 // @grant          GM.getValue
@@ -131,15 +131,14 @@ main();
 
 });
 
-define("tampermonkey_grants", function() { Object.assign(this.window, { GM, unsafeWindow }); });
-requirejs.config({ deps: ["tampermonkey_grants"] });
 load()
 
 async function load() {
   const links = GM.info.script.resources.filter(x => x.name.startsWith("link:"));
   await Promise.all(links.map(async ({ name }) => {
     const script = await GM.getResourceText(name)
-    define(name.replace("link:", ""), Function("require", "exports", "module", script))
+    const createModule = Function("GM", "unsafeWindow", "return function(require, exports, module) {\n" + script + "\n}")
+    define(name.replace("link:", ""), createModule(GM, unsafeWindow))
   }));
   require(["main"], () => {}, console.error);
 }

@@ -1,21 +1,21 @@
 // ==UserScript==
 // @name           토끼 뷰어
-// @name:ko        토끼 뷰어
 // @name:en        toki viewer
+// @name:ko        토끼 뷰어
 // @description    i,j,k 키를 눌러보세요
-// @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260511133929
-// @match          https://*.net/bbs/*
-// @match          https://*.net/comic/*
-// @match          https://*.com/webtoon/*
-// @match          https://*.com/novel/*
-// @match          https://*.com/bbs/*
-// @match          https://*.com/end/*
-// @match          https://*.com/manhwa/*
-// @match          https://*.com/manhwa-end/*
+// @description:ko i,j,k 키를 눌러보세요
+// @version        260610160822
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @match          https://*.com/bbs/*
+// @match          https://*.com/end/*
+// @match          https://*.com/manhwa-end/*
+// @match          https://*.com/manhwa/*
+// @match          https://*.com/novel/*
+// @match          https://*.com/webtoon/*
+// @match          https://*.net/bbs/*
+// @match          https://*.net/comic/*
 // @license        MIT
 // @connect        *
 // @grant          GM.addValueChangeListener
@@ -244,15 +244,14 @@ main();
 
 });
 
-define("tampermonkey_grants", function() { Object.assign(this.window, { GM, unsafeWindow }); });
-requirejs.config({ deps: ["tampermonkey_grants"] });
 load()
 
 async function load() {
   const links = GM.info.script.resources.filter(x => x.name.startsWith("link:"));
   await Promise.all(links.map(async ({ name }) => {
     const script = await GM.getResourceText(name)
-    define(name.replace("link:", ""), Function("require", "exports", "module", script))
+    const createModule = Function("GM", "unsafeWindow", "return function(require, exports, module) {\n" + script + "\n}")
+    define(name.replace("link:", ""), createModule(GM, unsafeWindow))
   }));
   require(["main"], () => {}, console.error);
 }

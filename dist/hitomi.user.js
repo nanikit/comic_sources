@@ -1,18 +1,18 @@
 // ==UserScript==
 // @name           히토미 뷰어
-// @name:ko        히토미 뷰어
 // @name:en        hitomi viewer
+// @name:ko        히토미 뷰어
 // @description    i,j,k 키를 눌러보세요
-// @description:ko i,j,k 키를 눌러보세요
 // @description:en press i to open
-// @version        260226160106
-// @match          https://hitomi.la/*
+// @description:ko i,j,k 키를 눌러보세요
+// @version        260610160821
 // @author         nanikit
 // @namespace      https://greasyfork.org/ko/users/713014-nanikit
+// @match          https://hitomi.la/*
 // @license        MIT
-// @connect        self
-// @connect        gold-usergeneratedcontent.net
 // @connect        *
+// @connect        gold-usergeneratedcontent.net
+// @connect        self
 // @grant          GM.addValueChangeListener
 // @grant          GM.getResourceText
 // @grant          GM.getValue
@@ -51,13 +51,12 @@
 
 define("main", (require, exports, module) => {
 let vim_comic_viewer = require("vim_comic_viewer");
-const timeout = (millisecond) => new Promise((resolve) => setTimeout(resolve, millisecond));
-const insertCss = (css) => {
+function insertCss(css) {
 	const style = document.createElement("style");
 	style.innerHTML = css;
 	document.head.append(style);
-};
-const observeOnce = (element, options) => {
+}
+function observeOnce(element, options) {
 	return new Promise((resolve) => {
 		const observer = new MutationObserver((...args) => {
 			observer.disconnect();
@@ -65,7 +64,7 @@ const observeOnce = (element, options) => {
 		});
 		observer.observe(element, options);
 	});
-};
+}
 const defaultFocusCss = `
 && {
   background: aliceblue;
@@ -181,6 +180,7 @@ function getPageList(href) {
 		index: currentPage - 1
 	};
 }
+const timeout = (millisecond) => new Promise((resolve) => setTimeout(resolve, millisecond));
 const overrideCss = `
 .vim_comic_viewer > :first-child ::-webkit-scrollbar {
   width: 12px !important;
@@ -289,15 +289,14 @@ initialize();
 
 });
 
-define("tampermonkey_grants", function() { Object.assign(this.window, { GM, unsafeWindow }); });
-requirejs.config({ deps: ["tampermonkey_grants"] });
 load()
 
 async function load() {
   const links = GM.info.script.resources.filter(x => x.name.startsWith("link:"));
   await Promise.all(links.map(async ({ name }) => {
     const script = await GM.getResourceText(name)
-    define(name.replace("link:", ""), Function("require", "exports", "module", script))
+    const createModule = Function("GM", "unsafeWindow", "return function(require, exports, module) {\n" + script + "\n}")
+    define(name.replace("link:", ""), createModule(GM, unsafeWindow))
   }));
   require(["main"], () => {}, console.error);
 }

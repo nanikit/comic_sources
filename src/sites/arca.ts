@@ -1,4 +1,5 @@
 import { initialize, utils, type ViewerController } from "vim_comic_viewer";
+import { findMainMediaGroup } from "../utils/main_media_group.ts";
 
 export async function main() {
   const viewer = await initialize({ source: comicSource });
@@ -98,11 +99,13 @@ ${linkUrl} ${Math.round(width * 2)}w`;
 
 async function searchMedia() {
   while (true) {
-    const media = [
-      ...document.querySelectorAll(
-        ".article-content img[src]:not([src='']), .article-content video[src]:not([src=''])",
-      ),
-    ] as (HTMLImageElement | HTMLVideoElement)[];
+    const articleContent = document.querySelector(".article-content");
+    if (!articleContent) {
+      await utils.timeout(100);
+      continue;
+    }
+
+    const media = findMainMediaGroup(articleContent);
 
     const isDehydrated = media.some((x) =>
       x.tagName === "IMG" && !(x.parentElement as HTMLAnchorElement | null)?.href
