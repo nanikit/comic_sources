@@ -17,7 +17,7 @@ async function updateTypes() {
   const branch = await getBranch({ owner: "nanikit", repo: "vim_comic_viewer", branch: "main" });
   const url =
     `https://raw.githubusercontent.com/nanikit/vim_comic_viewer/${branch.commit.sha}/src/mod.tsx`;
-  const denoConfig = JSON.parse(await Deno.readTextFile("deno.jsonc"));
+  const denoConfig = JSON.parse(await Deno.readTextFile("deno.json"));
 
   if (denoConfig.imports["vim_comic_viewer"] === url) {
     console.info("Types are already up to date");
@@ -30,8 +30,8 @@ async function updateTypes() {
   }
 
   denoConfig.imports["vim_comic_viewer"] = url;
-  await Deno.writeTextFile("deno.jsonc", JSON.stringify(denoConfig));
-  await new Deno.Command(Deno.execPath(), { args: ["fmt", "deno.jsonc"] }).output();
+  await Deno.writeTextFile("deno.json", JSON.stringify(denoConfig));
+  await new Deno.Command(Deno.execPath(), { args: ["fmt", "deno.json"] }).output();
   return true;
 }
 
